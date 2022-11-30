@@ -10,12 +10,6 @@ max_message_size = 48 # bytes
 
 # don't do things past here
 
-if len(sys.argv) < 2:
-	print("error provide hid device")
-	sys.exit(1)
-else:
-	hidx_device = sys.argv[1]
-
 queued_cmds = []
 hs = os.open(hidx_device, os.O_RDWR)
 
@@ -23,6 +17,15 @@ def do_cmd(cmd):
 	c = os.popen(cmd)
 	r = c.read()
 	return r
+
+# trick found by 01phor1e
+def get_linux_dev():
+	cmd = "dmesg|grep hidraw|grep hiddev|grep input2|tail -n1|awk -F ',' '{print $2}'|awk -F ':' '{print $1}'"
+	try:
+		r = str(do_cmd(cmd)).strip()
+		return r
+	except:
+		return None
 
 def chunk_cmd(result):
 	def chunk(o):
@@ -37,6 +40,16 @@ def chunk_cmd(result):
 			chunk(line)
 	else:
 		chunk(result)
+
+raw_dev = get_linux_dev()
+if raw_dev is not None:
+	hidx_device = "/dev/"+raw_dev
+else:
+	if len(sys.argv) < 2:
+		print("error provide hid device")
+		sys.exit(1)
+	else:
+		hidx_device = sys.argv[1]
 
 run = True
 cmd = ""
