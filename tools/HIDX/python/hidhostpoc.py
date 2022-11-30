@@ -2,16 +2,13 @@ import os,sys,time
 from textwrap import wrap
 
 # set these
-
-
+ 
 hidx_device = None
 transmission_delay = 1 # in seconds, 0 disables
 max_message_size = 48 # bytes
 
 # don't do things past here
 
-queued_cmds = []
-hs = os.open(hidx_device, os.O_RDWR)
 
 def do_cmd(cmd):
 	c = os.popen(cmd)
@@ -50,6 +47,9 @@ else:
 		sys.exit(1)
 	else:
 		hidx_device = sys.argv[1]
+
+queued_cmds = []
+hs = os.open(hidx_device, os.O_RDWR)
 
 run = True
 cmd = ""
