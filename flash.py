@@ -1,4 +1,4 @@
-# Copyright 2022 Mischief Gadgets LLC
+# Copyright 2023 Mischief Gadgets LLC
 
 import os
 import sys
@@ -16,8 +16,8 @@ from sys import exit
 from time import time
 from math import floor
 from signal import signal, SIGINT
-from serial.tools.list_ports import comports
 from serial.tools import hexlify_codec
+from serial.tools.list_ports import comports
 
 from pprint import pprint
 
@@ -271,7 +271,7 @@ class omg_results():
         self.FILE_ELF0 = "image.elf-0x00000.bin"
         self.FILE_ELF1 = "image.elf-0x10000.bin"
         self.FILE_BLANK = "blank.bin"
-        self.FILE_OFAT_INIT = "init.bin"
+        self.FILE_OFAT_INIT = "blank-settings.bin"
         self.FLASH_SLOTS = 0
         self.FLASH_PAYLOAD_SIZE = 1
         self.NUMBER_SLOTS = 7
@@ -644,6 +644,8 @@ def omg_input():
 
         results.WIFI_PASS = WIFI_PASS
         
+    # enable to let user customize on plus an elite devices
+    # beta feature
     PROMPT_FLASH_CUSTOMIZE = False 
     FLASH_CUSTOMIZE = 0
     FLASH_SIZE = 0
@@ -730,7 +732,7 @@ def omg_runflash(pre_erase=False):
             kp=abs(100-results.FLASH_PAYLOAD_SIZE)
             ns=int(results.FLASH_SLOTS*4)
             np=results.NUMBER_SLOTS
-            print(f"\n\tPERCENT FLASH PAYLOAD SPACE: {pp}\n\tPERCENT FLASH KEYLOG SPACE: {kp}\n\tNUMBER OF PAYLOADS: {np}\n\tSIZE OF PAYLOAD SLOTS: {ns}k\n\t")
+            print(f"\n\tPERCENT FLASH PAYLOAD SPACE: {pp}\n\tPERCENT FLASH KEYLOG SPACE: {kp} (Where Applicable)\n\tNUMBER OF PAYLOADS: {np}\n\tSIZE OF PAYLOAD SLOTS: {ns}k\n\t")
   
 def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
