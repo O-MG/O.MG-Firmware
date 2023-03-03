@@ -558,6 +558,16 @@ def omg_probe():
             print("<<< O.MG-PROGRAMMER WAS NOT FOUND IN DEVICES >>>\n")
         complete(1)
 
+def omg_reset_settings():
+    FILE_INIT = results.FILE_OFAT_INIT
+    try:
+        with open(FILE_INIT,'wb') as f:
+            fill = (4*1024)
+            init_cmd = "\00"*abs(fill)
+            f.write(bytes(init_cmd.encode("utf-8")))  
+    except:
+        print("Warning: Unable to reset " + FILE_INIT)
+
 
 def omg_patch(_ssid, _pass, _mode, slotsize=0, percent=30):
     FILE_INIT = results.FILE_OFAT_INIT
@@ -710,30 +720,36 @@ def omg_flashfw():
         print("\n<<< SOMETHING FAILED WHILE FLASHING >>>")
         complete(1)
 
-def omg_runflash(pre_erase=False):
-        mac, flash_size = get_dev_info(results.PORT_PATH)
-        if FLASHER_VERSION>=2:
-            print("Attempting to clear device before flashing...")
-            if flash_size < 0x200000:
-                command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x8A000']
-            else:
-                command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x18A000']
-            omg_flash(command)
-        omg_input()
-        omg_patch(results.WIFI_SSID, results.WIFI_PASS, results.WIFI_MODE, results.FLASH_SLOTS, results.FLASH_PAYLOAD_SIZE)
-        omg_flashfw()
-        print("\n[ WIFI SETTINGS ]")
-        print("\n\tWIFI_SSID: {SSID}\n\tWIFI_PASS: {PASS}\n\tWIFI_MODE: {MODE}\n\tWIFI_TYPE: {TYPE}".format(SSID=results.WIFI_SSID, PASS=results.WIFI_PASS, MODE=results.WIFI_MODE, TYPE=results.WIFI_TYPE))
-        print("\n[ FIRMWARE USED ]")
-        print("\n\tINIT: {INIT}\n\tELF0: {ELF0}\n\tELF1: {ELF1}\n\tPAGE: {PAGE}".format(INIT=results.FILE_INIT, ELF0=results.FILE_ELF0, ELF1=results.FILE_ELF1, PAGE=results.FILE_PAGE))
-        if results.FLASH_SLOTS > 0:
-            print("\n[ CUSTOM PAYLOAD CONFIGURATION ]")
-            pp=results.FLASH_PAYLOAD_SIZE
-            kp=abs(100-results.FLASH_PAYLOAD_SIZE)
-            ns=int(results.FLASH_SLOTS*4)
-            np=results.NUMBER_SLOTS
-            print(f"\n\tPERCENT FLASH PAYLOAD SPACE: {pp}\n\tPERCENT FLASH KEYLOG SPACE: {kp} (Where Applicable)\n\tNUMBER OF PAYLOADS: {np}\n\tSIZE OF PAYLOAD SLOTS: {ns}k\n\t")
-  
+def omg_runflash(pre_erase=False,skip_flash=False):
+	mac, flash_size = get_dev_info(results.PORT_PATH)
+	if (pre_erase and skip_flash) or FLASHER_VERSION>=2:
+		if skip_flash:
+			print("Attempting to factory reset (erase) device...")
+		else:
+			print("Attempting to clear device before flashing...")
+		if flash_size < 0x200000:
+			command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x8A000']
+		else:
+			command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x18A000']
+		omg_flash(command)
+	if not skip_flash:
+		omg_input()
+		omg_patch(results.WIFI_SSID, results.WIFI_PASS, results.WIFI_MODE, results.FLASH_SLOTS, results.FLASH_PAYLOAD_SIZE)
+		omg_flashfw()
+		print("\n[ WIFI SETTINGS ]")
+		print("\n\tWIFI_SSID: {SSID}\n\tWIFI_PASS: {PASS}\n\tWIFI_MODE: {MODE}\n\tWIFI_TYPE: {TYPE}".format(SSID=results.WIFI_SSID, PASS=results.WIFI_PASS, MODE=results.WIFI_MODE, TYPE=results.WIFI_TYPE))
+		print("\n[ FIRMWARE USED ]")
+		print("\n\tINIT: {INIT}\n\tELF0: {ELF0}\n\tELF1: {ELF1}\n\tPAGE: {PAGE}".format(INIT=results.FILE_INIT, ELF0=results.FILE_ELF0, ELF1=results.FILE_ELF1, PAGE=results.FILE_PAGE))
+		if results.FLASH_SLOTS > 0:
+			print("\n[ CUSTOM PAYLOAD CONFIGURATION ]")
+			pp=results.FLASH_PAYLOAD_SIZE
+			kp=abs(100-results.FLASH_PAYLOAD_SIZE)
+			ns=int(results.FLASH_SLOTS*4)
+			np=results.NUMBER_SLOTS
+			print(f"\n\tPERCENT FLASH PAYLOAD SPACE: {pp}\n\tPERCENT FLASH KEYLOG SPACE: {kp} (Where Applicable)\n\tNUMBER OF PAYLOADS: {np}\n\tSIZE OF PAYLOAD SLOTS: {ns}k\n\t")
+	# attempt to always erase settings
+	omg_reset_settings()
+	
 def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
@@ -757,6 +773,8 @@ if __name__ == '__main__':
     results.OS_DETECTED = platform.system().upper()
 
     omg_locate()
+    
+    omg_reset_settings()
 
     omg_probe()
     
@@ -799,7 +817,7 @@ if __name__ == '__main__':
             print("\n<<< FIRMWARE PROCESS FINISHED, REMOVE DEVICE >>>\n")
         elif MENU_MODE == '2':
             print("\nFACTORY RESET")
-            omg_runflash(True)
+            omg_runflash(True,True)
         elif MENU_MODE == '3':
             baudrate = '460800'
             mac, flash_size = get_dev_info(results.PORT_PATH)
@@ -817,7 +835,7 @@ if __name__ == '__main__':
             omg_input()
             repeating = ''
             while repeating != 'e':
-                omg_runflash(True)
+                omg_runflash(True,True)
                 repeating = input("\n\n<<< PRESS ENTER TO RESTORE NEXT DEVICE, OR 'E' TO EXIT >>>\n")
         elif MENU_MODE == '5':
             print("\nBACKUP DEVICE")
