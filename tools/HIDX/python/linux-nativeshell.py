@@ -1,3 +1,7 @@
+# NOTE: This is a POC only
+# This has certain limitations on size of packets and writes
+# You may need root access to use this.
+
 import os,sys,time
 from textwrap import wrap
 
