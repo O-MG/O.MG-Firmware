@@ -27,19 +27,19 @@ Defining product ID of the device. (Default: D34D)
 
 .EXAMPLE
 Defining a message: 
-HIDXExfil -Message "hello world"
+HIDXpoc -Message "hello world"
 
 .EXAMPLE
 HIDX usage with every paramter: 
-HIDXExfil -VendorID D3C0 -ProductID D34D -Message "test"
+HIDXpoc -VendorID D3C0 -ProductID D34D -Message "test"
 
 .EXAMPLE
 Piping output into HIDX: 
-whoami | HIDXExfil
+whoami | HIDXpoc
 
 .EXAMPLE
 Exfiltrating systeminfo with proper formatting:
-systeminfo | Out-String | HIDXExfil
+systeminfo | Out-String | HIDXpoc
 
 .LINK
 https://github.com/0iphor13
