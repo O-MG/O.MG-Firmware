@@ -351,7 +351,7 @@ def ask_for_port():
             if cleaned_value in all_ports:
                 # we found a port
                 if not in_valid_list:
-                    print(f"!! Warning: Manually selecting port {port}, but unable to veirfy it is a CP210x device")
+                    print(f"!! Warning: Manually selecting port {port}, but unable to verify it is a CP210x device")
                 break
             else:
                 print("Invalid option. You must enter an index or full path to the device")
