@@ -29,11 +29,11 @@ except NameError:
     unichr = chr
 
 if 'idlelib.run' in sys.modules:
-	print("!!!! PLEASE DO NOT RUN THIS IN IDLE EDITOR !!!!")
-	print("Unexpected outcomes or errors may occur when running in IDLE")
-	print("Please launch this by opening your command line or terminal and typing 'python3 flash.py'")
-	print("If you have any questions please see the wiki https://github.com/O-MG/O.MG-Firmware/wiki")
-	sys.exit(1)
+    print("!!!! PLEASE DO NOT RUN THIS IN IDLE EDITOR !!!!")
+    print("Unexpected outcomes or errors may occur when running in IDLE")
+    print("Please launch this by opening your command line or terminal and typing 'python3 flash.py'")
+    print("If you have any questions please see the wiki https://github.com/O-MG/O.MG-Firmware/wiki")
+    sys.exit(1)
 
 VERSION = "FIRMWARE FLASHER VERSION NUMBER [ 230228 @ 142312 UTC ]"
 FLASHER_VERSION = 1 # presume we have an old style flasher = 1
@@ -319,9 +319,11 @@ def ask_for_port():
     global FLASHER_VERSION
     i = 0
     sys.stderr.write('\n--- Available ports:\n')
+    port = None
     ports = []
     ports_info = {}
     skippedports = []
+
     for n, (port, desc, hwid) in enumerate(sorted(comports()), 1):
         includedport = "CP210"
         if includedport in desc:
@@ -343,22 +345,33 @@ def ask_for_port():
                 sys.stderr.write('--- Invalid index!\n')
                 continue
         except ValueError:
-            pass
+            all_ports = skippedports + list(ports_info.keys())
+            cleaned_value = str(port).strip().strip(" ")
+            in_valid_list = (cleaned_value in ports_info.keys())
+            if cleaned_value in all_ports:
+                # we found a port
+                if not in_valid_list:
+                    print(f"!! Warning: Manually selecting port {port}, but unable to veirfy it is a CP210x device")
+                break
+            else:
+                print("Invalid option. You must enter an index or full path to the device")
+                pass
         else:
             port = ports[index]
-            FLASHER_VERSION = 1 # update back to 1
-            if FLASHER_VERSION_DETECT:       
-                try:      
-                    if 'cp2102n' in str(ports_info[port]['desc'].lower()):
-                        print("Found programmer version: 2")
-                        print("This programmer will not require reconnection, please utilize the visual indicators on the programmer to ensure omg device is properly connected.")
-                        FLASHER_VERSION = 2
-                    else:
-                        print("Found programmer version: 1")
-                except KeyError:
-                    print("Defaulting to programmer version: 1")
-            # finish
-            return port
+            break
+    FLASHER_VERSION = 1 # update back to 1
+    if FLASHER_VERSION_DETECT:       
+        try:      
+            if 'cp2102n' in str(ports_info[port]['desc'].lower()):
+                print("Found programmer version: 2")
+                print("This programmer will not require reconnection, please utilize the visual indicators on the programmer to ensure omg device is properly connected.")
+                FLASHER_VERSION = 2
+            else:
+                print("Found programmer version: 1")
+        except KeyError:
+            print("Defaulting to programmer version: 1")
+    # finish
+    return port
 
 def omg_flash(command,tries=2):
     global FLASHER_VERSION
@@ -706,9 +719,10 @@ def omg_input():
         results.FLASH_PAYLOAD_SIZE = FLASH_PAYLOAD_PERCENT
         
 
-def omg_flashfw():
-    mac, flash_size = get_dev_info(results.PORT_PATH)
-
+def omg_flashfw(mac=None,flash_size=None):
+    if not mac and not flash_size:
+        mac, flash_size = get_dev_info(results.PORT_PATH)
+    # attempt to continue
     try:
         FILE_PAGE = results.FILE_PAGE
         FILE_INIT = results.FILE_INIT
@@ -727,35 +741,36 @@ def omg_flashfw():
         complete(1)
 
 def omg_runflash(pre_erase=False,skip_flash=False):
-	mac, flash_size = get_dev_info(results.PORT_PATH)
-	if (pre_erase and skip_flash) or FLASHER_VERSION>=2:
-		if skip_flash:
-			print("Attempting to factory reset (erase) device...")
-		else:
-			print("Attempting to clear device before flashing...")
-		if flash_size < 0x200000:
-			command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x8A000']
-		else:
-			command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x18A000']
-		omg_flash(command)
-	if not skip_flash:
-		omg_input()
-		omg_patch(results.WIFI_SSID, results.WIFI_PASS, results.WIFI_MODE, results.FLASH_SLOTS, results.FLASH_PAYLOAD_SIZE)
-		omg_flashfw()
-		print("\n[ WIFI SETTINGS ]")
-		print("\n\tWIFI_SSID: {SSID}\n\tWIFI_PASS: {PASS}\n\tWIFI_MODE: {MODE}\n\tWIFI_TYPE: {TYPE}".format(SSID=results.WIFI_SSID, PASS=results.WIFI_PASS, MODE=results.WIFI_MODE, TYPE=results.WIFI_TYPE))
-		print("\n[ FIRMWARE USED ]")
-		print("\n\tINIT: {INIT}\n\tELF0: {ELF0}\n\tELF1: {ELF1}\n\tPAGE: {PAGE}".format(INIT=results.FILE_INIT, ELF0=results.FILE_ELF0, ELF1=results.FILE_ELF1, PAGE=results.FILE_PAGE))
-		if results.FLASH_SLOTS > 0:
-			print("\n[ CUSTOM PAYLOAD CONFIGURATION ]")
-			pp=results.FLASH_PAYLOAD_SIZE
-			kp=abs(100-results.FLASH_PAYLOAD_SIZE)
-			ns=int(results.FLASH_SLOTS*4)
-			np=results.NUMBER_SLOTS
-			print(f"\n\tPERCENT FLASH PAYLOAD SPACE: {pp}\n\tPERCENT FLASH KEYLOG SPACE: {kp} (Where Applicable)\n\tNUMBER OF PAYLOADS: {np}\n\tSIZE OF PAYLOAD SLOTS: {ns}k\n\t")
-	# attempt to always erase settings
-	omg_reset_settings()
-	
+    # get info
+    mac, flash_size = get_dev_info(results.PORT_PATH)
+    if (pre_erase and skip_flash) or FLASHER_VERSION>=2:
+        if skip_flash:
+            print("Attempting to factory reset (erase) device...")
+        else:
+            print("Attempting to clear device before flashing...")
+        if flash_size < 0x200000:
+            command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x8A000']
+        else:
+            command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x18A000']
+        omg_flash(command)
+    if not skip_flash:
+        omg_input()
+        omg_patch(results.WIFI_SSID, results.WIFI_PASS, results.WIFI_MODE, results.FLASH_SLOTS, results.FLASH_PAYLOAD_SIZE)
+        omg_flashfw(mac,flash_size)
+        print("\n[ WIFI SETTINGS ]")
+        print("\n    WIFI_SSID: {SSID}\n    WIFI_PASS: {PASS}\n    WIFI_MODE: {MODE}\n    WIFI_TYPE: {TYPE}".format(SSID=results.WIFI_SSID, PASS=results.WIFI_PASS, MODE=results.WIFI_MODE, TYPE=results.WIFI_TYPE))
+        print("\n[ FIRMWARE USED ]")
+        print("\n    INIT: {INIT}\n    ELF0: {ELF0}\n    ELF1: {ELF1}\n    PAGE: {PAGE}".format(INIT=results.FILE_INIT, ELF0=results.FILE_ELF0, ELF1=results.FILE_ELF1, PAGE=results.FILE_PAGE))
+        if results.FLASH_SLOTS > 0:
+            print("\n[ CUSTOM PAYLOAD CONFIGURATION ]")
+            pp=results.FLASH_PAYLOAD_SIZE
+            kp=abs(100-results.FLASH_PAYLOAD_SIZE)
+            ns=int(results.FLASH_SLOTS*4)
+            np=results.NUMBER_SLOTS
+            print(f"\n    PERCENT FLASH PAYLOAD SPACE: {pp}\n    PERCENT FLASH KEYLOG SPACE: {kp} (Where Applicable)\n    NUMBER OF PAYLOADS: {np}\n    SIZE OF PAYLOAD SLOTS: {ns}k\n    ")
+    # attempt to always erase settings
+    omg_reset_settings()
+    
 def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
@@ -826,7 +841,7 @@ if __name__ == '__main__':
             omg_runflash(True,True)
         elif MENU_MODE == '3':
             baudrate = '460800'
-            mac, flash_size = get_dev_info(results.PORT_PATH)
+            
             print("\nFIRMWARE UPGRADE - BATCH MODE")
             omg_input()
             repeating = ''
@@ -836,7 +851,6 @@ if __name__ == '__main__':
                 complete(0)
         elif MENU_MODE == '4':
             baudrate = '460800'
-            mac, flash_size = get_dev_info(results.PORT_PATH)
             print("\nFACTORY RESET - BATCH MODE")
             omg_input()
             repeating = ''
