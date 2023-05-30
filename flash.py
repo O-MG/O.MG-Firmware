@@ -28,6 +28,12 @@ except NameError:
     raw_input = input   # in python3 it's "raw"
     unichr = chr
 
+if 'idlelib.run' in sys.modules:
+	print("!!!! PLEASE DO NOT RUN THIS IN IDLE EDITOR !!!!")
+	print("Unexpected outcomes or errors may occur when running in IDLE")
+	print("Please launch this by opening your command line or terminal and typing 'python3 flash.py'")
+	print("If you have any questions please see the wiki https://github.com/O-MG/O.MG-Firmware/wiki")
+	sys.exit(1)
 
 VERSION = "FIRMWARE FLASHER VERSION NUMBER [ 230228 @ 142312 UTC ]"
 FLASHER_VERSION = 1 # presume we have an old style flasher = 1
