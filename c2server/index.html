@@ -359,12 +359,11 @@
 			grid-template-columns: repeat(7, 1fr);
 		}
 
-		#keymapViewerModal {
+		#keymapViewer {
 			position: absolute;
 			vertical-align: middle;
 			float: left;
 			top: calc((var(--app-height) - 448px)/2);
-			left: 5vw;
 			width: 90vw;
 			height: 448px;
 			border-radius: 5px;
@@ -385,17 +384,14 @@
 			width: 120px;
 		}
 
-		#loadingScreen,
-		#partitionAppliedModal,
-		#partitionEditorModal,
-		#quickLaunchModal {
+		#partitionEditor,
+		#partitionApplied {
 			position: absolute;
 			vertical-align: middle;
 			float: left;
-			top: calc((var(--app-height) - 200px)/2);
-			left: calc((100vw - 345px)/2);
-			width: 345px;
-			height: 250px;
+			width: 280px;
+			height: auto;
+			top: calc((var(--app-height) - 448px)/2);
 			border-radius: 5px;
 			background-color: var(--bgColor2);
 			-webkit-box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
@@ -405,11 +401,34 @@
 			padding-top: 5px;
 		}
 
-		#quickLaunchModal {
-			width: 90vw;
-			height: 90vh;
-			top: calc((var(--app-height) - 90vh)/2);
-			left: calc((100vw - 90vw)/2);
+		#loadingScreen {
+			position: absolute;
+			vertical-align: middle;
+			text-align: center;
+			float: left;
+			width: 240px;
+			height: 160px;
+			top: calc((var(--app-height) - 448px)/2);
+			border-radius: 5px;
+			background-color: var(--bgColor2);
+			-webkit-box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
+			box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
+			color: var(--navColor);
+			padding-left: 5px;
+			padding-top: 5px;
+		}
+
+		.loader {
+			position: relative;
+			align-content: center;
+			border: 16px solid var(--bgColor1);
+			border-top: 16px solid var(--accentColor);
+			border-radius: 50%;
+			width: 80px;
+			height: 80px;
+			left: 70px;
+			top: 10px;
+			animation: spin 2s linear infinite;
 		}
 
 		#logo {
@@ -518,26 +537,6 @@
 			left: 45px;
 			top: 2px;
 			text-transform: uppercase;
-		}
-
-		#modal,
-		#regulatoryModal {
-			position: absolute;
-			vertical-align: middle;
-			float: left;
-			left: 5vw;
-			width: 90vw;
-			border-radius: 5px;
-			background-color: var(--bgColor2);
-			-webkit-box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
-			box-shadow: 5px 5px 15px 5px #000;
-			color: var(--fontColor);
-		}
-
-		#regulatoryModal {
-			top: 50px;
-			height: auto;
-			padding: 5px;
 		}
 
 		#modal {
@@ -874,20 +873,6 @@
 			grid-row: auto auto;
 		}
 
-		.loader {
-			position: absolute;
-			top: 50px;
-			left: calc((100% - 80px)/2);
-			padding-left: auto;
-			padding-right: auto;
-			border: 16px solid var(--bgColor1);
-			border-top: 16px solid var(--accentColor);
-			border-radius: 50%;
-			width: 80px;
-			height: 80px;
-			animation: spin 2s linear infinite;
-		}
-
 		.navLabel {
 			vertical-align: middle;
 		}
@@ -1144,6 +1129,73 @@
 				transform: rotate(360deg);
 			}
 		}
+
+		.tooltip,
+		.input-wrapper {
+			position: relative;
+		}
+
+		.tooltiptext {
+			position: absolute;
+			visibility: hidden;
+			background-color: red;
+			color: #fff;
+			font-size: 0.8em;
+			text-align: center;
+			border-radius: 6px;
+			padding: 5px 0;
+			z-index: 1;
+			top: 120%;
+			left: 0;
+			border-width: 5px;
+			border-style: solid;
+			border-color: transparent transparent red transparent;
+		}
+
+		.tooltiptext::after {
+			content: "";
+			position: absolute;
+			bottom: 100%;
+			margin-left: -240px;
+			border-width: 15px;
+			border-style: solid;
+			border-color: transparent transparent red transparent;
+		}
+
+		.glowing-effect {
+			animation: glowing 1s infinite;
+			-webkit-animation: glowing 1s infinite;
+			box-shadow: 0 0 1px red, 0 0 3px red, 0 0 5px red, 0 0 7px red;
+			-webkit-box-shadow: 0 0 1px red, 0 0 3px red, 0 0 5px red, 0 0 7px red;
+		}
+
+		@keyframes glowing {
+			0% {
+				box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
+			}
+
+			50% {
+				box-shadow: 0 0 8px red, 0 0 10px red, 0 0 12px red, 0 0 14px red;
+			}
+
+			100% {
+				box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
+			}
+		}
+
+		@-webkit-keyframes glowing {
+			0% {
+				-webkit-box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
+			}
+
+			50% {
+				-webkit-box-shadow: 0 0 8px red, 0 0 10px red, 0 0 12px red, 0 0 14px red;
+			}
+
+			100% {
+				-webkit-box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
+			}
+		}
 	</style>
 </head>
 
@@ -1192,7 +1244,9 @@
 			</div>
 			<div id="sidebar_settings_net">
 				<div id="wifi-Settings">
-					<h3>WiFi Settings</h3><label for="device-WIFIMode">WiFi Mode</label><data id="device-WIFIMode" class="hidden"></data><input type="radio" id="CW0" name="WIFIMode" value="AP"><data>AP (Broadcast a new AP)</data><br><input type="radio" id="CW1" name="WIFIMode" value="Station"><data>Station (Connect to Infrastructure)</data><label for="device-WIFISSID">SSID</label> <input type="text" id="device-WIFISSID" name="device-WIFISSID" spellcheck="false"> <label for="device-WIFIPassword">Password (8-63 Characters, 0 = Open)</label> <input type="text" id="device-WIFIPassword" name="device-WIFIPassword" spellcheck="false"> <label for="device-WIFIChannel">Channel</label> <input type="text" id="device-WIFIChannel" name="device-WIFIChannel" spellcheck="false"> <label for="device-CustomMACAddress">Custom MAC (Default:<data id="device-HardwareMACAddress"></data>)</label> <input type="text" id="device-CustomMACAddress" name="device-CustomMACAddress" spellcheck="false"> <label for="device-IPAddress">Device IP Address</label> <span type="text" id="device-IPAddress"></span> <button id="update-WIFISettings" class="submitButton" onclick="updateWifiSettings()">Change Settings</button>
+					<h3>WiFi Settings</h3><label for="device-WIFIMode">WiFi Mode</label><data id="device-WIFIMode" class="hidden"></data><input type="radio" id="CW0" name="WIFIMode" value="AP"><data>AP (Broadcast a new AP)</data><br><input type="radio" id="CW1" name="WIFIMode" value="Station"><data>Station (Connect to Infrastructure)</data>
+					<div class="input-wrapper"><label for="device-WIFISSID">SSID</label> <input type="text" id="device-WIFISSID" name="device-WIFISSID" spellcheck="false" pattern="^[\x00-\x7F]{1,32}$|^$" title="SSID must be 1-32 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifissid')"> <span class="tooltiptext" id="tooltipwifissid"></span></div>
+					<div class="input-wrapper"><label for="device-WIFIPassword">Password (8-63 Characters, 0 = Open)</label> <input class="tooltip" type="text" id="device-WIFIPassword" name="device-WIFIPassword" spellcheck="false" pattern="^[\x00-\x7F]{8,63}$|^$" title="Password must be 8-63 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifipass')"> <span class="tooltiptext" id="tooltipwifipass"></span></div><label for="device-WIFIChannel">Channel</label> <input type="text" id="device-WIFIChannel" name="device-WIFIChannel" spellcheck="false"> <label for="device-CustomMACAddress">Custom MAC (Default:<data id="device-HardwareMACAddress"></data>)</label> <input type="text" id="device-CustomMACAddress" name="device-CustomMACAddress" spellcheck="false"> <label for="device-IPAddress">Device IP Address</label> <span type="text" id="device-IPAddress"></span> <button id="update-WIFISettings" class="submitButton" onclick="updateWifiSettings()">Change Settings</button>
 				</div>
 				<div id="c2-Settings" class="c2">
 					<h3>C2 Settings</h3>
@@ -1250,17 +1304,8 @@
 				<h3>Keylog Settings</h3><button class="closeModal" type="button" onclick="keylog.keylogOptionsMenu('close')">&times;</button>
 			</div>
 			<div id="sidebar_settings_debug" class="hidden">
-				<div id="calibrationError" class="hidden">
-					<div>Device calibration not compatible with v2 firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Calibration-Upgrade">Calibration-Upgrade Instructions</a></div><label for="sidebar_settings_debug_CPGet">Generate Hardware Profile</label> <button class="submitButton" id="sidebar_settings_debug_CPGet" onclick="connect.sendMessage(`CPGet`)">Generate Hardware Profile</button>
-					<form><label for="calibration">Apply Calibration File:</label> <input type="file" id="calibration" name="calibration" accept=".cal" onchange="calibration.readCalibrationText(event)">
-						<div class="message-body">
-							<p id="omg-calibration-text"></p>
-							<p id="omg-calibration-log"></p>
-						</div>
-					</form>
-				</div>
 				<div>
-					<h3>General</h3><label for="sidebar_settings_debug_keymapViewer">Show Keymap Viewer</label> <button class="submitButton" id="sidebar_settings_debug_keymapViewer" onclick="modal('keymapViewer', 'open'); sidebarAreaToggle('close');">Show Keymap Viewer</button> <label for="sidebar_settings_debug_partitionEditor">Partition Editor</label> <button class="plus" id="sidebar_settings_debug_partitionEditor" onclick="partitionEditor.partitionEditorCurrent(); partitionEditor.generatePartitionEditor(); modal('partitionEditor', 'open')">Partition Editor</button> <label for="uiAccentColor">Theme</label> <select name="uiAccentColor" id="uiAccentColor" onchange="connect.sendMessage(`CTSet\tuicolor\t${this.value}`);connect.sendMessage(`CTList`);setAccentColors(this.value)">
+					<h3>General</h3><label for="sidebar_settings_debug_partitionEditor">Partition Editor</label> <button class="plus" id="sidebar_settings_debug_partitionEditor" onclick="partitionEditor.partitionEditorCurrent(); partitionEditor.generatePartitionEditor(); viewDialog('partitionEditor', 'open')">Partition Editor</button> <label for="uiAccentColor">Theme</label> <select name="uiAccentColor" id="uiAccentColor" onchange="connect.sendMessage(`CTSet\tuicolor\t${this.value}`);connect.sendMessage(`CTList`);setAccentColors(this.value)">
 						<option value="red">Red</option>
 						<option value="orange">Orange</option>
 						<option value="yellow">Yellow</option>
@@ -1298,7 +1343,7 @@
 		</div>
 		<div id="sidebar_help" class="hidden"><button class="close" type="button" onclick="sidebarAreaToggle('close')"><span>&times;</span></button>
 			<h1>Help</h1><input type="text" id="search" placeholder="Search Help...">
-			<h3>Keymap Viewer</h3><button class="submitButton helpHeader" id="sidebar_settings_help_keymapViewer" onclick="modal('keymapViewer', 'open'); sidebarAreaToggle('close');">Show Keymap Viewer</button>
+			<h3>Keymap Viewer</h3><button class="submitButton helpHeader" id="sidebar_settings_help_keymapViewer" onclick="viewDialog('keymapViewer', 'open'); sidebarAreaToggle('close');">Show Keymap Viewer</button>
 			<h3>O.MG DuckyScript Syntax Guide</h3>
 			<div id="helpExamples"><button id="btn_helppayloadGithub" class="helpHeader" onclick="document.getElementById('helppayloadGithub').classList.toggle('hidden');">Hak5 Community Payloads</button>
 				<div id="helppayloadGithub" class="hidden">
@@ -1344,7 +1389,7 @@
 				</button></div>
 			<div id="payloadSaveMenu" class="hidden contentFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadSaveMenu', 'close');">&times;</button>
 				<div class="headingModal">Save Payload</div>
-				<div><span><input class="payloadList" type="text" id="payloadSelect" list="payload-list"><datalist id="payload-list"></datalist></span><span><button id="payload-saveBootable" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="payload.payloadSlotPair(document.getElementById('payloadSelect').value)">Make Bootable</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft" onclick="payload.payloadCompile('save'); payload.payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button> <label for="toggle-BootScript">BootScript</label>
+				<div><span><input class="payloadList" type="text" id="payloadSelect" list="payload-list"><datalist id="payload-list"></datalist></span><span><button id="payload-saveBootable" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="payload.payloadSlotPair(document.getElementById('payloadSelect').value); this.classList.add('buttonSelected')">Make Bootable</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft" onclick="payload.payloadCompile('save'); payload.payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button> <label for="toggle-BootScript">BootScript</label>
 						<div class="button-container">
 							<div id="toggle-SaveBootScript" class="toggle-button" onclick="if(this.classList.contains('active')) { payload.payloadSetBootSlot('off') } else { payload.payloadSetBootSlot('on'); };">
 								<div class="inner-circle"></div>
@@ -1373,11 +1418,11 @@
 		<div id="modalLoader" class="loader hidden"></div>
 		<div id="modalButtons"><button id="modalSave" class="submitButton" onclick="downloadModal();">Save Message</button> <button id="modalClose" class="submitButton" onclick="modal(`modal`, 'close')">Close</button></div>
 	</div>
-	<div id="loadingScreen" class="modal">
-		<h1>Loading Admin WebUI</h1>
+	<dialog id="loadingScreen" open>
+		<h1>Loading WebUI</h1>
 		<div class="loader"></div>
-	</div>
-	<div id="keymapViewerModal" class="hidden"><button class="closeModal" type="button" onclick="modal('keymapViewer', 'close');">&times;</button> <span id="keymapViewerLabel">Keymap Viewer</span> <span class="keymapViewerHeader"><input class="keymapping" type="text" placeholder="US" data-keylogger-map-region id="keymapViewerSelect" list="keymap-list"><datalist id="keymap-list"></datalist><button id="update-keymapViewerLocale" class="updateButton" onclick="keymap.generateKeymap(document.getElementById('keymapViewerSelect').value)">Update</button> <button id="find-keymapViewerLocale" class="updateButton" onclick="keymap.findKeymap()">Find</button></span>
+	</dialog>
+	<dialog id="keymapViewer"><button class="close-button" type="button" onclick="viewDialog('keymapViewer', 'close');">&times;</button> <span id="keymapViewerLabel">Keymap Viewer</span> <span class="keymapViewerHeader"><input class="keymapping" type="text" placeholder="US" data-keylogger-map-region id="keymapViewerSelect" list="keymap-list"><datalist id="keymap-list"></datalist><button id="update-keymapViewerLocale" class="updateButton" onclick="keymap.generateKeymap(document.getElementById('keymapViewerSelect').value)">Update</button> <button id="find-keymapViewerLocale" class="updateButton" onclick="keymap.findKeymap()">Find</button></span>
 		<div id="keymap_row1"></div>
 		<div id="keymap_row2"></div>
 		<div id="keymap_row3"></div>
@@ -1385,9 +1430,11 @@
 		<div id="keymap_row5"></div>
 		<div id="keymap_row6"></div>
 		<div id="keymapFindList"></div>
-	</div>
-	<div id="partitionEditorModal" class="modal hidden"><button class="closeModal" type="button" onclick="modal('partitionEditor', 'close')">&times;</button> <span id="partitionEditorLabel">Partition Editor</span>
-		<div id="partitionPayloadConfig"><span>Payloads</span>
+	</dialog>
+	<dialog id="partitionEditor"><button class="close-button" type="button" onclick="viewDialog('partitionEditor', 'close')">&times;</button>
+		<h1 id="partitionEditorLabel">Partition Editor</h1>
+		<div id="partitionPayloadConfig">
+			<h2>Payloads</h2>
 			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Type</span> <select id="payloadSlotType" onchange="partitionEditor.generatePartitionEditor();">
 					<option value="1" selected="selected">Editable</option>
 					<option value="2">Executable</option>
@@ -1414,6 +1461,7 @@
 					<option value="64">xxx-large</option>
 				</select></div>
 		</div><br>
+		<h2>Exfiltration</h2>
 		<div id="partitonHidxConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">HIDX Exfil to File</span> <select id="hidxfileSize" onchange="partitionEditor.generatePartitionEditor();">
 				<option value="0" selected="selected">none</option>
 				<option value="1">4 KB</option>
@@ -1425,19 +1473,15 @@
 				<option value="64">256 KB</option>
 				<option value="128">512 KB</option>
 			</select></div>
-		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Keylog</span> <span id="keylogSize"></span></div><button id="partitionEditorDefault" class="submitButton" onclick="partitionEditor.partitionEditorApply();">Apply Layout</button>
-	</div>
-	<div id="partitionAppliedModal" class="modal hidden"><button class="closeModal" type="button" onclick="modal('partitonApplied', 'close')">&times;</button>
+		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Keylog</span> <span id="keylogSize"></span></div><br><br><button id="partitionEditorDefault" class="submitButton" onclick="partitionEditor.partitionEditorApply();">Apply Layout</button>
+	</dialog>
+	<dialog id="partitionApplied"><button class="closeModal" type="button" onclick="viewDialog('partitonApplied', 'close')">&times;</button>
 		<h2>Partition Applied</h2>
 		<h4>Your device will now reboot.</h4>
-	</div>
-	<div id="quickLaunchModal" class="modal hidden"><button class="closeModal" type="button" onclick="modal('quickLaunch', 'close')">&times;</button>
-		<h2>QuickLaunch</h2>
-		<div id="quickLaunchDialer"></div>
-	</div>
+	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230528";
+		frontendVersionNumber = "3.0-230601";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -2085,6 +2129,27 @@
 			}
 		};
 
+		function viewDialog(id, action) {
+			var dialog = document.getElementById(id);
+
+			if (!dialog) {
+				console.error("No dialog found with id:", id);
+				return;
+			}
+
+			if (action === "open") {
+				dialog.setAttribute("open", "");
+				dialog.removeAttribute("close", "");
+			} else if (action === "close") {
+				dialog.removeAttribute("open", "");
+				dialog.setAttribute("close", "");
+			} else if (action === "remove") {
+				dialog.remove();
+			} else {
+				console.error("Invalid action:", action);
+			}
+		}
+
 		function createDialog({
 			id,
 			title = '',
@@ -2105,8 +2170,6 @@
 					closeButton.classList.add('close-button');
 					closeButton.addEventListener('click', () => {
 						dialog.close();
-						// remove the dialog from the DOM
-						dialog.remove();
 					});
 					dialog.appendChild(closeButton);
 				}
@@ -2118,7 +2181,7 @@
 				}
 
 				if (description) {
-					const dialogDescription = document.createElement('p');
+					const dialogDescription = document.createElement('div');
 					dialogDescription.innerHTML = description;
 					dialog.appendChild(dialogDescription);
 				}
@@ -2152,6 +2215,9 @@
 			switch (responseTextParams[0]) {
 				case responseTextParams[0].match(/\[custom\]/)?.input:
 					apiResponseCustom(responseText);
+					break;
+				case responseTextParams[0].match(/\[CHStatus\]/)?.input:
+					hidx.apiResponseCHStatus(responseText);
 					break;
 				case "CB":
 				case "CC":
@@ -2288,8 +2354,13 @@
 		}
 
 		function apiResponseCustom(data) {
-			const parameters = parseData(data).response;
-			logger.sendMessage('INFO', `issueCustomCommand: [data]:[${parameters}]`);
+			data = data.replace("[custom]", "");
+			const {
+				response,
+				parameters
+			} = parseData(data);
+
+			logger.sendMessage('CRIT', `issueCustomCommand: [response]:[${response}] [parameters]:[${parameters}]`);
 			updateElementValue('customCommandOutput', parameters, 'value');
 		}
 
@@ -2303,12 +2374,10 @@
 		};
 
 		let prevDataCTList = null;
-
 		const apiResponseCTList = (data) => {
 			if (data === prevDataCTList) {
 				return;
 			}
-
 			prevDataCTList = data;
 
 			apiResponse(data, 'CTList');
@@ -2337,6 +2406,10 @@
 				if (item) {
 					const elementId = item.split('"')[1];
 					const elementValue = item.split(':')[1].replace(/"/g, '').trim();
+
+					if (elementId == "bootpair") {
+						bootpair = elementValue;
+					}
 
 					if (keyActions[key] === 'value' || keyActions[key] === 'innerHTML') {
 						elementValues[elementId] = {
@@ -2417,26 +2490,18 @@
 			logger.sendMessage('DEBUG', `apiResponseCFList: [data]:[${response}]`);
 			updateElement('response-CFList', response);
 			const json = JSON.parse(parameters[1]);
-
-			// Merge json into globalJson, omitting duplicates
 			Object.assign(globalJson, json);
-
-			// Check if there is more data to request
 			if (parameters[3] !== "0") {
-				// Request for more data
 				connect.sendMessage(`CFList\t${parameters[3]}`);
-				// Return a Promise that will be resolved when all data has been gathered
 				return new Promise((resolve, reject) => {
-					resolveFunction = resolve; // Keep a reference to the resolve function
+					resolveFunction = resolve;
 				});
 			} else {
 				processCFListData();
-				// Resolve the promise if there's one waiting
 				if (resolveFunction) {
 					resolveFunction();
 					resolveFunction = null;
 				}
-				// Since all data has been processed, return a resolved Promise
 				return Promise.resolve();
 			}
 		}
@@ -2451,7 +2516,7 @@
 			Object.entries(globalJson).forEach(([key, value]) => {
 				const name = document.createElement("input");
 				name.id = key;
-				name.name = parseInt(value[0], 16);
+				name.name = parseInt(value[0], 10);
 				name.value = value[1];
 				CFListResults.appendChild(name);
 				if (key.startsWith("payload")) {
@@ -2476,8 +2541,14 @@
 			globalJson = {};
 		}
 
+		let prevDataCI = null;
 
 		function apiResponseCI(data) {
+			if (data === prevDataCI) {
+				return;
+			}
+			prevDataCI = data;
+
 			const {
 				response,
 				parameters
@@ -2532,14 +2603,21 @@
 
 				const restartReason = restartReasons[parameters[3]] || 'Unknown Restart Reason';
 				logger.sendMessage('INFO', `Connection Established: [Uptime]:[${parameters[6]} seconds - ${restartReason}]`, 'Connection Established');
-				modal(`partitionApplied`, `close`);
+				viewDialog(`partitionApplied`, `close`);
 
 				previousUptime = parseFloat(parameters[6]);
 				previousMAC = parameters[1];
 			}
 		}
 
+		let prevDataCNGet = null;
+
 		function apiResponseCNGet(data) {
+			if (data === prevDataCNGet) {
+				return;
+			}
+			prevDataCNGet = data;
+
 			const {
 				response,
 				parameters
@@ -2576,31 +2654,39 @@
 			setElementValues(elementIds);
 		}
 
+		let intervalIdCPGet = null;
+
 		function apiResponseCPGet(data) {
 			const {
 				response,
 				parameters
 			} = parseData(data);
-
 			const isCPGet = response === "CPGet\t";
 
 			setElementValues({
 				'response-CPGet': isCPGet ? '' : response,
-				'modalLabel': 'Hardware Profile',
-				'modalMessage': isCPGet ? 'Generating Calibration Data. Please Wait.' : response
+				'calibrationStatusViewer': isCPGet ? 'Generating Calibration Data. Please Wait.' : response
 			});
 
-			toggleClassVisibility('modal', 'visible', true);
-			toggleClassVisibility('modalLoader', 'visible', isCPGet);
-
-			if (isCPGet) {
-				setInterval(() => connect.sendMessage('CPGet'), 1000);
+			if (isCPGet && !intervalIdCPGet) {
+				intervalIdCPGet = setInterval(() => connect.sendMessage('CPGet'), 1000);
+			} else if (!isCPGet && intervalIdCPGet) {
+				clearInterval(intervalIdCPGet);
+				intervalIdCPGet = null;
 			}
 
 			logger.sendMessage('CRIT', `apiResponseCPGet: [data]:[${response}]`);
 		}
 
+
+		let prevDataCTGet = null;
+
 		function apiResponseCTGet(data) {
+			if (data === prevDataCTGet) {
+				return;
+			}
+			prevDataCTGet = data;
+
 			const {
 				response,
 				parameters
@@ -2637,7 +2723,7 @@
 					const parameters = response.split("\t");
 					logger.sendMessage(`DIAG`, `apiResponseCV: [data]:[${response}]`);
 
-					toggleClass('loadingScreen', 'visible', 'hidden');
+					viewDialog('loadingScreen', 'close');
 
 					const type = parameters[2].charAt(0);
 					const model = parameters[2].charAt(1);
@@ -2657,17 +2743,32 @@
 					}
 
 					if (calibrationStatus === '?' || calibrationStatus === '-' || calibrationStatus === '') {
-						updateElementValue('modelText', modelData + 'ERROR', 'innerHTML');
+						updateElementValue('modelText', 'ERROR', 'innerHTML');
 						updateElementValue('device-CalibrationStatusDecoded', 'Calibration Error, Contact Support', 'innerHTML');
 						contentAreaToggle('syslog');
 						toggleClass('contentSubNav_payload', 'visible', 'hidden');
-						toggleClass('calibrationError', 'hidden', 'visible');
-						IssueDebugMessage(`INFO`, '! ALERT: Device calibration not compatible with v2 firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware.');
-						updateElementValue('navbarAlerts', '<a href="https://github.com/O-MG/O.MG_Cable-Firmware/wiki/Calibration-Upgrade">Calibration Error</a>', 'innerHTML');
+						logger.sendMessage(`CRIT`, '! ALERT: Device calibration not compatible with v2 firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware.');
+						updateElementValue('navbarAlerts', '<button onclick="viewDialog(`calibrationerror`, `open`);">Calibration Error</button>', 'innerHTML');
 						updateElementValue('device-TypeDecoded', 'Unknown Device', 'innerHTML');
-						updateElementValue('modalLabel', 'Calibration Error', 'innerHTML');
-						updateElementValue('modalMessage', 'Device calibration not compatible with v2 firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware. For more details please see: <a href="https://github.com/O-MG/O.MG_Cable-Firmware/wiki/Calibration-Upgrade">Calibration-Upgrade Instructions</a>', 'innerHTML');
-						toggleClass('modal', 'hidden', 'visible');
+
+						createDialog({
+							id: 'calibrationerror',
+							title: 'Calibration Error',
+							description: `Device calibration not compatible with v2 firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Calibration-Upgrade">Calibration-Upgrade Instructions</a><br /><br />
+							<h2>Generate Hardware Profile</h2>
+							<button class="submitButton" id="sidebar_settings_debug_CPStart" onclick="connect.sendMessage('CPStart'); connect.sendMessage('CPGet'); this.remove();">Generate Hardware Profile</button><br />
+							<div id="calibrationStatusViewer"></div>
+							<form>
+								<h2>Apply Calibration File:</h2>
+								<input type="file" id="calibration" name="calibration" accept=".cal" onchange="calibration.readCalibrationText(event)">
+								<div class="message-body">
+									<p id="omg-calibration-text"></p>
+									<p id="omg-calibration-log"></p>
+								</div>
+							</form>`,
+							closeEnabled: true,
+						});
+
 						featureFlags = ['global', 'syslog', 'debug'];
 						hideElementsByClass('payload', 'keylog', 'c2', 'hidx');
 						toggleFeatureFlags();
@@ -2720,12 +2821,17 @@
 			};
 		})();
 
+		let prevDataCWInfo = null;
+
 		function apiResponseCWInfo(data) {
+			if (data === prevDataCWInfo) {
+				return;
+			}
+			prevDataCWInfo = data;
 			const {
 				response,
 				parameters
 			} = parseData(data);
-
 			logger.sendMessage(`DIAG`, `apiResponseCWInfo: [data]:[${response}]`);
 
 			const elementIds = {
@@ -2761,7 +2867,13 @@
 			}
 		}
 
+		let prevDataCWStatus = null;
+
 		function apiResponseCWStatus(data) {
+			if (data === prevDataCWStatus) {
+				return;
+			}
+			prevDataCWStatus = data;
 			const {
 				response,
 				parameters
@@ -2995,10 +3107,17 @@
 			}
 
 			function payloadSlotLoad(slotValue) {
-				modalCreate("Loading Payload", "Please wait...");
-				toggleModule("modal", "open");
+				createDialog({
+					id: 'payloadloading',
+					title: 'Loading Payload',
+					description: `Please wait...`,
+					closeEnabled: true,
+				});
 				payloadEditorFilename = document.getElementById(`payloadEditorFilename`);
 				payloadEditorFilename.innerHTML = slotValue;
+
+				payloadSaveMenuInput = document.getElementById(`payloadSelect`);
+				payloadSaveMenuInput.value = slotValue;
 
 				splitPayload = [];
 				splitPayloadCounter = 0;
@@ -3024,7 +3143,7 @@
 
 				payloadElement.innerText = splitPayload.slice(0, endIndex);
 				logger.sendMessage(`INFO`, `! LOADING USER PAYLOAD`);
-				modal("modal", "close");
+				viewDialog('payloadloading', 'remove');
 			}
 
 			function apiResponsePayloadLoad(data) {
@@ -3054,6 +3173,8 @@
 
 				if (bootpair == payloadEditorFilenameValue) {
 					payloadEditorBootable.innerHTML = " + bootscript";
+					payloadSaveMenuBootable = document.getElementById(`payload-saveBootable`);
+					payloadSaveMenuBootable.classList.add('buttonSelected');
 				} else {
 					payloadEditorBootable.innerHTML = "";
 				}
@@ -3069,8 +3190,12 @@
 			function payloadSlotSave(slotValue) {
 				iterations = 0;
 				splitPayloadCounter = 0;
-				modalCreate("Saving Payload", "Please wait...");
-				toggleModule("modal", "open");
+				createDialog({
+					id: 'payloadsaving',
+					title: 'Saving Payload',
+					description: `Please wait...`,
+					closeEnabled: true,
+				});
 
 				let bootpairvalue = document.getElementById("bootscriptPair").value;
 				payloadEditorSavedElement = document.getElementById('payloadEditorSaved');
@@ -3101,7 +3226,10 @@
 					const parsement = scriptcode.substr(i * writeSize, writeSize);
 					const alignment = Math.ceil(parsement.length / 4) * 4;
 					const slotAddress = parseInt(payloadSlotAddress) + i * writeSize;
-					const cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
+					cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
+					if (slotValue == "bootscript") {
+						cmd = `[pS-${i}.${iterations}]CEStore\t${slotValue}\t${parsement}`;
+					}
 					logger.sendMessage(`CRIT`, `SAVING DATA TO ${slotValue}: [${cmd}]`)
 					connect.sendMessage(cmd);
 				}
@@ -3127,7 +3255,7 @@
 				splitPayloadCounter += 1;
 				if (splitPayloadCounter == iterations) {
 					toggleModule('payloadSaveMenu', 'close');
-					modal("modal", "close");
+					viewDialog('payloadsaving', 'remove');
 				}
 			}
 
@@ -3157,27 +3285,9 @@
 				return split_payloads;
 			}
 
-			const memoizedKeyToHidMapping = (() => {
-				const cache = {};
-				return (key) => {
-					if (cache[key]) {
-						return cache[key];
-					}
-					const result = keymap.keyToHidMapping(key);
-					if (result === undefined || result === null) {
-						console.log("No matching value for key: ", key);
-						return;
-					}
-					cache[key] = result;
-					return result;
-				};
-			})();
-
 			function ceBuildPayload(ceBuffer) {
-				console.log(ceBuffer);
 				const payloadArray = ceBuffer.split('').map(key => {
-					const [mod, hid] = memoizedKeyToHidMapping(key);
-					console.log(`[mod]:[${mod}] [hid]:[${hid}]`);
+					const [mod, hid] = keymap.memoizedKeyToHidMapping(key);
 					let payloadPart = '';
 
 					if (defaultCharDelay >= 1) {
@@ -3354,7 +3464,7 @@
 
 						if (j === cePayload.length - 1) {
 							if (mode === 'save') {
-								// payloadSlotSave('bootscript');
+								payloadSlotSave('bootscript');
 							} else {
 								logger.sendMessage("INFO", `! EVAL PAYLOAD: [${payload}]:[${command_line}]:[${compiledBootSlot}]`, "! EVAL PAYLOAD");
 							}
@@ -4046,7 +4156,14 @@
 				// document.getElementById('footerNavKeylogLiveStatus').classList.toggle('buttonSelected', liveLogStatus === 'on');
 			}
 
+			let prevDataCLStatus = null;
+
 			function apiResponseCLStatus(data) {
+				if (data === prevDataCLStatus) {
+					return;
+				}
+				prevDataCLStatus = data;
+
 				let responseHexParams = data.split('09');
 				data = bigEndianToLittleEndian(responseHexParams[1]);
 
@@ -4264,12 +4381,31 @@
 
 		// HIDX Module
 		const hidx = (() => {
+			function apiResponseCHStart(data) {
+				const {
+					response,
+					parameters
+				} = parseData(data);
+				logger.sendMessage(`CRIT`, `CHStart: [data]:[${response}]`);
+
+				if (CHStatus === 1) {
+					document.getElementById(`hidxstatusfile`).classList.remove('active');
+					document.getElementById(`hidxstatustcp`).classList.add('active');
+				} else if (CHStatus === 2) {
+					document.getElementById(`hidxstatusfile`).classList.add('active');
+					document.getElementById(`hidxstatustcp`).classList.remove('active');
+				} else {
+					document.getElementById(`hidxstatusfile`).classList.remove('active');
+					document.getElementById(`hidxstatustcp`).classList.remove('active');
+				}
+			}
+
 			function apiResponseCHStatus(data) {
 				const {
 					response,
 					parameters
 				} = parseData(data);
-				logger.sendMessage(`INFO`, `CHStatus: [data]:[${response}]`);
+				logger.sendMessage(`CRIT`, `CHStatus: [data]:[${response}]`);
 
 				const regex = /CH Mode: (\d+)/;
 				const match = response.match(regex);
@@ -4330,7 +4466,14 @@
 				connect.sendMessage(`CTSet\tc2boot\t1`);
 			}
 
+			let prevDataC2Info = null;
+
 			function apiResponseC2Info(data) {
+				if (data === prevDataC2Info) {
+					return;
+				}
+				prevDataC2Info = data;
+
 				const {
 					response,
 					parameters
@@ -4341,7 +4484,14 @@
 				output.value = data;
 			}
 
+			let prevDataC2Status = null;
+
 			function apiResponseC2Status(data) {
+				if (data === prevDataC2Status) {
+					return;
+				}
+				prevDataC2Status = data;
+
 				const {
 					response,
 					parameters
@@ -4539,6 +4689,7 @@
 
 			function createRegulatory() {
 				createDialog({
+					id: 'regulatory',
 					title: 'Regulatory Info',
 					description: `<h2 id="fccID">${fccID}</h2>
 					<p>This device complies with Part 15 of the FCC Rules. Operation is subject to the following two conditions: (1) this device may not cause harmful interference, and (2) this device must accept any interference received, including interference that may cause undesired operation. Warning (Part 15.21) Changes or modifications not expressly approved by the party responsible for compliance could void the user’s authority to operate the equipment.</p>
@@ -4555,7 +4706,6 @@
 					</p>`,
 					closeEnabled: true,
 				});
-
 			}
 
 			return {
@@ -5302,9 +5452,9 @@
 				}
 
 				connect.sendMessage(`CR1`);
-				modal(`partitionEditor`, `close`);
+				viewDialog(`partitionEditor`, `close`);
 
-				modal(`partitionApplied`, `open`);
+				viewDialog(`partitionApplied`, `open`);
 			}
 
 
@@ -5788,6 +5938,7 @@
 				keymapData = Object.assign({}, generateFullKeymapGlobal(), unpacked);
 				keymapInverted = generateInvertedKeymap(keymapData);
 				updateKeymapViewer(keymapData, keymapViewerKeys);
+				memoizedKeyToHidMapping.invalidateCache();
 			}
 
 			function generateFullKeymapGlobal() {
@@ -5820,17 +5971,34 @@
 			}
 
 			function unpackKeymap(keymapLocal) {
-				const usageIDList = [
-					"04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f", "20", "21", "22", "23", "24", "25", "26", "27", "2d", "2e", "2f", "30", "31", "33", "34", "35", "36", "37", "38", "64",
-				];
 				const unpacked = {};
-
-				usageIDList.forEach((currentUsage, i) => {
+				positionalIds.forEach((currentUsage, i) => {
 					unpacked[currentUsage] = keymapLocal.map((layer) => (layer[i] === " " ? "" : layer[i]));
 				});
-
 				return unpacked;
 			}
+
+			const memoizedKeyToHidMapping = (() => {
+				let cache = {};
+				const memoizedFunction = (key) => {
+					if (cache[key]) {
+						return cache[key];
+					}
+					const result = keyToHidMapping(key);
+					if (result === undefined || result === null) {
+						console.log("No matching value for key: ", key);
+						return;
+					}
+					cache[key] = result;
+					return result;
+				};
+
+				memoizedFunction.invalidateCache = () => {
+					cache = {};
+				};
+
+				return memoizedFunction;
+			})();
 
 			function keyToHidMapping(key) {
 				if (key === " " || key === " ") {
@@ -5882,7 +6050,6 @@
 				let positionIdIndex = positionalIds.indexOf(positionId);
 
 				if (positionIdIndex === -1) {
-					console.log(`Invalid position_id: ${positionId}`);
 					return new Set();
 				}
 
@@ -5910,7 +6077,6 @@
 
 			function findSharedLocales(...args) {
 				if (args.length % 3 !== 0) {
-					console.log("Invalid number of arguments. Arguments must be provided in groups of 3.");
 					return [];
 				}
 
@@ -5991,7 +6157,8 @@
 				keyToHidMapping,
 				findMatchingLocale,
 				findSharedLocales,
-				findKeymap
+				findKeymap,
+				memoizedKeyToHidMapping
 			};
 		})();
 
@@ -6022,6 +6189,28 @@
 				}
 			}
 		});
+
+		var tooltipTimeout;
+
+		function checkInput(input, field) {
+			var pattern = new RegExp(input.pattern);
+			var tooltipText = document.getElementById(field);
+
+			clearTimeout(tooltipTimeout);
+
+			if (!pattern.test(input.value)) {
+				input.classList.add('glowing-effect');
+				tooltipText.textContent = input.title;
+				tooltipText.style.visibility = 'visible';
+				tooltipTimeout = setTimeout(() => {
+					tooltipText.style.visibility = 'hidden';
+				}, 30000);
+			} else {
+				input.classList.remove('glowing-effect');
+				tooltipText.textContent = '';
+				tooltipText.style.visibility = 'hidden';
+			}
+		}
 		if (hostname == "localhost") {
 			hostname = "192.168.1.231"
 		}
@@ -6033,7 +6222,7 @@
 
 		console.log(hostname);
 
-		toggleClass('loadingScreen', 'visible', 'hidden');
+		viewDialog('loadingScreen', 'close');
 		toggleClass('navbar-wifiIcon', 'visible', 'hidden');
 		toggleClass('wifiDetails', 'visible', 'hidden');
 		toggleClass('wifiRTT', 'visible', 'hidden');
@@ -6283,6 +6472,7 @@
 
 			if (!adminData.devices.length) {
 				createDialog({
+					id: 'C2Error',
 					title: 'C2Server Provisioning Error',
 					description: 'No devices have been configured.<br /><br /> Please run provisioning via:<br /> python3 ./c2server.py provision [deviceAlias] [poll_rate] [fast_rate] [connect_rate]<br /><br /> Then use the subsequent Provisioning Data to pair an O.MG Elite device to this C2 Server.<br /><br />See: <a href="https://github.com/O-MG/O.MG-Firmware/wiki#c2server">https://github.com/O-MG/O.MG-Firmware/wiki#c2server</a>',
 					closeEnabled: true,
@@ -6394,7 +6584,7 @@
 			adminIntervalId = setInterval(loadAdminData, refreshRate * 1000);
 
 			document.getElementById('queryDeviceStatus').onclick = () => {
-				const deviceStatusCommands = ["CI", "CV", "CWInfo", "CNGet", "CTList", "CFList", "CWStatus", "CEStatus", "CLStatus", "CHStatus", "C2Status"];
+				const deviceStatusCommands = ["CI", "CV", "CWInfo", "CNGet", "CTList", "CFList", "CWStatus", "CEStatus", "CLStatus", "[CHStatus]CHStatus", "C2Status"];
 				deviceStatusCommands.forEach((cmd) => addCmd(aliasSelect.value, cmd));
 			};
 			document.getElementById('modifyQueueC2').onclick = null;
@@ -6422,7 +6612,9 @@
 			}
 
 			function sendMessage(message) {
-				messageQueue.push(message);
+				if (!messageQueue.includes(message)) {
+					messageQueue.push(message);
+				}
 			}
 
 			setInterval(() => {
