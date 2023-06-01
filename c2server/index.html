@@ -3202,7 +3202,7 @@
 				payloadEditorSavedElement.innerHTML = "Saved";
 
 				const payloadScriptArea = document.getElementById('payloadoutput');
-				scriptcode = slotValue === "bootscript" ? compiledBootSlot : unescapeHtml(payloadScriptArea.innerText);
+				scriptcode = slotValue === "bootscript" || slotValue.startsWith("exec") ? compiledBootSlot : unescapeHtml(payloadScriptArea.innerText);
 				scriptcode = unescapeHtml(scriptcode);
 				const sectorSize = 4096;
 				const writeSize = 512;
@@ -3227,7 +3227,7 @@
 					const alignment = Math.ceil(parsement.length / 4) * 4;
 					const slotAddress = parseInt(payloadSlotAddress) + i * writeSize;
 					cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
-					if (slotValue == "bootscript") {
+					if (slotValue == "bootscript" || slotValue.startsWith("exec")) {
 						cmd = `[pS-${i}.${iterations}]CEStore\t${slotValue}\t${parsement}`;
 					}
 					logger.sendMessage(`CRIT`, `SAVING DATA TO ${slotValue}: [${cmd}]`)
@@ -5354,14 +5354,6 @@
 				let slotCount = document.getElementById("payloadSlotCount").value;
 				let payloadSlotType = document.getElementById("payloadSlotType").value;
 				let existingUsed = parseInt(bootslotSize) + parseInt(hidxfileSize);
-
-				if (payloadSlotType === "2" || payloadSlotType === "3") {
-					document.getElementById("bootscriptSlotSize").value = "0";
-					document.getElementById("bootscriptSlotSize").disabled = true;
-				} else {
-					document.getElementById("bootscriptSlotSize").value = "4";
-					document.getElementById("bootscriptSlotSize").disabled = false;
-				}
 
 				document.getElementById("payloadSlotCount").innerHTML = "";
 
