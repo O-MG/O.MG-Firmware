@@ -1384,7 +1384,7 @@
 					<div id="payloadStorageUsedBar" class="progressFilled" style="width:0.2%">&nbsp;</div>
 				</div>
 			</div><label for="payload" class="hidden">Payload Area</label>
-			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadLoad" onclick="payload.payloadLoadMenu()"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Load</span></button> <button id="footerNavPayloadSave" onclick="payload.payloadSaveMenu()"><svg id="ico_payloadSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Save</span></button> <button id="footerNavPayloadEval" class="" onclick="payload.payloadCompile('eval')"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="document.getElementById(`footerNavPayloadRun`).classList.add(`payloadRunning`); payload.payloadCompile('run')"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadLoad" onclick="payload.payloadLoadMenu()"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Load</span></button> <button id="footerNavPayloadSave" onclick="payload.payloadCompile('eval'); payload.payloadSaveMenu()"><svg id="ico_payloadSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Save</span></button> <button id="footerNavPayloadEval" class="" onclick="payload.payloadCompile('eval')"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="payload.payloadCompile('eval'); document.getElementById(`footerNavPayloadRun`).classList.add(`payloadRunning`); payload.payloadCompile('run')"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
 					<div>Build + Run</div>
 				</button></div>
 			<div id="payloadSaveMenu" class="hidden contentFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadSaveMenu', 'close');">&times;</button>
@@ -3202,7 +3202,7 @@
 				payloadEditorSavedElement.innerHTML = "Saved";
 
 				const payloadScriptArea = document.getElementById('payloadoutput');
-				scriptcode = slotValue === "bootscript" || slotValue.startsWith("exec") ? compiledBootSlot : unescapeHtml(payloadScriptArea.innerText);
+				scriptcode = slotValue === "bootscript" ? compiledBootSlot : unescapeHtml(payloadScriptArea.innerText);
 				scriptcode = unescapeHtml(scriptcode);
 				const sectorSize = 4096;
 				const writeSize = 512;
@@ -3227,8 +3227,8 @@
 					const alignment = Math.ceil(parsement.length / 4) * 4;
 					const slotAddress = parseInt(payloadSlotAddress) + i * writeSize;
 					cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
-					if (slotValue == "bootscript" || slotValue.startsWith("exec")) {
-						cmd = `[pS-${i}.${iterations}]CEStore\t${slotValue}\t${parsement}`;
+					if (slotValue == "bootscript") {
+						cmd = `[pS-${i}.${iterations}]CEStore\tbootscript\t${parsement}`;
 					}
 					logger.sendMessage(`CRIT`, `SAVING DATA TO ${slotValue}: [${cmd}]`)
 					connect.sendMessage(cmd);
@@ -3439,6 +3439,15 @@
 				}
 				logger.sendMessage("CRIT", `? CONTENTS OF COMPILED: [ce]:[${compiled}]`);
 				eval(compiled);
+				console.log(compiled.length * 2);
+
+				let payload1Size = document.getElementById("payload1") ? document.getElementById("payload1").value : '1';
+				let payloadStoragePercent = (((compiled.length * 2) / (payload1Size * 4096)) * 100).toFixed(0) + '%';
+
+				document.getElementById('payloadStorageUsedBar').style.width = payloadStoragePercent;
+				document.getElementById('payloadStorageUsedBar').innerHTML = payloadStoragePercent;
+
+
 				split_payloads = split_process(cePayload.toUpperCase());
 				logger.sendMessage("CRIT", `? CONTENTS OF SPLIT_PAYLOADS: [ce]:[${split_payloads}]`);
 
@@ -3464,7 +3473,7 @@
 
 						if (j === cePayload.length - 1) {
 							if (mode === 'save') {
-								payloadSlotSave('bootscript');
+								// payloadSlotSave('bootscript');
 							} else {
 								logger.sendMessage("INFO", `! EVAL PAYLOAD: [${payload}]:[${command_line}]:[${compiledBootSlot}]`, "! EVAL PAYLOAD");
 							}
@@ -3805,15 +3814,15 @@
 			}
 
 			function handleKeyloggerCommands(args) {
-				if (args[0].toUpperCase() != undefined) {
-					if (args[1].toUpperCase() == "HID") {
+				console.log(args);
+				if (args[0] != undefined) {
+					let mode = "02"; // Default mode
+					if (args[1] != undefined && args[1].toUpperCase() == "HID") {
 						mode = "01";
-					} else {
-						mode = "02";
 					}
-					if (args[0].toUpperCase() == 'ON' || args[0].toUpperCase() == '1') {
+					if (args[0].toUpperCase() == 'ON' || args[0] == '1') {
 						payloadIntermediate += `;cePayload += "19` + mode + `00";`;
-					} else if (args[0].toUpperCase() == 'OFF' || args[0].toUpperCase() == '0') {
+					} else if (args[0].toUpperCase() == 'OFF' || args[0] == '0') {
 						payloadIntermediate += `;cePayload += "1A0000";`;
 					}
 				}
