@@ -14,7 +14,7 @@
 		:root {
 			--bgColor1: hsl(0, 0%, 75%);
 			--bgColor2: hsl(0, 0%, 25%);
-			--bgColor3: hsla(0, 0%, 10%, 0.7);
+			--bgColor3: hsl(0, 0%, 10%);
 			--watermarkColor: hsla(0, 0%, 15%, .4);
 			--navColor: hsl(0, 0%, 100%);
 			--fontColor: hsl(0, 0%, 100%);
@@ -94,7 +94,15 @@
 
 		#contentArea_debug input,
 		code {
-			background-color: var(--bgColor3);
+			background-color: black;
+			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path style='fill: white;' d='m28,21.8v8.4c0,7-2.8,9.8-9.8,9.8h-8.4c-7,0-9.8-2.8-9.8-9.8v-8.4c0-7,2.8-9.8,9.8-9.8h8.4c7,0,9.8,2.8,9.8,9.8Z'/><path style='fill: lightgrey;' d='m30.2,0h-8.4c-6.9,0-9.7,2.74-9.78,9.5h6.18c8.4,0,12.3,3.9,12.3,12.3v6.18c6.76-.08,9.5-2.88,9.5-9.78v-8.4c0-7-2.8-9.8-9.8-9.8Z'/></svg>");
+			background-repeat: no-repeat;
+			background-position: top 8px right 8px;
+			background-size: 20px 20px;
+			border-radius: 12px;
+			padding: 8px;
+			padding-left: 16px;
+			padding-right: 36px;
 		}
 
 		body,
@@ -105,7 +113,7 @@
 		code {
 			font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 			font-size: 77.5%;
-			color: var(--accentColor);
+			color: var(--accentGradient2);
 			word-wrap: break-word;
 			word-break: break-all;
 			display: block;
@@ -139,6 +147,18 @@
 			text-align: left;
 			font-size: 1em;
 			padding-left: 10px;
+		}
+
+		.bigLabel {
+			text-transform: uppercase;
+			align-items: center;
+			text-align: left;
+			font-size: 1em;
+			padding-left: 10px;
+			font-weight: 700;
+			top: -10px;
+			position: relative;
+			vertical-align: middle;
 		}
 
 		input {
@@ -309,8 +329,10 @@
 			margin-bottom: 5px;
 		}
 
-		#helpExamples span {
+		#helpExamples pre {
 			color: var(--bgColor1);
+			font-family: Arial, Verdana, Tahoma, serif;
+			white-space: pre-wrap;
 		}
 
 		#keylogStorage,
@@ -595,15 +617,39 @@
 		}
 
 		#payloadLoadMenu,
-		#payloadSaveMenu {
+		#payloadSaveMenu,
+		#payloadFileMenu {
 			position: fixed;
-			height: 130px;
-			bottom: 59px;
+			height: 200px;
+			bottom: 57px;
 			left: 10px;
 			padding: 10px;
 			background-color: var(--bgColor2);
 			border-top-left-radius: 10px;
 			border-top-right-radius: 10px;
+		}
+
+		#fileMenuFlex {
+			display: flex;
+			justify-content: left;
+		}
+
+		#columnLeft,
+		#columnRight {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			/* adjust as needed */
+		}
+
+		#columnLeft,
+		#columnLeft input {
+			width: 246px;
+		}
+
+		#columnRight {
+			padding-left: 5px;
+			width: 100px;
 		}
 
 		.payloadList {
@@ -761,7 +807,7 @@
 		}
 
 		.closeModal {
-			right: 40px;
+			right: 0px;
 			top: 0;
 			position: absolute;
 		}
@@ -776,6 +822,10 @@
 
 		.footerSidebar {
 			width: calc(100% - 365px);
+		}
+
+		.footerFullscreen {
+			width: calc(100% - 40px);
 		}
 
 		.editor-wrapper {
@@ -1023,6 +1073,9 @@
 			top: -4px;
 			left: -4px;
 			margin-left: 0;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
 		}
 
 		.buttonMergeLeft {
@@ -1082,7 +1135,11 @@
 			}
 
 			.contentFullscreen {
-				width: calc(100%)
+				width: calc(100%);
+			}
+
+			.contentFooter {
+				width: calc(100% - 40px);
 			}
 
 			.contentSidebar {
@@ -1103,10 +1160,6 @@
 
 			#navbarAlerts {
 				display: none;
-			}
-
-			.closeModal {
-				right: 40px
 			}
 		}
 
@@ -1220,6 +1273,17 @@
 			100% {
 				-webkit-box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
 			}
+		}
+
+		::-webkit-scrollbar {
+			-webkit-appearance: none;
+			width: 7px;
+		}
+
+		::-webkit-scrollbar-thumb {
+			border-radius: 4px;
+			background-color: rgba(0, 0, 0, .5);
+			-webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 		}
 	</style>
 </head>
@@ -1414,21 +1478,19 @@
 					<div id="payloadRunPercentBar" class="progressFilled" style="width:0%">&nbsp;</div>
 				</div>
 			</div><label for="payload" class="hidden">Payload Area</label>
-			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadLoad" onclick="payload.payloadLoadMenu()"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Load</span></button> <button id="footerNavPayloadSave" onclick="payload.payloadCompile('eval'); payload.payloadSaveMenu()"><svg id="ico_payloadSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Save</span></button> <button id="footerNavPayloadEval" class="" onclick="payload.payloadCompile('eval')"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="payload.payloadCompile('eval'); document.getElementById(`footerNavPayloadRun`).classList.add(`buttonRunning`); payload.payloadCompile('run')"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadMenu" onclick="toggleModule('payloadFileMenu', 'open');"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>File Menu</span></button> <button id="footerNavPayloadEval" onclick="payload.payloadCompile('eval')"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="payload.payloadCompile('eval'); document.getElementById(`footerNavPayloadRun`).classList.add(`buttonRunning`); payload.payloadCompile('run')"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
 					<div>Build + Run</div>
 				</button></div>
-			<div id="payloadSaveMenu" class="hidden contentFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadSaveMenu', 'close');">&times;</button>
-				<div class="headingModal">Save Payload</div>
-				<div><span><input class="payloadList" type="text" id="payloadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltippayloadSelect', 'payload-list')"><datalist id="payload-list"></datalist><span class="tooltiptext arrowTop" id="tooltippayloadSelect"></span> </span><span><button id="payload-saveBootable" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="payload.payloadSlotPair(document.getElementById('payloadSelect').value); this.classList.add('buttonSelected')">Make Bootable</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft" onclick="payload.payloadCompile('save'); payload.payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button> <label for="toggle-BootScript">BootScript</label>
-						<div class="button-container">
-							<div id="toggle-SaveBootScript" class="toggle-button" onclick="if(this.classList.contains('active')) { payload.payloadSetBootSlot('off') } else { payload.payloadSetBootSlot('on'); };">
-								<div class="inner-circle"></div>
-							</div>
-						</div>
-					</span></div>
-			</div>
-			<div id="payloadLoadMenu" class="hidden contentFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadLoadMenu', 'close');">&times;</button>
-				<div class="headingModal">Load Payload</div><span><input class="payloadList" type="text" id="payloadLoadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltipPayloadLoadSelect', 'payload-list')"> <span class="tooltiptext arrowTop" id="tooltipPayloadLoadSelect"></span> </span><button id="payload-loadButton" class="updateButtonLarge" onclick="payload.payloadSlotLoad(document.getElementById('payloadLoadSelect').value)">Load</button>
+			<div id="payloadFileMenu" class="hidden footerFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadFileMenu', 'close');">&times;</button>
+				<h2>File Menu</h2><label>Select Payload</label>
+				<div id="fileMenuFlex">
+					<div id="columnLeft"><input class="payloadList" type="text" id="payloadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltipPayloadSelect', 'payload-list')"><datalist id="payload-list"></datalist><span class="tooltiptext arrowTop" id="tooltipPayloadSelect"></span></div>
+					<div id="columnRight"><button id="payload-loadButton" class="updateButtonLarge buttonMergeLeft" onclick="payload.payloadSlotLoad(document.getElementById('payloadSelect').value)">Load</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="payload.payloadCompile('save'); payload.payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button></div>
+				</div><span class="bigLabel">Run this payload at boot:</span> <span class="button-container" style="display: inline-block;">
+					<div id="payload-bootableToggle" class="toggle-button" onclick="if(this.classList.contains('active')) { payload.payloadSetBootSlot('off') } else { payload.payloadSetBootSlot('on'); payload.payloadSlotPair(document.getElementById('payloadSelect').value);};">
+						<div class="inner-circle"></div>
+					</div>
+				</span>
 			</div>
 		</content>
 		<content id="contentArea_syslog" class="hidden"><label for="syslog" class="hidden">Syslog Area</label> <textarea id="syslog" spellcheck="false" class="editorSyslog" readonly="readonly"></textarea> <textarea id="debuglog" class="hidden"></textarea></content>
@@ -1668,14 +1730,14 @@
 			appHeight();
 
 			const payloadSelect = document.getElementById('payloadSelect');
-			const saveBootableButton = document.getElementById('payload-saveBootable');
+			const saveBootableButton = document.getElementById('payload-bootableToggle');
 			document.getElementById('searchGithubPayloads').addEventListener('keydown', helpMenu.searchGithubPayloads);
 
 			payloadSelect.addEventListener('input', function() {
 				if (payloadSelect.value === bootpair) {
-					saveBootableButton.classList.add('buttonSelected');
+					saveBootableButton.classList.add('active');
 				} else {
-					saveBootableButton.classList.remove('buttonSelected');
+					saveBootableButton.classList.remove('active');
 				}
 			});
 		});
@@ -1949,10 +2011,8 @@
 			if (moduleName != "close") {
 				document.getElementById(`content`).classList.remove(`contentFullscreen`);
 				document.getElementById(`content`).classList.add(`contentSidebar`);
-				document.getElementById(`payloadSaveMenu`).classList.remove(`footerFullscreen`);
-				document.getElementById(`payloadSaveMenu`).classList.add(`footerSidebar`);
-				document.getElementById(`payloadLoadMenu`).classList.remove(`footerFullscreen`);
-				document.getElementById(`payloadLoadMenu`).classList.add(`footerSidebar`);
+				document.getElementById(`payloadFileMenu`).classList.remove(`footerFullscreen`);
+				document.getElementById(`payloadFileMenu`).classList.add(`footerSidebar`);
 				document.getElementById(`subnav`).classList.remove(`subnavFullscreen`);
 				document.getElementById(`subnav`).classList.add(`subnavSidebar`);
 				document.getElementById(`sidebar_${moduleName}`).classList.remove(`hidden`);
@@ -1962,10 +2022,8 @@
 			} else {
 				document.getElementById(`content`).classList.remove(`contentSidebar`);
 				document.getElementById(`content`).classList.add(`contentFullscreen`);
-				document.getElementById(`payloadSaveMenu`).classList.remove(`footerSidebar`);
-				document.getElementById(`payloadSaveMenu`).classList.add(`footerFullscreen`);
-				document.getElementById(`payloadLoadMenu`).classList.remove(`footerSidebar`);
-				document.getElementById(`payloadLoadMenu`).classList.add(`footerFullscreen`);
+				document.getElementById(`payloadFileMenu`).classList.remove(`footerSidebar`);
+				document.getElementById(`payloadFileMenu`).classList.add(`footerFullscreen`);
 				document.getElementById(`subnav`).classList.remove(`subnavSidebar`);
 				document.getElementById(`subnav`).classList.add(`subnavFullscreen`);
 			}
@@ -3154,17 +3212,6 @@
 				output.value = `${response}`;
 			}
 
-			// UI
-			function payloadSaveMenu() {
-				toggleModule('payloadLoadMenu', 'close');
-				toggleModule('payloadSaveMenu', 'open');
-			}
-
-			function payloadLoadMenu() {
-				toggleModule('payloadSaveMenu', 'close');
-				toggleModule('payloadLoadMenu', 'open');
-			}
-
 			// Bootscript
 			function apiResponseStatusBootSlot(data) {
 				const {
@@ -3272,7 +3319,7 @@
 
 				if (bootpair == payloadEditorFilenameValue) {
 					payloadEditorBootable.innerHTML = " + bootscript";
-					payloadSaveMenuBootable = document.getElementById(`payload-saveBootable`);
+					payloadSaveMenuBootable = document.getElementById(`ayload-runOnBoot`);
 					payloadSaveMenuBootable.classList.add('buttonSelected');
 				} else {
 					payloadEditorBootable.innerHTML = "";
@@ -3347,7 +3394,6 @@
 				logger.sendMessage(`WARN`, `Writing Payload to Slot - ${splitPayloadCounter + 1} of ${iterations}`, `Payload Saved to Slot.`);
 				splitPayloadCounter += 1;
 				if (splitPayloadCounter == iterations) {
-					toggleModule('payloadSaveMenu', 'close');
 					viewDialog('payloadsaving', 'remove');
 				}
 			}
@@ -4061,8 +4107,6 @@
 
 			return {
 				payloadCompile,
-				payloadLoadMenu,
-				payloadSaveMenu,
 				payloadSetBootSlot,
 				payloadSlotLoad,
 				payloadSlotPair,
@@ -5211,6 +5255,34 @@
 				"code": [{
 					"example": "SELF-DESTRUCT 2"
 				}]
+			}, {
+				"feat": "globalKeys",
+				"name": "ALT",
+				"desc": "Use the ALT key.\nAliases: OPT, OPTION",
+				"code": [{
+					'example': 'ALT'
+				}]
+			}, {
+				"feat": "globalKeys",
+				"name": "CTRL",
+				"desc": "Use the CTRL key.\nAliases: CONTROL",
+				"code": [{
+					'example': 'CTRL'
+				}]
+			}, {
+				"feat": "globalKeys",
+				"name": "SHIFT",
+				"desc": "Use the SHIFT key.",
+				"code": [{
+					'example': 'SHIFT'
+				}]
+			}, {
+				"feat": "globalKeys",
+				"name": "GUI",
+				"desc": "Use the GUI key.\nAliases: WIN, WINDOWS, CMD, COMMAND, META",
+				"code": [{
+					'example': 'GUI'
+				}]
 			}];
 
 			function clearHelpElements() {
@@ -5251,7 +5323,7 @@
 				nameElement.classList.add(feat);
 				helpEntryElement.appendChild(nameElement);
 
-				const descElement = document.createElement("span");
+				const descElement = document.createElement("pre");
 				descElement.textContent = desc;
 				descElement.classList.add(feat);
 				helpEntryElement.appendChild(descElement);
