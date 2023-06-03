@@ -160,6 +160,8 @@
 		}
 
 		#keylogStorage label,
+		#payloadStorage label,
+		#payloadRun label,
 		label {
 			position: relative;
 			display: block;
@@ -312,7 +314,8 @@
 		}
 
 		#keylogStorage,
-		#payloadStorage {
+		#payloadStorage,
+		#payloadRun {
 			position: relative;
 			padding-left: 10px;
 			padding-top: 0;
@@ -322,10 +325,19 @@
 		}
 
 		#keylogStorage label,
-		#payloadStorage label {
+		#payloadStorage label,
+		#payloadRun label {
 			top: 0;
 			height: 2px;
 			text-align: center;
+		}
+
+		#payloadStorage {
+			padding-top: 7px;
+		}
+
+		#payloadRun {
+			padding-top: 7px;
 		}
 
 		#keymap_row1,
@@ -713,7 +725,9 @@
 		}
 
 		.buttonSelected,
-		.buttonSelected:hover {
+		.buttonSelected:hover,
+		.buttonRunning,
+		.buttonRunning:hover {
 			background: var(--accentColor);
 			background-image: -webkit-linear-gradient(top, var(--accentGradient2), var(--accentGradient1));
 			background-image: -moz-linear-gradient(top, var(--accentGradient2), var(--accentGradient1));
@@ -722,7 +736,8 @@
 			background-image: linear-gradient(to bottom, var(--accentGradient2), var(--accentGradient1));
 		}
 
-		.buttonSelected:hover {
+		.buttonSelected:hover,
+		.buttonRunning:hover {
 			background-image: -webkit-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
 			background-image: -moz-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
 			background-image: -ms-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
@@ -815,7 +830,8 @@
 
 		.editorKeylog,
 		.editorSyslog,
-		.editorc2log {
+		.editorc2log,
+		.editorPayload {
 			background-color: var(--bgColor3);
 			border-color: var(--bgColor2);
 			color: var(--fontColor);
@@ -840,7 +856,7 @@
 		}
 
 		.footer {
-			width: calc(100% - 20px);
+			width: calc(100% - 22px);
 			padding-top: 0;
 		}
 
@@ -1162,6 +1178,15 @@
 			border-color: transparent transparent red transparent;
 		}
 
+		.arrowTop {
+			top: -10px;
+		}
+
+		.arrowTop::after {
+			top: 100%;
+			border-color: red transparent transparent transparent;
+		}
+
 		.glowing-effect {
 			animation: glowing 1s infinite;
 			-webkit-animation: glowing 1s infinite;
@@ -1379,17 +1404,22 @@
 				<div id="debug-info" class="debug-info hidden"></div>
 				<div id="payloadEditorFile"><span>File: </span><span id="payloadEditorFilename">unsaved</span><span id="payloadEditorBootable"></span> (<span id="payloadEditorSaved">unsaved</span>)</div>
 			</div>
-			<div id="payloadStorage" class="footer"><label for="payloadStorage"><data id="payloadStoragePercent">&nbsp;</data></label>
+			<div id="payloadStorage" class="footer"><label for="payloadStorageUsed">Storage Used:<data id="payloadStoragePercent">0%</data></label>
 				<div id="payloadStorageUsed" class="progressBar">
 					<div id="payloadStorageUsedBar" class="progressFilled" style="width:0.2%">&nbsp;</div>
 				</div>
+			</div>
+			<div id="payloadRun" class="footer hidden"><label for="payloadRunPercentDiv">Execution:<data id="payloadRunPercent">0%</data></label>
+				<div id="payloadRunPercentDiv" class="progressBar">
+					<div id="payloadRunPercentBar" class="progressFilled" style="width:0%">&nbsp;</div>
+				</div>
 			</div><label for="payload" class="hidden">Payload Area</label>
-			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadLoad" onclick="payload.payloadLoadMenu()"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Load</span></button> <button id="footerNavPayloadSave" onclick="payload.payloadCompile('eval'); payload.payloadSaveMenu()"><svg id="ico_payloadSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Save</span></button> <button id="footerNavPayloadEval" class="" onclick="payload.payloadCompile('eval')"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="payload.payloadCompile('eval'); document.getElementById(`footerNavPayloadRun`).classList.add(`payloadRunning`); payload.payloadCompile('run')"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadLoad" onclick="payload.payloadLoadMenu()"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Load</span></button> <button id="footerNavPayloadSave" onclick="payload.payloadCompile('eval'); payload.payloadSaveMenu()"><svg id="ico_payloadSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Save</span></button> <button id="footerNavPayloadEval" class="" onclick="payload.payloadCompile('eval')"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="payload.payloadCompile('eval'); document.getElementById(`footerNavPayloadRun`).classList.add(`buttonRunning`); payload.payloadCompile('run')"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
 					<div>Build + Run</div>
 				</button></div>
 			<div id="payloadSaveMenu" class="hidden contentFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadSaveMenu', 'close');">&times;</button>
 				<div class="headingModal">Save Payload</div>
-				<div><span><input class="payloadList" type="text" id="payloadSelect" list="payload-list"><datalist id="payload-list"></datalist></span><span><button id="payload-saveBootable" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="payload.payloadSlotPair(document.getElementById('payloadSelect').value); this.classList.add('buttonSelected')">Make Bootable</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft" onclick="payload.payloadCompile('save'); payload.payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button> <label for="toggle-BootScript">BootScript</label>
+				<div><span><input class="payloadList" type="text" id="payloadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltippayloadSelect', 'payload-list')"><datalist id="payload-list"></datalist><span class="tooltiptext arrowTop" id="tooltippayloadSelect"></span> </span><span><button id="payload-saveBootable" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="payload.payloadSlotPair(document.getElementById('payloadSelect').value); this.classList.add('buttonSelected')">Make Bootable</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft" onclick="payload.payloadCompile('save'); payload.payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button> <label for="toggle-BootScript">BootScript</label>
 						<div class="button-container">
 							<div id="toggle-SaveBootScript" class="toggle-button" onclick="if(this.classList.contains('active')) { payload.payloadSetBootSlot('off') } else { payload.payloadSetBootSlot('on'); };">
 								<div class="inner-circle"></div>
@@ -1398,7 +1428,7 @@
 					</span></div>
 			</div>
 			<div id="payloadLoadMenu" class="hidden contentFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadLoadMenu', 'close');">&times;</button>
-				<div class="headingModal">Load Payload</div><span><input class="payloadList" type="text" id="payloadLoadSelect" list="payload-list"> </span><button id="payload-loadButton" class="updateButtonLarge" onclick="payload.payloadSlotLoad(document.getElementById('payloadLoadSelect').value)">Load</button>
+				<div class="headingModal">Load Payload</div><span><input class="payloadList" type="text" id="payloadLoadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltipPayloadLoadSelect', 'payload-list')"> <span class="tooltiptext arrowTop" id="tooltipPayloadLoadSelect"></span> </span><button id="payload-loadButton" class="updateButtonLarge" onclick="payload.payloadSlotLoad(document.getElementById('payloadLoadSelect').value)">Load</button>
 			</div>
 		</content>
 		<content id="contentArea_syslog" class="hidden"><label for="syslog" class="hidden">Syslog Area</label> <textarea id="syslog" spellcheck="false" class="editorSyslog" readonly="readonly"></textarea> <textarea id="debuglog" class="hidden"></textarea></content>
@@ -1481,7 +1511,7 @@
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230601";
+		frontendVersionNumber = "3.0-230603";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1550,9 +1580,7 @@
 				'CE': 'Payload Execute',
 				'CEError': 'Payload Error',
 				'CEStatus': 'Payload Status',
-				'CJ': 'Mouse Jiggler Enable/Disable',
-				'CK': 'Send Keystrokes',
-				'CM': 'Send Mouse Actions',
+				'CJ': 'Mouse Jiggler Enable/Disable'
 			},
 			'debug': {
 				'CO': 'Calibration Apply',
@@ -1716,13 +1744,23 @@
 			return littleEndian;
 		}
 
+		const extractArg = (arg, matchPattern) => {
+			const match = arg.match(matchPattern);
+			return match && match[1];
+		};
+
 		function sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
 		}
 
-		function hud(icon, mode) {
-			document.getElementById(`ico_${icon}`).removeAttribute("class");
-			document.getElementById(`ico_${icon}`).classList.add(`hud_${mode}`);
+		function toggleClassBasedOnStatus(elementId, className, status, desiredStatus) {
+			let element = document.getElementById(elementId);
+
+			if (status === desiredStatus && !element.classList.contains(className)) {
+				element.classList.add(className);
+			} else if (status !== desiredStatus && element.classList.contains(className)) {
+				element.classList.remove(className);
+			}
 		}
 
 		function toggleModule(moduleName, openClose) {
@@ -2266,7 +2304,7 @@
 					c2.apiResponseC2Wipe(responseText);
 					break;
 				case "CEStatus":
-					payload.apiResponseCEStatus(responseTextParams[1]);
+					payload.apiResponseCEStatus(responseText);
 					break;
 				case responseTextParams[0].match(/CE/)?.input:
 				case responseTextParams[0].match(/ce/)?.input:
@@ -3026,28 +3064,86 @@
 		const payload = (() => {
 			function apiResponseCE(data) {}
 
+			let previousData = '';
+			var iterations;
+			split_payloads = "";
+			compiledBootSlot = "";
+			cePayload = "";
+			var compiledBootSlot = "";
+			var defaultDelay = "0";
+			var defaultDelayJitter = "0";
+			var defaultCharDelay = "0";
+			var defaultCharDelayJitter = "0";
+			var compileFailed = "0";
+			let payloadIntermediate = "";
+
+			const modifiers = {
+				'CONTROL': 0x01,
+				'CTRL': 0x01,
+				'LEFT-CTRL': 0x01,
+				'LEFT-SHIFT': 0x02,
+				'SHIFT': 0x02,
+				'ALT': 0x04,
+				'LEFT-ALT': 0x04,
+				'OPTION': 0x04,
+				'COMMAND': 0x08,
+				'GUI': 0x08,
+				'LEFT-GUI': 0x08,
+				'WINDOWS': 0x08,
+				'RCONTROL': 0x10,
+				'RCTRL': 0x10,
+				'RIGHT-CTRL': 0x10,
+				'RIGHT-SHIFT': 0x20,
+				'RSHIFT': 0x20,
+				'ALTGR': 0x40,
+				'RALT': 0x40,
+				'RIGHT-ALT': 0x40,
+				'ROPTION': 0x40,
+				'RCOMMAND': 0x80,
+				'RGUI': 0x80,
+				'RIGHT-GUI': 0x80,
+				'RWINDOWS': 0x80,
+			};
+
+			// Status
+			let ceStatusInterval;
 			const apiResponseCEStatus = (function() {
-				let previousData = '';
-
 				return function(data) {
-					if (data === previousData) {
-						return;
+					const {
+						response,
+						parameters
+					} = parseData(data);
+					toggleClassBasedOnStatus('footerNavPayloadRun', 'buttonRunning', parameters[1], "Running");
+
+					let payloadRunPercent = (((parameters[3]) / (parameters[2])) * 100).toFixed(0) + '%';
+					document.getElementById('payloadRunPercentBar').style.width = payloadRunPercent;
+					document.getElementById('payloadRunPercent').innerHTML = payloadRunPercent;
+
+
+					if (parameters[1] === "Loading" || parameters[1] === "Running") {
+						document.getElementById(`payloadStorage`).classList.add(`hidden`);
+						document.getElementById(`payloadRun`).classList.remove(`hidden`);
+						if (!ceStatusInterval) {
+							ceStatusInterval = setInterval(() => {
+								connect.sendMessage("CEStatus");
+							}, 2000);
+						}
+					} else if (parameters[1] === "Idle") {
+						document.getElementById(`payloadStorage`).classList.remove(`hidden`);
+						document.getElementById(`payloadRun`).classList.add(`hidden`);
+						document.getElementById('payloadRunPercentBar').style.width = "0%";
+						document.getElementById('payloadRunPercent').innerHTML = "0%";
+						if (ceStatusInterval) {
+							clearInterval(ceStatusInterval);
+							ceStatusInterval = null;
+						}
 					}
 
-					previousData = data;
 					logger.sendMessage('CRIT', `apiResponseCEStatus: [status]:[${data}]`);
-
-					const isRunning = data === 'Running';
-					const payloadElement = document.getElementById('footerNavPayloadRun');
-
-					if (isRunning) {
-						toggleClass('footerNavPayloadRun', 'payloadRunning', isRunning);
-					} else {
-						toggleClass('footerNavPayloadRun', 'payloadRunning', !isRunning);
-					}
 				};
 			})();
 
+			// Mode Toggles
 			function apiResponseCJ(data) {
 				const {
 					response,
@@ -3058,11 +3154,7 @@
 				output.value = `${response}`;
 			}
 
-			function deviceStatusBootSlot() {
-				cmd = `CTList`;
-				connect.sendMessage(cmd);
-			}
-
+			// UI
 			function payloadSaveMenu() {
 				toggleModule('payloadLoadMenu', 'close');
 				toggleModule('payloadSaveMenu', 'open');
@@ -3073,16 +3165,7 @@
 				toggleModule('payloadLoadMenu', 'open');
 			}
 
-			function sendFlashReadCommands(iterations, slotAddress) {
-				for (let i = 0; i < iterations; i++) {
-					const currentAddress = slotAddress + (i * readSize);
-					const cmd = `[pL-${i+1}.${iterations}]FR${parseInt(currentAddress)}\t${readSize}`;
-					logger.sendMessage(`INFO`, `Flash Read Commands: [${cmd}]`);
-					connect.sendMessage(cmd);
-					sleep(50);
-				}
-			}
-
+			// Bootscript
 			function apiResponseStatusBootSlot(data) {
 				const {
 					response,
@@ -3103,7 +3186,23 @@
 				} else if (mode == "off") {
 					connect.sendMessage(`CTSet\tbootscript\t0`);
 				}
-				deviceStatusBootSlot();
+				connect.sendMessage(`CTList`);
+			}
+
+			function payloadSlotPair(slotValue) {
+				var payloadSlotPair = `CTSet\tbootpair\t${slotValue}`;
+				connect.sendMessage(payloadSlotPair);
+			}
+
+			// Payload Load
+			function sendFlashReadCommands(iterations, slotAddress) {
+				for (let i = 0; i < iterations; i++) {
+					const currentAddress = slotAddress + (i * readSize);
+					const cmd = `[pL-${i+1}.${iterations}]FR${parseInt(currentAddress)}\t${readSize}`;
+					logger.sendMessage(`INFO`, `Flash Read Commands: [${cmd}]`);
+					connect.sendMessage(cmd);
+					sleep(50);
+				}
 			}
 
 			function payloadSlotLoad(slotValue) {
@@ -3180,13 +3279,7 @@
 				}
 			}
 
-			function payloadSlotPair(slotValue) {
-				var payloadSlotPair = `CTSet\tbootpair\t${slotValue}`;
-				connect.sendMessage(payloadSlotPair);
-			}
-
-			var iterations;
-
+			// Payload Save
 			function payloadSlotSave(slotValue) {
 				iterations = 0;
 				splitPayloadCounter = 0;
@@ -3259,16 +3352,7 @@
 				}
 			}
 
-			function removeComments(script) {
-				script = script.replace(/^REM_BLOCK[\s\S]*?END_REM$/gm, "");
-				script = script.replace(/^(?:REM).*$/gm, "");
-				return script.trim();
-			}
-
-			function stringSanitize(testString) {
-				return testString.replace(/['"\\]/g, '\\$&');
-			}
-
+			// Payload Run
 			function split_process(hexPayload) {
 				const payloadMaxSize = 936;
 				const operations = Math.ceil(hexPayload.length / payloadMaxSize);
@@ -3285,134 +3369,31 @@
 				return split_payloads;
 			}
 
-			function ceBuildPayload(ceBuffer) {
-				const payloadArray = ceBuffer.split('').map(key => {
-					const [mod, hid] = keymap.memoizedKeyToHidMapping(key);
-					let payloadPart = '';
-
-					if (defaultCharDelay >= 1) {
-						let humanized;
-
-						if (defaultCharDelayJitter >= 1) {
-							const random = Math.floor(Math.random() * defaultCharDelayJitter);
-							humanized = defaultCharDelay + random;
-						} else {
-							humanized = defaultCharDelay;
-						}
-
-						const humanizedMS = humanized / 10;
-						logger.sendMessage(`CRIT`, `Default Char Delay Set. [delay]:[${defaultCharDelay}] [jitter]:[${defaultCharDelayJitter}] [result]:[${humanized}]`);
-						payloadPart += `1D${toHex(humanizedMS, 4)}`;
-					}
-
-					payloadPart += padHex(1) + padHex(mod) + padHex(hid);
-					return payloadPart;
-				});
-
-				const payload = payloadArray.join('');
-				logger.sendMessage(`CRIT`, `ceBuildPayload: [ceBuffer]:[${ceBuffer}] [payload]:[${payload}]`);
-				return payload;
-			}
-
-			compiledBootSlot = "";
-			cePayload = "";
-
-			function payloadCompile(mode) {
-				payloadoutput.innerHTML = unescapeHtml(document.querySelector('.editor').innerText);
-				cePayload = "";
-				const payloadElement = document.getElementById("payloadoutput");
+			function handlePayloadExecution(mode, command_line, cePayload) {
 				const footerNavPayloadRun = document.getElementById("footerNavPayloadRun");
+				const bRunPayload = mode === 'run';
 
-				if (mode === 'run') {
-					footerNavPayloadRun.classList.add("payloadRunning");
-				}
+				if (bRunPayload) {
+					footerNavPayloadRun.classList.add("buttonRunning");
+					logger.sendMessage("INFO", `! RUNNING PAYLOAD: [${command_line}]`, "! RUNNING PAYLOAD");
+					connect.sendMessage(command_line);
+					connect.sendMessage("CEStatus");
+				} else {
+					compiledBootSlot = "";
 
-				let payload = payloadElement.innerText;
+					for (let j = 0; j < cePayload.length; j++) {
+						compiledBootSlot += cePayload[j];
 
-				payload = replaceDefines(payload);
-				payload = replaceFunctions(payload);
-				payload = removeComments(payload);
-
-				if (payloadElement.value === '') {
-					footerNavPayloadRun.classList.remove("payloadRunning");
-					logger.sendMessage("INFO", "? NOTHING TO RUN");
-					return;
-				}
-
-				payload = stringSanitize(payload);
-				cePayload = compileAndRunPayload(mode, payload);
-
-				for (let i = 0; i < cePayload.length; i++) {
-					const command_line = `CE${cePayload[i]}`;
-
-					if (cePayload[i] === '') {
-						footerNavPayloadRun.classList.remove("payloadRunning");
-						logger.sendMessage("INFO", "? SCRIPT SYNTAX IS INVALID");
-						return;
+						if (j === cePayload.length - 1) {
+							if (mode === 'save') {
+								// payloadSlotSave('bootscript');
+							} else {
+								logger.sendMessage("INFO", `! EVAL PAYLOAD: [${payload}]:[${command_line}]:[${compiledBootSlot}]`, "! EVAL PAYLOAD");
+							}
+						}
 					}
-
-					handlePayloadExecution(mode, command_line, cePayload);
 				}
 			}
-
-			function replaceDefines(payload) {
-				const defineRegex = /^DEFINE\s+(#\S+)\s+(.*)$/gm;
-				let match;
-				let defines = {};
-
-				while ((match = defineRegex.exec(payload)) !== null) {
-					const keyName = match[1];
-					const keyContent = match[2];
-					defines[keyName] = keyContent;
-				}
-
-				payload = payload.replace(defineRegex, '');
-				payload = payload.replace(/^\s*[\r\n]/gm, '');
-
-				for (let key in defines) {
-					const regex = new RegExp(key.replace('#', '\\#'), 'g');
-					payload = payload.replace(regex, defines[key]);
-				}
-
-				return payload;
-			}
-
-
-			function replaceFunctions(payload) {
-				const functionRegex = /^FUNCTION\s+([a-zA-Z0-9_]+)\((.*?)\)\n([\s\S]*?)\nEND_FUNCTION/gm;
-				let match;
-				let functions = {};
-
-				while ((match = functionRegex.exec(payload)) !== null) {
-					const functionName = match[1];
-					const functionParams = match[2] ? match[2].split(',').map(item => item.trim()) : [];
-					const functionContent = match[3];
-
-					functions[functionName] = {
-						params: functionParams,
-						body: functionContent
-					};
-				}
-
-				payload = payload.replace(functionRegex, '');
-
-				Object.keys(functions).forEach(functionName => {
-					const regex = new RegExp(`${functionName}\\(([^\\)]*)\\)`, "g");
-					payload = payload.replace(regex, (match, args) => {
-						const argList = args.split(',').map(item => item.trim());
-						let functionBody = functions[functionName].body;
-
-						functions[functionName].params.forEach((param, index) => {
-							functionBody = functionBody.replace(new RegExp(param, "g"), argList[index] || "");
-						});
-
-						return functionBody;
-					});
-				});
-				return payload;
-			}
-
-			split_payloads = "";
 
 			function compileAndRunPayload(mode, payload) {
 				split_payloads = "";
@@ -3445,8 +3426,7 @@
 				let payloadStoragePercent = (((compiled.length * 2) / (payload1Size * 4096)) * 100).toFixed(0) + '%';
 
 				document.getElementById('payloadStorageUsedBar').style.width = payloadStoragePercent;
-				document.getElementById('payloadStorageUsedBar').innerHTML = payloadStoragePercent;
-
+				document.getElementById('payloadStoragePercent').innerHTML = payloadStoragePercent;
 
 				split_payloads = split_process(cePayload.toUpperCase());
 				logger.sendMessage("CRIT", `? CONTENTS OF SPLIT_PAYLOADS: [ce]:[${split_payloads}]`);
@@ -3454,79 +3434,123 @@
 				return split_payloads;
 			}
 
-			var compiledBootSlot = "";
-
-			function handlePayloadExecution(mode, command_line, cePayload) {
-				const footerNavPayloadRun = document.getElementById("footerNavPayloadRun");
-				const bRunPayload = mode === 'run';
-
-				if (bRunPayload) {
-					footerNavPayloadRun.classList.add("payloadRunning");
-					logger.sendMessage("INFO", `! RUNNING PAYLOAD: [${command_line}]`, "! RUNNING PAYLOAD");
-					connect.sendMessage(command_line);
-					sleep(100);
-				} else {
-					compiledBootSlot = "";
-
-					for (let j = 0; j < cePayload.length; j++) {
-						compiledBootSlot += cePayload[j];
-
-						if (j === cePayload.length - 1) {
-							if (mode === 'save') {
-								// payloadSlotSave('bootscript');
-							} else {
-								logger.sendMessage("INFO", `! EVAL PAYLOAD: [${payload}]:[${command_line}]:[${compiledBootSlot}]`, "! EVAL PAYLOAD");
-							}
-						}
-					}
+			// Compiler
+			const validateAndLogError = (value, cmd, lengthRange, errorMsg) => {
+				if (value && (value.length < lengthRange[0] || value.length > lengthRange[1])) {
+					logger.sendMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} ${errorMsg}`);
+					return false;
 				}
+				return true;
+			};
+
+			const ceBuildPayload = (ceBuffer) => {
+				return ceBuffer.split('').map(key => ceBuildPayloadPart(key)).join('');
+			};
+
+			const ceBuildPayloadPart = (key) => {
+				const [mod, hid] = keymap.memoizedKeyToHidMapping(key);
+				let payloadPart = '';
+
+				if (defaultCharDelay >= 1) {
+					const humanized = getHumanized(defaultCharDelay, defaultCharDelayJitter);
+					logger.sendMessage('CRIT', `Default Char Delay Set. [delay]:[${defaultCharDelay}] [jitter]:[${defaultCharDelayJitter}] [result]:[${humanized}]`);
+					payloadPart += `1D${toHex(humanized / 10, 4)}`;
+				}
+
+				return payloadPart + `${padHex(1)}${padHex(mod)}${padHex(hid)}`;
+			};
+
+			const getHumanized = (delay, jitter) => jitter >= 1 ? delay + Math.floor(Math.random() * jitter) : delay;
+
+			function payloadCompile(mode) {
+				payloadoutput.innerHTML = unescapeHtml(document.querySelector('.editor').innerText);
+				cePayload = "";
+				const payloadElement = document.getElementById("payloadoutput");
+				const footerNavPayloadRun = document.getElementById("footerNavPayloadRun");
+
+				if (mode === 'run') {
+					footerNavPayloadRun.classList.add("buttonRunning");
+				}
+
+				let payload = removeComments(replaceFunctions(replaceDefines(payloadElement.innerText)));
+
+				if (payloadElement.value === '') {
+					footerNavPayloadRun.classList.remove("buttonRunning");
+					logger.sendMessage("INFO", "? NOTHING TO RUN");
+					return;
+				}
+
+				payload = stringSanitize(payload);
+				cePayload = compileAndRunPayload(mode, payload);
+
+				cePayload.forEach(payload => {
+					const command_line = `CE${payload}`;
+
+					if (!payload) {
+						footerNavPayloadRun.classList.remove("buttonRunning");
+						logger.sendMessage("INFO", "? SCRIPT SYNTAX IS INVALID");
+						return;
+					}
+
+					handlePayloadExecution(mode, command_line, cePayload);
+				});
 			}
 
-			var defaultDelay = "0";
-			var defaultDelayJitter = "0";
-			var defaultCharDelay = "0";
-			var defaultCharDelayJitter = "0";
-			var compileFailed = "0";
-			let payloadIntermediate = "";
-			const modifiers = {
-				'CONTROL': 0x01,
-				'CTRL': 0x01,
-				'LEFT-CTRL': 0x01,
-				'LEFT-SHIFT': 0x02,
-				'SHIFT': 0x02,
-				'ALT': 0x04,
-				'LEFT-ALT': 0x04,
-				'OPTION': 0x04,
-				'COMMAND': 0x08,
-				'GUI': 0x08,
-				'LEFT-GUI': 0x08,
-				'WINDOWS': 0x08,
-				'RCONTROL': 0x10,
-				'RCTRL': 0x10,
-				'RIGHT-CTRL': 0x10,
-				'RIGHT-SHIFT': 0x20,
-				'RSHIFT': 0x20,
-				'ALTGR': 0x40,
-				'RALT': 0x40,
-				'RIGHT-ALT': 0x40,
-				'ROPTION': 0x40,
-				'RCOMMAND': 0x80,
-				'RGUI': 0x80,
-				'RIGHT-GUI': 0x80,
-				'RWINDOWS': 0x80,
-			};
+			function compile_duckyscript(script) {
+				logger.sendMessage('INFO', 'Compile Started');
+				logger.sendMessage('CRIT', `compile_duckyscript: [script]:[${script}]`);
+
+				const scriptLines = script.split('\n');
+				let errorCount = 0;
+				const errors = [];
+
+				let compiledJs = scriptLines.reduce((compiledJs, line) => {
+					line = line.trim();
+					if (!line) return compiledJs;
+
+					const [command, ...args] = line.split(' ');
+					let finalLine = '';
+
+					if (command === "REPEAT") {
+						const [repeatCount, repeatCommand, ...repeatArgs] = args;
+						finalLine = Array.from({
+							length: repeatCount
+						}, () => compile_line(repeatCommand, repeatArgs)).join('\n');
+					} else {
+						finalLine = compile_line(command, args);
+					}
+
+					if (finalLine.length === 1 && command !== 'DUCKY_LANG') {
+						finalLine = ';';
+						errorCount++;
+						errors.push(line);
+					}
+
+					return `${compiledJs}${finalLine}\n`;
+				}, '');
+
+				if (errorCount > 1 || compileFailed === "1") {
+					bRunPayload = false;
+					errors.pop();
+					logger.sendMessage('INFO', `! ERROR: ${String(errorCount - 1)} ERRORS FOUND`);
+
+					errors.forEach((errorLine) => {
+						const lineNumber = scriptLines.findIndex(scriptLine => errorLine === scriptLine) + 1;
+						logger.sendMessage('INFO', `! ERROR: SCRIPT SYNTAX ERROR ON LINE: ${String(lineNumber)}: ${String(errorLine)}`);
+					});
+				}
+
+				return compiledJs.replace(/;\n,/g, '').split(';,').join().replace(/,;/g, ';');
+			}
 
 			function compile_line(cmd, args) {
 				payloadIntermediate = "";
-				const defaultDelay = 0;
-				const defaultDelayJitter = 0;
 				let humanizedMS;
 
 				if (defaultDelay >= 1) {
-					const humanized = defaultDelayJitter >= 1 ? defaultDelay + Math.floor(Math.random() * defaultDelayJitter) : defaultDelay;
-					humanizedMS = humanized / 10;
+					const humanized = getHumanized(defaultDelay, defaultDelayJitter);
 					logger.sendMessage(`CRIT`, `Default Delay Set. [delay]:[${defaultDelay}] [jitter]:[${defaultDelayJitter}] [result]:[${humanized}]`);
-					payloadIntermediate += `;cePayload += "1D${toHex(humanizedMS, 4)}";`;
+					payloadIntermediate += `;cePayload += "1D${toHex(humanized / 10, 4)}";`;
 				}
 
 				switch (cmd) {
@@ -3625,128 +3649,159 @@
 				return payloadIntermediate;
 			}
 
-			function handleGeofencingCommands(cmd, args) {
-				var prefixSSID;
-				var prefixBSSID;
-				var cmdFooter;
-				if (cmd == "IF_PRESENT") {
-					prefixSSID = "24";
-					prefixBSSID = "25";
-					cmdFooter = "0307";
-				} else if (cmd == "IF_NOTPRESENT") {
-					prefixSSID = "26";
-					prefixBSSID = "27";
-					cmdFooter = "0307";
-				} else if (cmd == "WAIT_FOR_PRESENT") {
-					prefixSSID = "28";
-					prefixBSSID = "29";
-					cmdFooter = "0407";
-				} else if (cmd == "WAIT_FOR_NOTPRESENT") {
-					prefixSSID = "2A";
-					prefixBSSID = "2B";
-					cmdFooter = "0407";
+			// Compiler Helpers
+			function removeComments(script) {
+				script = script.replace(/^REM_BLOCK[\s\S]*?END_REM$/gm, "");
+				script = script.replace(/^(?:REM).*$/gm, "");
+				return script.trim();
+			}
+
+			function stringSanitize(testString) {
+				return testString.replace(/['"\\]/g, '\\$&');
+			}
+
+			function replaceDefines(payload) {
+				const defineRegex = /^DEFINE\s+(#\S+)\s+(.*)$/gm;
+				let match;
+				let defines = {};
+
+				while ((match = defineRegex.exec(payload)) !== null) {
+					const keyName = match[1];
+					const keyContent = match[2];
+					defines[keyName] = keyContent;
 				}
-				if (args[0] != undefined) {
-					var argSSID;
-					var argBSSID;
-					var argSIGNAL;
-					var argMINUTES;
-					var argINTERVAL;
-					if (args[0].match(/SSID=\\['"]([^'"]*)\\['"]/)) {
-						argSSID = args[0].match(/SSID=\\['"]([^'"]*)\\['"]/)[1];
-						argSSID = asciiToHex(argSSID);
-						argSSID = argSSID.match(/.{1,4}/g);
+
+				payload = payload.replace(defineRegex, '');
+				payload = payload.replace(/^\s*[\r\n]/gm, '');
+
+				for (let key in defines) {
+					const regex = new RegExp(key.replace('#', '\\#'), 'g');
+					payload = payload.replace(regex, defines[key]);
+				}
+
+				return payload;
+			}
+
+			function replaceFunctions(payload) {
+				const functionRegex = /^FUNCTION\s+([a-zA-Z0-9_]+)\((.*?)\)\n([\s\S]*?)\nEND_FUNCTION/gm;
+				let match;
+				let functions = {};
+
+				while ((match = functionRegex.exec(payload)) !== null) {
+					const functionName = match[1];
+					const functionParams = match[2] ? match[2].split(',').map(item => item.trim()) : [];
+					const functionContent = match[3];
+
+					functions[functionName] = {
+						params: functionParams,
+						body: functionContent
+					};
+				}
+
+				payload = payload.replace(functionRegex, '');
+				Object.keys(functions).forEach(functionName => {
+					const regex = new RegExp(`${functionName}\\(([^\\)]*)\\)`, "g");
+					payload = payload.replace(regex, (match, args) => {
+						const argList = args.split(',').map(item => item.trim());
+						let functionBody = functions[functionName].body;
+
+						functions[functionName].params.forEach((param, index) => {
+							functionBody = functionBody.replace(new RegExp(param, "g"), argList[index] || "");
+						});
+
+						return functionBody;
+					});
+				});
+				return payload;
+			}
+
+			const commandConfigs = {
+				"IF_PRESENT": {
+					prefixSSID: "24",
+					prefixBSSID: "25",
+					cmdFooter: "0307"
+				},
+				"IF_NOTPRESENT": {
+					prefixSSID: "26",
+					prefixBSSID: "27",
+					cmdFooter: "0307"
+				},
+				"WAIT_FOR_PRESENT": {
+					prefixSSID: "28",
+					prefixBSSID: "29",
+					cmdFooter: "0407"
+				},
+				"WAIT_FOR_NOTPRESENT": {
+					prefixSSID: "2A",
+					prefixBSSID: "2B",
+					cmdFooter: "0407"
+				}
+			};
+
+			const commandPrefixes = {
+				"VID": "OE",
+				"PID": "0F",
+				"MAN": "15",
+				"PRO": "16",
+				"SER": "17",
+				"USB": "10",
+				"JIGGLER": "11"
+			};
+
+			function handleGeofencingCommands(cmd, args) {
+				const config = commandConfigs[cmd];
+				if (!config || !args[0]) {
+					logger.sendMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} requires one of the following: SSID and BSSID.`);
+					return;
+				}
+
+				const argSSID = extractArg(args[0], /SSID=\['"]([^'"]*)\['"]/);
+				const argBSSID = extractArg(args[0], /BSSID=\['"]([^'"]*)\['"]/);
+				const argSIGNAL = extractArg(args[0], /SIGNAL=\['"]([^'"]*)\['"]/);
+				const argMINUTES = extractArg(args[0], /MINUTES=\['"]([^'"]*)\['"]/);
+				const argINTERVAL = extractArg(args[0], /INTERVAL=\['"]([^'"]*)\['"]/);
+
+				logger.sendMessage('CRIT', `geofencing: [cmd]:[${cmd}] [${args[0]}] [ssid]:[${argSSID}] [bssid]:[${argBSSID}] [signal]:[${argSIGNAL}] [minutes]:[${argMINUTES}] [interval]:[${argINTERVAL}]`);
+
+				if (argSSID && argBSSID) {
+					logger.sendMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} does not support both SSID and BSSID.`);
+					return;
+				}
+
+				if (argSSID || argBSSID) {
+					const cmdPrefix = argSSID ? config.prefixSSID : config.prefixBSSID;
+					const argToUse = argSSID || argBSSID;
+
+					if (argBSSID && !validateAndLogError(argBSSID, cmd, [17, 17], `BSSID IS THE WRONG LENGTH. Example: AA:BB:CC:DD:EE:FF vs ${argBSSID}`)) return;
+
+					let cmdData = "";
+					for (let i = 0; i < argToUse.length; i++) {
+						cmdData += (argToUse[i].length % 2 !== 0) ? `${cmdPrefix}${argToUse[i]}00` : `${cmdPrefix}${argToUse[i]}`;
 					}
-					if (args[0].match(/BSSID=\\['"]([^'"]*)\\['"]/)) {
-						argBSSID = args[0].match(/BSSID=\\['"]([^'"]*)\\['"]/)[1];
-						argBSSID = asciiToHex(argBSSID);
-						argBSSID = argSSID.match(/.{1,4}/g);
-					}
-					if (args[0].match(/SIGNAL=\\['"]([^'"]*)\\['"]/)) {
-						argSIGNAL = args[0].match(/SIGNAL=\\['"]([^'"]*)\\['"]/)[1];
-					}
-					if (args[0].match(/MINUTES=\\['"]([^'"]*)\\['"]/)) {
-						argMINUTES = args[0].match(/MINUTES=\\['"]([^'"]*)\\['"]/)[1];
-					}
-					if (args[0].match(/INTERVAL=\\['"]([^'"]*)\\['"]/)) {
-						argINTERVAL = args[0].match(/INTERVAL=\\['"]([^'"]*)\\['"]/)[1];
-					}
-					logger.sendMessage(`CRIT`, `geofencing: [cmd]:[${cmd}] [${args[0]}] [ssid]:[${argSSID}] [bssid]:[${argBSSID}] [signal]:[${argSIGNAL}] [minutes]:[${argMINUTES}] [interval]:[${argINTERVAL}]`)
-					if (argSSID && argBSSID) {
-						logger.sendMessage(`INFO`, `! ALERT: Payload Compile Failed. ${cmd} does not support both SSID and BSSID.`);
-					} else if (argSSID || argBSSID) {
-						var cmdData = "";
-						if (argSSID) {
-							cmdPrefix = String(prefixSSID);
-							for (var i = 0; i < argSSID.length; i++) {
-								if (argSSID[i].length % 2 != 0) {
-									cmdData += cmdPrefix + argSSID[i] + "00";
-								} else {
-									cmdData += cmdPrefix + argSSID[i];
-								}
-							}
-						} else if (argBSSID) {
-							cmdPrefix = String(prefixBSSID);
-							if (argBSSID.length != 17) {
-								logger.sendMessage(`INFO`, `ERROR: ${String(cmd)} BSSID IS THE WRONG LENGTH. Example: AA:BB:CC:DD:EE:FF vs ${String(argBSSID)}`);
-								return;
-							} else {
-								for (var i = 0; i < argSSID.length; i++) {
-									if (argSSID[i].length % 2 != 0) {
-										cmdData += cmdPrefix + argSSID[i] + "00";
-									} else {
-										cmdData += cmdPrefix + argSSID[i];
-									}
-								}
-							}
-						}
-						if (argSIGNAL) {
-							if (argSIGNAL.length > 1 && argSIGNAL.length < 3) {
-								cmdSignal = `${String(cmdPrefix)}02${toHex(argSIGNAL)}`;
-							} else {
-								logger.sendMessage(`INFO`, `! ALERT: Payload Compile Failed. ${cmd} SIGNAL is invalid. Must be a number between 0 and 99`);
-								return;
-							}
-						} else {
-							cmdSignal = ``;
-						}
-						if (argMINUTES) {
-							if (argMINUTES.length > 1 && argSIGNAL.length < 3) {
-								cmdMinutes = `${String(cmdPrefix)}02${toHex(argMINUTES)}`;
-							} else {
-								logger.sendMessage(`INFO`, `! ALERT: Payload Compile Failed. ${cmd} MINUTES is invalid. Must be a number between 0 and 60`);
-								return;
-							}
-						} else {
-							cmdMinutes = `${String(cmdPrefix)}0203`;
-						}
-						if (argINTERVAL) {
-							if (argINTERVAL.length > 1 && argINTERVAL.length < 4) {
-								cmdInterval = `${String(cmdPrefix)}03${toHex(argINTERVAL)}`;
-							} else {
-								logger.sendMessage(`INFO`, `! ALERT: Payload Compile Failed. ${cmd} INTERVAL is invalid. Must be a number between 0 and 255`);
-								return;
-							}
-						} else {
-							cmdInterval = `${String(cmdPrefix)}0300`;
-						}
-						if (cmd == ("IF_PRESENT" || "IF_NOT_PRESENT")) {
-							cmdArguments = cmdSignal;
-						} else if (cmd == ("WAIT_FOR_PRESENT" || "WAIT_FOR_NOTPRESENT")) {
-							cmdArguments = `${cmdMinutes}${cmdInterval}`;
-						}
-						payloadIntermediate += `;cePayload += "${cmdPrefix}0106${cmdData}${cmdArguments}${cmdPrefix}${cmdFooter}";`;
-					} else {
-						logger.sendMessage(`INFO`, `! ALERT: Payload Compile Failed. ${cmd} requires one of the following: SSID and BSSID.`);
-					}
+
+					if (!validateAndLogError(argSIGNAL, cmd, [2, 3], `SIGNAL is invalid. Must be a number between 0 and 99`)) return;
+					const cmdSignal = argSIGNAL ? `${cmdPrefix}02${toHex(argSIGNAL)}` : '';
+
+					if (!validateAndLogError(argMINUTES, cmd, [2, 3], `MINUTES is invalid. Must be a number between 0 and 60`)) return;
+					const cmdMinutes = argMINUTES ? `${cmdPrefix}02${toHex(argMINUTES)}` : `${cmdPrefix}0203`;
+
+					if (!validateAndLogError(argINTERVAL, cmd, [2, 4], `INTERVAL is invalid. Must be a number between 0 and 255`)) return;
+					const cmdInterval = argINTERVAL ? `${cmdPrefix}03${toHex(argINTERVAL)}` : `${cmdPrefix}0300`;
+
+					const cmdArguments = (cmd === "IF_PRESENT" || cmd === "IF_NOTPRESENT") ? cmdSignal : `${cmdMinutes}${cmdInterval}`;
+
+					let payloadIntermediate = `;cePayload += "${cmdPrefix}0106${cmdData}${cmdArguments}${cmdPrefix}${config.cmdFooter}";`;
 				} else {
-					logger.sendMessage(`INFO`, `! ALERT: Payload Compile Failed. ${cmd} requires one of the following: SSID and BSSID.`);
+					logger.sendMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} requires one of the following: SSID and BSSID.`);
 				}
 			}
 
 			function handleVidPidCommands(cmd, args, random = false) {
-				const prefix = cmd === "VID" ? "0E" : "0F";
-
+				let prefix = commandPrefixes[cmd];
+				if (!prefix) {
+					console.error(`Invalid command: ${cmd}`);
+					return;
+				}
 				let arg = random ? generateRandomHex(4) : args[0].toUpperCase();
 				if (/^[\da-fA-F]+$/.test(arg) && arg.length === 4) {
 					payloadIntermediate += `;cePayload += "${prefix}${arg}";`;
@@ -3754,69 +3809,35 @@
 			}
 
 			function handleManProSerCommands(cmd, args, random = false) {
-				let prefix;
-				if (cmd == "MAN") {
-					prefix = "15";
-				} else if (cmd == "PRO") {
-					prefix = "16";
-				} else if (cmd == "SER") {
-					prefix = "17";
+				let prefix = commandPrefixes[cmd];
+				if (!prefix) {
+					console.error(`Invalid command: ${cmd}`);
+					return;
 				}
-
 				let argValue = random ? generateRandomWords() : args[0];
-
-				if (argValue != undefined) {
-					const argHex = asciiToHex(argValue);
-					payloadIntermediate += `;cePayload += "${prefix}0106";`;
-
-					for (let i = 0; i < argHex.length; i = i + 4) {
-						let temp = argHex.substr(i, 4).toString(16);
-						if (argHex.length % 2 !== 0) {
-							payloadIntermediate += `;cePayload += "${prefix}${temp}00"`;
-						} else {
-							if (temp.length < 4) {
-								temp = temp + "00";
-							}
-							payloadIntermediate += `;cePayload += "${prefix}${temp}"`;
+				if (!argValue) {
+					return;
+				}
+				const argHex = asciiToHex(argValue);
+				let payloadParts = [`;cePayload += "${prefix}0106"`];
+				for (let i = 0; i < argHex.length; i = i + 4) {
+					let temp = argHex.substr(i, 4).toString(16);
+					if (argHex.length % 2 !== 0) {
+						payloadParts.push(`;cePayload += "${prefix}${temp}00"`);
+					} else {
+						if (temp.length < 4) {
+							temp = temp + "00";
 						}
+						payloadParts.push(`;cePayload += "${prefix}${temp}"`);
 					}
-					payloadIntermediate += `;cePayload += "${prefix}0207";`;
 				}
-			}
-
-			function generateRandomHex(length) {
-				let result = "";
-				const characters = '0123456789ABCDEF';
-				for (let i = 0; i < length; i++) {
-					result += characters[Math.floor(Math.random() * characters.length)];
-				}
-				return result;
-			}
-
-			function generateRandomWords() {
-				const wordCount = Math.floor(Math.random() * 4) + 2;
-				let randomWords = [];
-				for (let i = 0; i < wordCount; i++) {
-					const wordLength = Math.floor(Math.random() * 7) + 1;
-					let word = '';
-					for (let j = 0; j < wordLength; j++) {
-						if (j === 0) {
-							word += String.fromCharCode(Math.floor(Math.random() * 26) + 65);
-						} else {
-							word += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
-						}
-					}
-					randomWords.push(word);
-				}
-				const suffixes = [', Inc.', 'Ltd.', 'Pty.', 'LLC', 'Corp.', 'Co.'];
-				const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-				return randomWords.join(' ') + suffix;
+				payloadParts.push(`;cePayload += "${prefix}0207"`);
+				payloadIntermediate += payloadParts.join('');
 			}
 
 			function handleKeyloggerCommands(args) {
-				console.log(args);
 				if (args[0] != undefined) {
-					let mode = "02"; // Default mode
+					let mode = "02";
 					if (args[1] != undefined && args[1].toUpperCase() == "HID") {
 						mode = "01";
 					}
@@ -3829,11 +3850,12 @@
 			}
 
 			function handleUsbJigglerCommands(cmd, args) {
-				if (cmd == "USB") {
-					prefix = "10";
-				} else if (cmd == "JIGGLER") {
-					prefix = "11";
+				let prefix = commandPrefixes[cmd];
+				if (!prefix) {
+					console.error(`Invalid command: ${cmd}`);
+					return;
 				}
+
 				switch (args[0].toUpperCase()) {
 					case 'ON':
 					case '1':
@@ -3850,96 +3872,69 @@
 			}
 
 			function handleMouseCommands(args) {
-				if (args[0].toUpperCase() == 'MOVE') {
-					if (Number.isNaN(parseInt(args[1])) == false && Number.isNaN(parseInt(args[2])) == false) {
-						let x = Math.abs(parseInt(args[1]));
-						let y = Math.abs(parseInt(args[2]));
-						let xPrefix = "";
-						let yPrefix = "";
-						if (args[1][0] == '-') {
-							xPrefix = "04";
-						} else {
-							xPrefix = "03";
-						}
-						if (args[2][0] == '-') {
-							yPrefix = "04";
-						} else {
-							yPrefix = "03";
-						}
-						if (x > 100) {
-							while (x > 100) {
-								payloadIntermediate += `;cePayload += "${xPrefix}" + toHex(99) + toHex(0);`;
-								x -= 100;
-							}
-						}
-						xx = toHex(parseInt(x));
-						payloadIntermediate += `;cePayload += "${xPrefix}" + ${xx} + toHex(0);`;
-						if (y > 100) {
-							while (y > 100) {
-								payloadIntermediate += `;cePayload += "${yPrefix}" + toHex(0) + toHex(99);`;
-								y -= 100;
-							}
-						}
-						yy = toHex(parseInt(y));
-						payloadIntermediate += `;cePayload += "${yPrefix}" + toHex(0) + ${yy};`;
+				const command = args[0].toUpperCase();
+				const direction = {
+					"-": "04",
+					"+": "03"
+				};
+
+				function updatePayload(prefix, value) {
+					while (value > 100) {
+						payloadIntermediate += `;cePayload += "${prefix} + toHex(99) + toHex(0)";`;
+						value -= 100;
 					}
-				} else if (args[0].toUpperCase() == 'CLICK') {
-					const mouseButtonID = toHex(parseInt(args[1]));
-					if (Number.isNaN(parseInt(args[1])) == false) {
+					payloadIntermediate += `;cePayload += "${prefix} + toHex(0) + ${toHex(value)}";`;
+				}
+
+				if (command === 'MOVE') {
+					const x = Math.abs(parseInt(args[1]));
+					const y = Math.abs(parseInt(args[2]));
+					if (!Number.isNaN(x) && !Number.isNaN(y)) {
+						const xPrefix = direction[Math.sign(args[1])];
+						const yPrefix = direction[Math.sign(args[2])];
+						updatePayload(xPrefix, x);
+						updatePayload(yPrefix, y);
+					}
+				} else if (command === 'CLICK') {
+					const mouseButtonID = parseInt(args[1]);
+					if (!Number.isNaN(mouseButtonID)) {
 						payloadIntermediate += `;cePayload += "05000" + ${toHex(mouseButtonID)};`;
 					}
 				}
 			}
 
-			function handleRandomCommands(cmd) {
-				const commandToCharactersMap = {
-					RANDOM_LOWERCASE_LETTER: 'abcdefghijklmnopqrstuvwxyz',
-					RANDOM_UPPERCASE_LETTER: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-					RANDOM_LETTER: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-					RANDOM_NUMBER: '0123456789',
-					RANDOM_SPECIAL: '!@#$%^&*()',
-					RANDOM_CHAR: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()',
-				};
-
-				const randomCharacters = commandToCharactersMap[cmd];
-
-				if (randomCharacters) {
-					const selected = randomCharacters.charAt(Math.floor(Math.random() * randomCharacters.length));
-					payloadIntermediate += `;cePayload += ceBuildPayload("${selected}");`;
-				}
-			}
-
 			function handleSelfDestructCommands(args) {
-				if (args == 1 || args == '') {
-					logger.sendMessage(`INFO`, 'Self Destruct is running. Full Erase');
-					payloadIntermediate += `;cePayload += "130000";`;
-				} else if (args == 2) {
-					logger.sendMessage(`INFO`, 'Self Destruct is running. Data Passthrough');
-					payloadIntermediate += `;cePayload += "140000";`;
+				const payloadCommands = {
+					'1': '130000',
+					'2': '140000'
+				};
+				const messages = {
+					'1': 'Full Erase',
+					'2': 'Data Passthrough'
+				};
+				if (args in payloadCommands) {
+					logger.sendMessage('INFO', `Self Destruct is running. ${messages[args]}`);
+					payloadIntermediate += `;cePayload += "${payloadCommands[args]}";`;
 				} else {
-					logger.sendMessage(`INFO`, 'Self Destruct was not run due to invalid parameter.');
+					logger.sendMessage('INFO', 'Self Destruct was not run due to invalid parameter.');
 				}
 			}
 
 			function handleDelayCommands(args) {
-				iDelay = args[0];
-				iDelay /= 10;
-				let bDelay = false;
-				if (typeof iDelay !== 'number') {
+				let iDelay = parseInt(args[0]) / 10;
+
+				if (Number.isNaN(iDelay)) {
+					logger.sendMessage('INFO', `ERROR: DELAY VALUE IS NOT AN INTEGER`);
 					bRunPayload = false;
-					logger.sendMessage(`INFO`, 'ERROR: DELAY VALUE IS NOT AN INTEGER');
-				} else {
-					if (iDelay > 65535) {
-						while (iDelay > 65535) {
-							if (!bDelay) {
-								payloadIntermediate += `;cePayload += "1DFFFF";`;
-								bDelay = true;
-							}
-							iDelay -= 65535;
-						}
-					}
-					payloadIntermediate += `;cePayload += "1D${toHex(iDelay, 4)}";`;
+					return;
 				}
+
+				while (iDelay > 65535) {
+					payloadIntermediate += `;cePayload += "1DFFFF";`;
+					iDelay -= 65535;
+				}
+
+				payloadIntermediate += `;cePayload += "1D${toHex(iDelay, 4)}";`;
 			}
 
 			function handleDuckyLangCommands(args) {
@@ -4011,58 +4006,57 @@
 					iModify |= mod;
 					payloadIntermediate += `;cePayload += "01${toHex(iModify)}${hid}"`;
 				} else {
+					logger.sendMessage(`INFO`, `Payload Compile Failed: Unrecognized argument (${words[0]})`);
 					throw new Error(`Unrecognized argument (${words[0]})`);
 				}
 				return payloadIntermediate;
 			}
 
-			function compile_duckyscript(script) {
-				logger.sendMessage('INFO', 'Compile Started');
-				logger.sendMessage('CRIT', `compile_duckyscript: [script]:[${script}]`);
-
-				const scriptLines = script.split('\n');
-				let errorCount = 0;
-				const errors = [];
-
-				const compiledJsArray = scriptLines.map(line => {
-					line = line.trim();
-					if (!line) return;
-
-					const [command, ...args] = line.split(' ');
-					let finalLine = '';
-
-					if (command === "REPEAT") {
-						const [repeatCount, repeatCommand, ...repeatArgs] = args;
-						finalLine = Array.from({
-							length: repeatCount
-						}, () => compile_line(repeatCommand, repeatArgs)).join('\n');
-					} else {
-						finalLine = compile_line(command, args);
-					}
-
-					if (finalLine.length === 1 && command !== 'DUCKY_LANG') {
-						finalLine = ';';
-						errorCount++;
-						errors.push(line);
-					}
-
-					return `${finalLine}\n`;
-				});
-
-				let compiledJs = compiledJsArray.join('');
-
-				if (errorCount > 1 || compileFailed === "1") {
-					bRunPayload = false;
-					errors.pop();
-					logger.sendMessage('INFO', `! ERROR: ${String(errorCount - 1)} ERRORS FOUND`);
-
-					errors.forEach((errorLine, i) => {
-						const lineNumber = scriptLines.findIndex(scriptLine => errorLine === scriptLine) + 1;
-						logger.sendMessage('INFO', `! ERROR: SCRIPT SYNTAX ERROR ON LINE: ${String(lineNumber)}: ${String(errorLine)}`);
-					});
+			function generateRandomHex(length) {
+				let result = "";
+				const characters = '0123456789ABCDEF';
+				for (let i = 0; i < length; i++) {
+					result += characters[Math.floor(Math.random() * characters.length)];
 				}
+				return result;
+			}
 
-				return compiledJs.replace(/;\n,/g, '').split(';,').join().replace(/,;/g, ';');
+			function generateRandomWords() {
+				const wordCount = Math.floor(Math.random() * 4) + 2;
+				let randomWords = [];
+				for (let i = 0; i < wordCount; i++) {
+					const wordLength = Math.floor(Math.random() * 7) + 1;
+					let word = '';
+					for (let j = 0; j < wordLength; j++) {
+						if (j === 0) {
+							word += String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+						} else {
+							word += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+						}
+					}
+					randomWords.push(word);
+				}
+				const suffixes = [', Inc.', ' Ltd.', ' Pty.', ' LLC', ' Corp.', ' Co.'];
+				const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+				return randomWords.join(' ') + suffix;
+			}
+
+			function handleRandomCommands(cmd) {
+				const commandToCharactersMap = {
+					RANDOM_LOWERCASE_LETTER: 'abcdefghijklmnopqrstuvwxyz',
+					RANDOM_UPPERCASE_LETTER: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+					RANDOM_LETTER: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+					RANDOM_NUMBER: '0123456789',
+					RANDOM_SPECIAL: '!@#$%^&*()',
+					RANDOM_CHAR: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()',
+				};
+
+				const randomCharacters = commandToCharactersMap[cmd];
+
+				if (randomCharacters) {
+					const selected = randomCharacters.charAt(Math.floor(Math.random() * randomCharacters.length));
+					payloadIntermediate += `;cePayload += ceBuildPayload("${selected}");`;
+				}
 			}
 
 			return {
@@ -4079,6 +4073,7 @@
 				apiResponsePayloadLoad,
 				apiResponsePayloadSave,
 				apiResponseStatusBootSlot,
+				generateRandomWords
 			};
 		})();
 
@@ -4137,7 +4132,7 @@
 					'keylogger-NextReportID': data.slice(0, 8),
 				};
 
-				document.getElementById('footerNavKeylogStatus').classList.toggle('buttonSelected', keylogValues['keylogger-Status'] === '01');
+				toggleClassBasedOnStatus('footerNavKeylogStatus', 'buttonSelected', keylogValues['keylogger-Status'], "01");
 			}
 
 			function setElementValue(id, value) {
@@ -4153,9 +4148,12 @@
 			function updateKeylogStatus(keylogValues) {
 				const spaceUsedDecimal = parseInt(keylogValues[ELEMENT_IDS.KEYLOGGER_SPACE_USED], 16);
 				const spaceFreeDecimal = parseInt(keylogValues[ELEMENT_IDS.KEYLOGGER_SPACE_FREE], 16);
-				const keylogStoragePercent = ((spaceUsedDecimal / spaceFreeDecimal) * 100).toFixed(0) + '%';
+				let keylogStoragePercent = ((spaceUsedDecimal / spaceFreeDecimal) * 100).toFixed(0) + '%';
+				if (keylogStoragePercent == "0%") {
+					keylogStoragePercent = "0.2%";
+				}
 
-				document.getElementById('footerNavKeylogStatus').classList.toggle('buttonSelected', keylogValues['keylogger-Status'] === '01');
+				toggleClassBasedOnStatus('footerNavKeylogStatus', 'buttonSelected', keylogValues['keylogger-Status'], "01");
 				document.getElementById('keylogStartButton').innerHTML = keylogValues['keylogger-Status'] === '01' ? 'Stop' : 'Start';
 				// document.getElementById('toggle-keyloggingMode').classList.toggle('active', keylogValues['keylogger-CaptureMode'] === '02');
 				document.getElementById('keylogStorageUsedBar').style.width = keylogStoragePercent;
@@ -4201,7 +4199,7 @@
 				const spaceFreeDecimal = parseInt(keylogValues['keylogger-SpaceFree'], 16);
 				const keylogStoragePercent = ((spaceUsedDecimal / spaceFreeDecimal) * 100).toFixed(0) + '%';
 
-				document.getElementById('footerNavKeylogStatus').classList.toggle('buttonSelected', keylogValues['keylogger-Status'] === '01');
+				toggleClassBasedOnStatus('footerNavKeylogStatus', 'buttonSelected', keylogValues['keylogger-Status'], "01");
 				document.getElementById('keylogStartButton').innerHTML = keylogValues['keylogger-Status'] === '01' ? 'Stop' : 'Start';
 				// document.getElementById('toggle-keyloggingMode').classList.toggle('active', keylogValues['keylogger-CaptureMode'] === '02');
 				document.getElementById('keylogStorageUsedBar').style.width = keylogStoragePercent;
@@ -5222,14 +5220,16 @@
 			}
 
 			function addGlobalKeysToHelpMenuItems(keymapGlobalArray) {
-				keymapGlobalArray.forEach(([_, value]) => {
-					helpMenuItems.push({
-						"feat": "globalKeys",
-						"name": value,
-						"desc": `Use the ${value} key`,
-						"code": [{
-							example: value
-						}],
+				keymapGlobalArray.forEach((valueArray, key) => {
+					valueArray.forEach(value => {
+						helpMenuItems.push({
+							"feat": "globalKeys",
+							"name": value,
+							"desc": `Use the ${value} key`,
+							"code": [{
+								example: value
+							}],
+						});
 					});
 				});
 			}
@@ -5499,9 +5499,13 @@
 				[0x4c, "DELETE"],
 				[0x4d, "END"],
 				[0x4e, "PAGEDOWN"],
+				[0x4f, "RIGHT"],
 				[0x4f, "RIGHTARROW"],
+				[0x50, "LEFT"],
 				[0x50, "LEFTARROW"],
+				[0x51, "DOWN"],
 				[0x51, "DOWNARROW"],
+				[0x52, "UP"],
 				[0x52, "UPARROW"],
 				[0x53, "NUMLOCK"],
 				[0x54, "KPAD_SLASH"],
@@ -5870,8 +5874,16 @@
 			}
 
 			function sortedKeymapGlobalArray() {
-				const keymapGlobalArray = keymapGlobal.slice().sort((a, b) => a[0] - b[0]);
-				return keymapGlobalArray.map(([key, value]) => [key.toString(16), [value]]);
+				const keymapGlobalMap = new Map();
+				keymapGlobal.forEach(([key, value]) => {
+					key = key.toString(16);
+					if (keymapGlobalMap.has(key)) {
+						keymapGlobalMap.get(key).push(value);
+					} else {
+						keymapGlobalMap.set(key, [value]);
+					}
+				});
+				return new Map([...keymapGlobalMap.entries()].sort());
 			}
 
 			var modifiersInverted = {
@@ -6004,6 +6016,18 @@
 			function keyToHidMapping(key) {
 				if (key === " " || key === " ") {
 					key = "SPACE";
+				}
+				if (key === "DOWN" || key === "DOWNARROW") {
+					key = "DOWNARROW";
+				}
+				if (key === "UP" || key === "UPARROW") {
+					key = "UPARROW";
+				}
+				if (key === "LEFT" || key === "LEFTARROW") {
+					key = "LEFTARROW";
+				}
+				if (key === "RIGHT" || key === "RIGHTARROW") {
+					key = "RIGHTARROW";
 				}
 				const mappedKey = keymapInverted[key];
 				if (key === "102nd" || key === "102ND") {
@@ -6200,6 +6224,27 @@
 			clearTimeout(tooltipTimeout);
 
 			if (!pattern.test(input.value)) {
+				input.classList.add('glowing-effect');
+				tooltipText.textContent = input.title;
+				tooltipText.style.visibility = 'visible';
+				tooltipTimeout = setTimeout(() => {
+					tooltipText.style.visibility = 'hidden';
+				}, 30000);
+			} else {
+				input.classList.remove('glowing-effect');
+				tooltipText.textContent = '';
+				tooltipText.style.visibility = 'hidden';
+			}
+		}
+
+		function checkInputList(input, field, dataListId) {
+			var dataList = document.getElementById(dataListId);
+			var tooltipText = document.getElementById(field);
+
+			clearTimeout(tooltipTimeout);
+			var options = Array.from(dataList.options).map(opt => opt.value);
+
+			if (!options.includes(input.value)) {
 				input.classList.add('glowing-effect');
 				tooltipText.textContent = input.title;
 				tooltipText.style.visibility = 'visible';

@@ -17,9 +17,6 @@ SESSION_LIFESPAN = 120
 serverPort = 8000
 adminPort = 8080
 
-# Provisioning Example:
-# python3 ./c2Server.py provision cableOne 60 10 120 cableTwo 30 5 300
-
 def get_ip_address():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
