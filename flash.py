@@ -270,7 +270,7 @@ class omg_results():
         self.WIFI_DEFAULTS = False
         self.WIFI_SSID = "O.MG"
         self.WIFI_PASS = "12345678"
-        self.WIFI_MODE = "1"
+        self.WIFI_MODE = "2"
         self.WIFI_TYPE = "STATION"
         self.FILE_PAGE = "page.mpfs"
         self.FILE_INIT = "esp_init_data_default_v08.bin"
@@ -278,9 +278,9 @@ class omg_results():
         self.FILE_ELF1 = "image.elf-0x10000.bin"
         self.FILE_BLANK = "blank.bin"
         self.FILE_OFAT_INIT = "blank-settings.bin"
-        self.FLASH_SLOTS = 0
-        self.FLASH_PAYLOAD_SIZE = 1
-        self.NUMBER_SLOTS = 7
+        self.FLASH_SLOTS = 4
+        self.FLASH_PAYLOAD_SIZE = 60
+        self.NUMBER_SLOTS = 50
 
 def get_dev_info(dev):
     esp = flashapi.ESP8266ROM(dev, baudrate, None)
@@ -588,7 +588,7 @@ def omg_reset_settings():
         print("Warning: Unable to reset " + FILE_INIT)
 
 
-def omg_patch(_ssid, _pass, _mode, slotsize=0, percent=30):
+def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
     FILE_INIT = results.FILE_OFAT_INIT
 
     init_cmd = "INIT;"
@@ -601,16 +601,15 @@ def omg_patch(_ssid, _pass, _mode, slotsize=0, percent=30):
         init_cmd+="S:{KEY}{SEP}{VALUE};".format(SEP="=", KEY=config,VALUE=value)
     #  once booted we know more, this is a sane default for now
     # if we set this to %f we can actually erase and allocate at once
-    if slotsize>0 :
-        init_cmd += "F:keylog=0;F:payload1=0;F:payload2=0;F:payload3=0;F:payload4=0;F:payload5=0;F:payload6=0;F:payload7=0;"
-        ns = floor(((250*4)*(percent*.01))/(slotsize*4))
-        print(f"[If Applicable] Number of Slots: {ns} with size {slotsize*4}k each")
+    if slotsize>0:
+        init_cmd += "F:keylog=0;F:payload1=0;F:payload2=0;F:payload3=0;F:payload4=0;F:payload5=0;F:payload6=0;F:payload7=0;F:bootscript=4;F:hidxfile=16;"
+        ns = floor(((360*4)*(percent*.01))/(slotsize*4))
+        print(f"[If Applicable] Number of Slots: {ns} with size {slotsize*4}k each based on {percent}% for payload slots")
         results.NUMBER_SLOTS = ns
         for i in range(1,ns+1):
             init_cmd+="f{SEP}payload{COUNT}={SLOT};".format(SEP=":", COUNT=i, SLOT=int(slotsize))
-        init_cmd += "f{SEP}keylog=100%;".format(SEP=":")   
+        init_cmd += "f{SEP}keylog=100%F;".format(SEP=":")   
     init_cmd += "\0"
-
     try:
         with open(FILE_INIT,'wb') as f:
             length = len(init_cmd)
@@ -629,7 +628,8 @@ def omg_input():
     while not SANITIZED_SELECTION:
 
         try:
-            WIFI_MODE = input("\nSELECT WIFI MODE\n1: STATION - (Connect to existing network. 2.4GHz)\n2: ACCESS POINT - (Create SSID. IP: 192.168.4.1)\n")
+            notemsg = "Hitting enter without an option will default to AP Mode with SSID: %s Pass: %s"%(results.WIFI_SSID,results.WIFI_PASS)
+            WIFI_MODE = input("\nSELECT WIFI MODE\n1: STATION - (Connect to existing network. 2.4GHz)\n2: ACCESS POINT - (Create SSID. IP: 192.168.4.1)\n[%s]\n"%notemsg)
             if WIFI_MODE == '' or WIFI_MODE == '1' or WIFI_MODE == '2':
                 SANITIZED_SELECTION = True
         except:
@@ -675,10 +675,10 @@ def omg_input():
         
     # enable to let user customize on plus an elite devices
     # beta feature
-    PROMPT_FLASH_CUSTOMIZE = False 
+    PROMPT_FLASH_CUSTOMIZE = True 
     FLASH_CUSTOMIZE = 0
-    FLASH_SIZE = 0
-    FLASH_PAYLOAD_PERCENT = 40
+    FLASH_SIZE = 4
+    FLASH_PAYLOAD_PERCENT = 60
     SANITIZED_SELECTION = False
     if PROMPT_FLASH_CUSTOMIZE:
         while not SANITIZED_SELECTION:
@@ -706,10 +706,12 @@ def omg_input():
         SANITIZED_SELECTION=False
         while not SANITIZED_SELECTION:
             try:
-                CUST_INPUT = int(str(input("\nENTER PAYLOAD SLOT SIZE [In 4k chunks]: ")).lower().replace("%",""))
+                CUST_INPUT = int(str(input("\nENTER PAYLOAD SLOT SIZE [Divisible By 4 between  4K and Max 32K]: ")).lower().replace("%","").replace("k",""))
                 if (CUST_INPUT%4)==0:
                     FLASH_SIZE=(CUST_INPUT)/4
                     SANITIZED_SELECTION=True
+                    if(CUST_INPUT>(360*4)):
+                       print(f"{CUST_INPUT} is greater then the max size available.")
                     break
                 else:
                     print(f"\n{CUST_INPUT} is not divisible by 4, try again. Note: Default is 4k")
