@@ -1117,7 +1117,7 @@
 		dialog {
 			width: 60%;
 			height: fit-content;
-			background: var(--bgColor3);
+			background: #111;
 			color: var(--navColor);
 			border-radius: 10px;
 			border-color: var(--bgColor2);
@@ -1131,6 +1131,35 @@
 			background: transparent;
 			font-size: 20px;
 			cursor: pointer;
+		}
+
+		#color-container {
+			position: relative;
+			width: 100%;
+			height: 40px;
+		}
+
+		#color-slider {
+			position: absolute;
+			top: 12px;
+			width: 200px;
+			margin: 0;
+			z-index: 1;
+		}
+
+		#color-box {
+			position: absolute;
+			top: 10px;
+			width: 200px;
+			height: 20px;
+			background: linear-gradient(to right, hsl(0, 70%, 50%), hsl(120, 70%, 50%), hsl(240, 70%, 50%), hsl(359, 70%, 50%));
+			border-radius: 10px;
+		}
+
+		#apply-color {
+			position: absolute;
+			top: 0px;
+			right: 20px;
 		}
 
 		@media (max-width:700px) {
@@ -1443,7 +1472,11 @@
 						<option value="maroon">Maroon</option>
 						<option value="brown">Brown</option>
 						<option value="grey">Grey</option>
-					</select> <label for="debugLevel">Log Level</label> <select name="debugLevel" id="debugLevel">
+						<option id="uicolorCustom" value="custom">Custom</option>
+					</select> <label for="uiAccentColor">Custom Color</label>
+					<div id="color-container"><span><input type="range" id="color-slider" min="0" max="360" value="0">
+							<div id="color-box"></div>
+						</span><span><button id="apply-color">Save</button></span></div><label for="debugLevel">Log Level</label> <select name="debugLevel" id="debugLevel">
 						<option value="NONE">NONE</option>
 						<option value="INFO">INFO</option>
 						<option value="WARN">WARN</option>
@@ -1792,6 +1825,22 @@
 					payload.payloadCompile('eval');
 				}, 10000);
 			});
+
+			const colorSlider = document.querySelector("#color-slider");
+			const colorBox = document.querySelector("#color-box");
+			const applyButton = document.querySelector("#apply-color");
+
+			colorSlider.addEventListener("input", function() {
+				const hue = colorSlider.value;
+				colorBox.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+				setAccentColors(hue);
+			});
+
+			applyButton.addEventListener("click", function() {
+				console.log(`HSL: ${colorSlider.value}, 100%, 50%`);
+				connect.sendMessage(`CTSet\tuicolor\t${colorSlider.value}`);
+			});
+
 		});
 		document.onvisibilitychange = function() {
 			logger.sendMessage(`WARN`, `Browser Visibility Change Detected: [visibilityState]:[${document.visibilityState}]`);
@@ -1961,9 +2010,19 @@
 		}
 
 		function setAccentColors(hue) {
-			const hslHue = colorNameToHue(hue);
+			console.log(hue);
 			const uiAccentColorMenuSelect = document.getElementById('uiAccentColor');
 			const r = document.querySelector(':root');
+			console.log(hue);
+
+			if (!isNaN(hue) && hue >= 0 && hue <= 360) {
+				hslHue = hue;
+				customColor = true;
+			} else {
+				hslHue = colorNameToHue(hue);
+				customColor = false;
+			}
+			console.log(hue);
 
 			if (hue == "grey") {
 				hslSat = "0";
@@ -1977,7 +2036,11 @@
 			r.style.setProperty('--accentGradient1', `hsl(${hslHue}, ${hslSat}%, 23%)`);
 			r.style.setProperty('--accentGradient2', `hsl(${hslHue}, ${hslSat}%, 41%)`);
 
-			if (uiAccentColorMenuSelect) {
+			if (uiAccentColorMenuSelect && customColor == false) {
+				uiAccentColorMenuSelect.value = hue;
+			} else {
+				customColor = document.getElementById('uicolorCustom');
+				customColor.value = hue;
 				uiAccentColorMenuSelect.value = hue;
 			}
 		}
@@ -2611,6 +2674,10 @@
 					if (keyActions[key] === 'color') {
 						setAccentColors(elementValue);
 						uicolorExists = true;
+						customColor = document.getElementById('uicolorCustom');
+						customColor.value = elementValue;
+						customColorSlider = document.getElementById('color-slider');
+						customColorSlider.value = elementValue;
 					}
 
 					if (keyActions[key] == 'slotmode') {
@@ -2913,10 +2980,10 @@
 						createDialog({
 							id: 'calibrationerror',
 							title: 'Calibration Error',
-							description: `Device calibration not compatible with v2 firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Calibration-Upgrade">Calibration-Upgrade Instructions</a><br /><br />
+							description: `Device calibration not compatible with v2 or later firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Calibration-Upgrade">Calibration-Upgrade Instructions</a><br /><br />
 							<h2>Generate Hardware Profile</h2>
-							<button class="submitButton" id="sidebar_settings_debug_CPStart" onclick="connect.sendMessage('CPStart'); connect.sendMessage('CPGet'); this.remove();">Generate Hardware Profile</button><br />
-							<div id="calibrationStatusViewer"></div>
+							<button class="submitButton" id="sidebar_settings_debug_CPStart" onclick="connect.sendMessage('CPStart'); connect.sendMessage('CPGet'); this.remove();">Generate Hardware Profile</button>
+							<div id="calibrationStatusViewer"><br /><button class="submitButton" id="calibrationErrorDownloadButton" onclick="downloadFrontendlog();">Download Frontend Log</button></div>
 							<form>
 								<h2>Apply Calibration File:</h2>
 								<input type="file" id="calibration" name="calibration" accept=".cal" onchange="calibration.readCalibrationText(event)">
