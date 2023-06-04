@@ -500,7 +500,7 @@
 		}
 
 		#ico_payload {
-			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 37.04' fill='white'><path d='m37.04,24.46v5c0,2.09-.74,3.87-2.22,5.35-1.48,1.48-3.27,2.22-5.35,2.22H7.58c-2.09,0-3.87-.74-5.35-2.22-1.48-1.48-2.22-3.27-2.22-5.35V7.58c0-2.09.74-3.87,2.22-5.35C3.7.74,5.49,0,7.58,0h21.89c1.1,0,2.13.22,3.08.66.26.12.42.32.47.61.05.3-.03.55-.24.76l-1.29,1.29c-.25.25-.53.32-.84.21-.4-.11-.8-.16-1.18-.16H7.58c-1.16,0-2.15.41-2.97,1.24-.82.82-1.24,1.82-1.24,2.97v21.89c0,1.16.41,2.15,1.24,2.97.82.82,1.82,1.24,2.97,1.24h21.89c1.16,0,2.15-.41,2.97-1.24.82-.82,1.24-1.82,1.24-2.97v-3.31c0-.23.08-.42.24-.58l1.68-1.68c.26-.26.57-.32.92-.18.35.14.53.39.53.76h0Z'/><path style='fill: white' d='m39.66,9.48l-3.2-3.2c-.46-.46-1.26-.46-1.83,0l-1.49,1.49,5.04,5.04,1.49-1.49c.46-.46.46-1.26,0-1.83h0Z'/><path style='fill: cls-1' d='m16.5,24.43l14.08-14.08,5.02,5.02-14.08,14.08-5.02-5.02Z'/><path style='fill: white' d='m38.17,12.84l-2.51,2.51-5.02-5.02,2.51-2.51,5.02,5.02Z'/><path style='fill: white' d='m16.53,24.47l-1.72,6.64,6.64-1.72-4.92-4.92Z'/><path style='fill: white' d='m15.62,27.68l-.8,3.43,3.43-.8-2.63-2.63Z'/></svg>");
+			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' xml:space='preserve' fill='white' viewBox='0 0 512 512'><path d='M432 448H189c-5-14-15-24-29-29V80c0-4-2-8-5-11L91 5a16 16 0 00-22 22l59 60v332a48 48 0 1061 61h243a16 16 0 000-32zm-288 32a16 16 0 110-32 16 16 0 010 32z'/><path d='M400 256h-64v64h-64v-64h-64c-9 0-16 7-16 16v128l16 16h192c9 0 16-7 16-16V272c0-9-7-16-16-16zM336 128h-48v32h-32v-32h-48c-9 0-16 7-16 16v80h160v-80c0-9-7-16-16-16z'/></svg>");
 		}
 
 		#ico_keylog {
@@ -1374,7 +1374,7 @@
 				</div>
 				<div id="c2-Settings" class="c2">
 					<h3>C2 Settings</h3>
-					<p>C2 is currently in beta. Click <a href="https://github.com/O-MG/O.MG-Firmware/wiki#c2server">https://github.com/O-MG/O.MG-Firmware/wiki#c2server</a> to learn more.</p><label for="c2config">C2 Config - <span id="c2configApplied"></span></label> <input type="text" id="c2config" name="c2config" spellcheck="false"> <button id="update-C2Settings" class="submitButton" onclick="c2.updateC2Settings()">Change Settings</button>
+					<p>C2 is currently in beta. Click <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Elite-Early-Access#c2">https://github.com/O-MG/O.MG-Firmware/wiki/Elite-Early-Access#c2</a> to learn more.</p><label for="c2config">C2 Config - <span id="c2configApplied"></span></label> <input type="text" id="c2config" name="c2config" spellcheck="false"> <button id="update-C2Settings" class="submitButton" onclick="c2.updateC2Settings()">Change Settings</button>
 					<div class="button-container"><label for="c2status">C2</label>
 						<div id="c2status" class="toggle-button" onclick="document.getElementById(`c2status`).classList.toggle('active'); if(this.classList.contains('active')) { connect.sendMessage(`C2Start`) } else { connect.sendMessage(`C2Stop`); };">
 							<div class="inner-circle"></div>
