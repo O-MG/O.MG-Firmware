@@ -249,6 +249,17 @@
 			margin-left: auto;
 		}
 
+		.statusLightActive {
+			margin-left: 10px;
+			width: 10px;
+			height: 10px;
+			background-color: var(--accentColor);
+			border-radius: 50%;
+			box-shadow: 5 5 5 5 var(--inactiveColor);
+			transform: scale(1);
+			animation: pulse 2s infinite;
+		}
+
 		#navbar-wifiIcon {
 			position: relative;
 			left: 10px;
@@ -340,7 +351,7 @@
 		#payloadStorage,
 		#payloadRun {
 			position: relative;
-			padding-left: 10px;
+			padding-left: 11px;
 			padding-top: 0;
 			margin-top: -2px;
 			border-left-width: 4px;
@@ -628,6 +639,12 @@
 			background-color: var(--inactiveGradient2);
 			border-top-left-radius: 10px;
 			border-top-right-radius: 10px;
+			background-image: -webkit-linear-gradient(top, var(--inactiveGradient1), var(--inactiveGradient2));
+			background-image: -moz-linear-gradient(top, var(--inactiveGradient1), var(--inactiveGradient2));
+			background-image: -ms-linear-gradient(top, var(--inactiveGradient1), var(--inactiveGradient2));
+			background-image: -o-linear-gradient(top, var(--inactiveGradient1), var(--inactiveGradient2));
+			background-image: linear-gradient(to bottom, var(--inactiveGradient1), var(--inactiveGradient2));
+
 		}
 
 		#fileMenuFlex {
@@ -1200,6 +1217,23 @@
 			}
 		}
 
+		@keyframes pulse {
+			0% {
+				transform: scale(0.95);
+				box-shadow: 0 0 0 0 var(--accentColor);
+			}
+
+			70% {
+				transform: scale(0.80);
+				box-shadow: 0 0 0 3px var(--accentGradient2);
+			}
+
+			100% {
+				transform: scale(0.95);
+				box-shadow: 0 0 0 0 var(--accentColor);
+			}
+		}
+
 		.tooltip,
 		.input-wrapper {
 			position: relative;
@@ -1306,7 +1340,7 @@
 			<div id="navbar-Links"><a id="navbar-Links-settings" data-target="#modal-settings" href="#" onclick="sidebarAreaToggle('settings')"><svg id="ico_settings" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg> <span class="navLabel">SETTINGS</span> </a><a id="navbar-Links-about" data-target="#modal-about" href="#" onclick="sidebarAreaToggle('about')"><svg id="ico_about" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg> <span class="navLabel">ABOUT</span> </a><a id="navbar-Links-help" data-target="#modal-help" href="#" onclick="sidebarAreaToggle('help')"><svg id="ico_help" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg> <span class="navLabel">HELP</span></a></div>
 		</div>
 	</nav>
-	<div id="subnav" class="subnav"><button id="contentSubNav_syslog" onclick="contentAreaToggle('syslog')"><svg id="ico_syslog" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>log</span></button> <button id="contentSubNav_c2log" onclick="contentAreaToggle('c2log')" class="hidden"><svg id="ico_syslog" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>c2log</span></button> <button id="contentSubNav_keylog" class="keylog hidden" onclick="contentAreaToggle('keylog')"><svg id="ico_keylog" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Keylog</span></button> <button id="contentSubNav_payload" onclick="contentAreaToggle('payload')" class="buttonSelected hidden"><svg id="ico_payload" xmlns="http://www.w3.org/2000/svg" data-keyloggingOn height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Payload</span></button> <button id="contentSubNav_debug" class="hidden" onclick="contentAreaToggle('debug')">Debug</button></div>
+	<div id="subnav" class="subnav"><button id="contentSubNav_syslog" onclick="contentAreaToggle('syslog')"><svg id="ico_syslog" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>log</span><span id="syslogStatusLight">&nbsp;</span></button> <button id="contentSubNav_c2log" onclick="contentAreaToggle('c2log')" class="hidden"><svg id="ico_syslog" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>c2log</span><span id="c2logStatusLight">&nbsp;</span></button> <button id="contentSubNav_keylog" class="keylog hidden" onclick="contentAreaToggle('keylog')"><svg id="ico_keylog" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Keylog</span><span id="keylogStatusLight">&nbsp;</span></button> <button id="contentSubNav_payload" onclick="contentAreaToggle('payload')" class="buttonSelected hidden"><svg id="ico_payload" xmlns="http://www.w3.org/2000/svg" data-keyloggingOn height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Payload</span><span id="payloadStatusLight">&nbsp;</span></button> <button id="contentSubNav_debug" class="hidden" onclick="contentAreaToggle('debug')">Debug</button></div>
 	<div id="sidebar" class="hidden">
 		<div id="sidebar_settings" class="hidden"><button class="close" type="button" onclick="sidebarAreaToggle('close')"><span>&times;</span></button>
 			<h1>Settings</h1>
@@ -1578,7 +1612,7 @@
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230603";
+		frontendVersionNumber = "3.0-230604";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1744,6 +1778,19 @@
 				} else {
 					saveBootableButton.classList.remove('active');
 				}
+			});
+
+			var payloadEditor = document.getElementById('payload');
+			var payloadEditorChangeTimeout = null;
+			payloadEditor.addEventListener('input', function() {
+				if (payloadEditorChangeTimeout) {
+					clearTimeout(payloadEditorChangeTimeout);
+				}
+
+				payloadEditorChangeTimeout = setTimeout(function() {
+					console.log("changed, and presently idle");
+					payload.payloadCompile('eval');
+				}, 10000);
 			});
 		});
 		document.onvisibilitychange = function() {
@@ -2621,10 +2668,15 @@
 			payloadList.innerHTML = "";
 
 			Object.entries(globalJson).forEach(([key, value]) => {
+				const label = document.createElement("label");
+				label.for = key;
+				label.innerText = `cflist: ${key}`;
+
 				const name = document.createElement("input");
 				name.id = key;
 				name.name = parseInt(value[0], 10);
 				name.value = value[1];
+				CFListResults.appendChild(label);
 				CFListResults.appendChild(name);
 				if (key.startsWith("payload")) {
 					const option = document.createElement("option");
@@ -3188,20 +3240,22 @@
 					document.getElementById('payloadRunPercentBar').style.width = payloadRunPercent;
 					document.getElementById('payloadRunPercent').innerHTML = payloadRunPercent;
 
-
 					if (parameters[1] === "Loading" || parameters[1] === "Running") {
 						document.getElementById(`payloadStorage`).classList.add(`hidden`);
 						document.getElementById(`payloadRun`).classList.remove(`hidden`);
+						document.getElementById(`payloadStatusLight`).classList.add(`statusLightActive`);
 						if (!ceStatusInterval) {
 							ceStatusInterval = setInterval(() => {
 								connect.sendMessage("CEStatus");
 							}, 2000);
 						}
 					} else if (parameters[1] === "Idle") {
+						document.getElementById(`payloadStatusLight`).classList.remove(`statusLightActive`);
 						document.getElementById(`payloadStorage`).classList.remove(`hidden`);
 						document.getElementById(`payloadRun`).classList.add(`hidden`);
 						document.getElementById('payloadRunPercentBar').style.width = "0%";
 						document.getElementById('payloadRunPercent').innerHTML = "0%";
+						connect.sendMessage("CLStatus");
 						if (ceStatusInterval) {
 							clearInterval(ceStatusInterval);
 							ceStatusInterval = null;
@@ -3435,6 +3489,7 @@
 					logger.sendMessage("INFO", `! RUNNING PAYLOAD: [${command_line}]`, "! RUNNING PAYLOAD");
 					connect.sendMessage(command_line);
 					connect.sendMessage("CEStatus");
+					connect.sendMessage("CLStatus");
 				} else {
 					compiledBootSlot = "";
 
@@ -4256,6 +4311,8 @@
 
 				toggleClassBasedOnStatus('footerNavKeylogStatus', 'buttonSelected', keylogValues['keylogger-Status'], "01");
 				document.getElementById('keylogStartButton').innerHTML = keylogValues['keylogger-Status'] === '01' ? 'Stop' : 'Start';
+				toggleClassBasedOnStatus('keylogStatusLight', 'statusLightActive', keylogValues['keylogger-Status'], "01");
+
 				// document.getElementById('toggle-keyloggingMode').classList.toggle('active', keylogValues['keylogger-CaptureMode'] === '02');
 				document.getElementById('keylogStorageUsedBar').style.width = keylogStoragePercent;
 				document.getElementById('keylogStoragePercent').innerHTML = keylogStoragePercent;
@@ -4270,10 +4327,12 @@
 
 			function apiResponseCLStop(data) {
 				handleapiResponse(data, ELEMENT_IDS.RESPONSE_CL_STOP, 'buttonSelected');
+				connect.sendMessage("CLStatus");
 			}
 
 			function apiResponseCLStart(data) {
 				handleapiResponse(data, ELEMENT_IDS.RESPONSE_CL_START, 'buttonSelected');
+				connect.sendMessage("CLStatus");
 			}
 
 			function apiResponse(data) {
