@@ -87,7 +87,8 @@
 			-webkit-appearance: none;
 		}
 
-		button:hover {
+		button:hover,
+		.buttonSelectedGrey {
 			background-image: linear-gradient(to bottom, var(--inactiveGradient2), var(--inactiveGradient1));
 			text-decoration: none;
 		}
@@ -624,7 +625,7 @@
 			bottom: 57px;
 			left: 10px;
 			padding: 10px;
-			background-color: var(--bgColor2);
+			background-color: var(--inactiveGradient2);
 			border-top-left-radius: 10px;
 			border-top-right-radius: 10px;
 		}
@@ -775,11 +776,11 @@
 		.buttonRunning,
 		.buttonRunning:hover {
 			background: var(--accentColor);
-			background-image: -webkit-linear-gradient(top, var(--accentGradient2), var(--accentGradient1));
-			background-image: -moz-linear-gradient(top, var(--accentGradient2), var(--accentGradient1));
-			background-image: -ms-linear-gradient(top, var(--accentGradient2), var(--accentGradient1));
-			background-image: -o-linear-gradient(top, var(--accentGradient2), var(--accentGradient1));
-			background-image: linear-gradient(to bottom, var(--accentGradient2), var(--accentGradient1));
+			background-image: -webkit-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
+			background-image: -moz-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
+			background-image: -ms-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
+			background-image: -o-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
+			background-image: linear-gradient(to bottom, var(--accentGradient1), var(--accentGradient2));
 		}
 
 		.buttonSelected:hover,
@@ -1400,9 +1401,13 @@
 						<option value="yellow">Yellow</option>
 						<option value="green">Green</option>
 						<option value="cyan">Cyan</option>
+						<option value="teal">Teal</option>
 						<option value="blue">Blue</option>
 						<option value="purple">Purple</option>
 						<option value="pink">Pink</option>
+						<option value="fuchsia">Fuchsia</option>
+						<option value="maroon">Maroon</option>
+						<option value="brown">Brown</option>
 						<option value="grey">Grey</option>
 					</select> <label for="debugLevel">Log Level</label> <select name="debugLevel" id="debugLevel">
 						<option value="NONE">NONE</option>
@@ -1478,7 +1483,7 @@
 					<div id="payloadRunPercentBar" class="progressFilled" style="width:0%">&nbsp;</div>
 				</div>
 			</div><label for="payload" class="hidden">Payload Area</label>
-			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadMenu" onclick="toggleModule('payloadFileMenu', 'open');"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>File Menu</span></button> <button id="footerNavPayloadEval" onclick="payload.payloadCompile('eval')"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="payload.payloadCompile('eval'); document.getElementById(`footerNavPayloadRun`).classList.add(`buttonRunning`); payload.payloadCompile('run')"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadMenu" onclick="this.classList.toggle('buttonSelectedGrey'); toggleModule('payloadFileMenu');"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>File Menu</span></button> <button id="footerNavPayloadEval" onclick="payload.payloadCompile('eval')"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="payload.payloadCompile('eval'); document.getElementById(`footerNavPayloadRun`).classList.add(`buttonRunning`); payload.payloadCompile('run')"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
 					<div>Build + Run</div>
 				</button></div>
 			<div id="payloadFileMenu" class="hidden footerFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadFileMenu', 'close');">&times;</button>
@@ -1890,14 +1895,18 @@
 
 		function colorNameToHue(colorName) {
 			const colors = {
-				red: 4,
-				orange: 30,
-				yellow: 60,
+				red: 5,
+				orange: 25,
+				yellow: 45,
 				green: 120,
-				cyan: 180,
+				cyan: 190,
+				teal: 210,
 				blue: 230,
 				purple: 260,
 				pink: 300,
+				fuchsia: 320,
+				maroon: 340,
+				brown: 20,
 				grey: 0,
 			};
 
@@ -1911,6 +1920,8 @@
 
 			if (hue == "grey") {
 				hslSat = "0";
+			} else if (hue == "brown") {
+				hslSat = "50";
 			} else {
 				hslSat = "75";
 			}
