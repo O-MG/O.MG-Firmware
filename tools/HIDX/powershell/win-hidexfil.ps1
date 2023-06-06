@@ -81,8 +81,7 @@ https://github.com/rogandawes
             if ($wmidev.GetPropertyValue('DeviceID') -match ($omg) -and 
                 ($wmidev.GetPropertyValue('Service') -eq $null)) {
                 return ([char]92+[char]92+'?'+[char]92 + 
-                    $wmidev.GetPropertyValue('DeviceID').ToString().Replace([char]92,[char]35) 
-                    + [char]35+'{4d1e55b2-f16f-11cf-88cb-001111000030}')
+                    $wmidev.GetPropertyValue('DeviceID').ToString().Replace([char]92,[char]35)+[char]35+'{4d1e55b2-f16f-11cf-88cb-001111000030}')
             }
         }
 
