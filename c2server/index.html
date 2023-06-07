@@ -1645,7 +1645,7 @@
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230604";
+		frontendVersionNumber = "3.0-230607";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1837,7 +1837,6 @@
 			});
 
 			applyButton.addEventListener("click", function() {
-				console.log(`HSL: ${colorSlider.value}, 100%, 50%`);
 				connect.sendMessage(`CTSet\tuicolor\t${colorSlider.value}`);
 			});
 
@@ -2010,10 +2009,8 @@
 		}
 
 		function setAccentColors(hue) {
-			console.log(hue);
 			const uiAccentColorMenuSelect = document.getElementById('uiAccentColor');
 			const r = document.querySelector(':root');
-			console.log(hue);
 
 			if (!isNaN(hue) && hue >= 0 && hue <= 360) {
 				hslHue = hue;
@@ -2022,7 +2019,6 @@
 				hslHue = colorNameToHue(hue);
 				customColor = false;
 			}
-			console.log(hue);
 
 			if (hue == "grey") {
 				hslSat = "0";
@@ -2672,12 +2668,12 @@
 					}
 
 					if (keyActions[key] === 'color') {
-						setAccentColors(elementValue);
-						uicolorExists = true;
 						customColor = document.getElementById('uicolorCustom');
 						customColor.value = elementValue;
 						customColorSlider = document.getElementById('color-slider');
 						customColorSlider.value = elementValue;
+						setAccentColors(elementValue);
+						uicolorExists = true;
 					}
 
 					if (keyActions[key] == 'slotmode') {
@@ -3361,7 +3357,7 @@
 
 			function payloadSetBootSlot(mode) {
 				if (mode == "on") {
-					connect.sendMessage(`CTSet\tbootscript\t1`);
+					connect.sendMessage(`CTSet\tbootscript\tbootscript`);
 				} else if (mode == "off") {
 					connect.sendMessage(`CTSet\tbootscript\t0`);
 				}
@@ -3460,6 +3456,7 @@
 
 			// Payload Save
 			function payloadSlotSave(slotValue) {
+				console.log(slotValue);
 				iterations = 0;
 				splitPayloadCounter = 0;
 				createDialog({
@@ -3501,6 +3498,7 @@
 					cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
 					if (slotValue == "bootscript") {
 						cmd = `[pS-${i}.${iterations}]CEStore\tbootscript\t${parsement}`;
+						//cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
 					}
 					logger.sendMessage(`CRIT`, `SAVING DATA TO ${slotValue}: [${cmd}]`)
 					connect.sendMessage(cmd);
@@ -3512,7 +3510,8 @@
 				payloadEditorFilename.innerHTML = slotValue;
 				payloadEditorBootable = document.getElementById('payloadEditorBootable');
 
-				if (bootpairvalue == slotValue) {
+				console.log(bootpair);
+				if (bootpair == slotValue) {
 					payloadSlotSave("bootscript");
 					payloadEditorFilename.innerHTML = bootpairvalue;
 					payloadEditorBootable.innerHTML = " + bootscript";
