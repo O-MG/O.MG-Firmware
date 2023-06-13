@@ -3501,7 +3501,11 @@
 				scriptcode = slotValue === "bootscript" ? compiledBootSlot : unescapeHtml(payloadScriptArea.innerText);
 				scriptcode = unescapeHtml(scriptcode);
 				const sectorSize = 4096;
-				const writeSize = 522;
+				if (slotValue == "bootscript") {
+					writeSize = 522;
+				} else {
+					writeSize = 512;
+				}
 				const payloadSlotBlocks = document.getElementById(slotValue).name;
 				const payloadSlotSectors = document.getElementById(slotValue).value;
 				const payloadSlotSize = payloadSlotSectors * sectorSize;
