@@ -1634,7 +1634,7 @@
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230612";
+		frontendVersionNumber = "3.0-230613";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -3484,7 +3484,6 @@
 
 			// Payload Save
 			function payloadSlotSave(slotValue) {
-				console.log(slotValue);
 				iterations = 0;
 				splitPayloadCounter = 0;
 				createDialog({
@@ -3502,7 +3501,7 @@
 				scriptcode = slotValue === "bootscript" ? compiledBootSlot : unescapeHtml(payloadScriptArea.innerText);
 				scriptcode = unescapeHtml(scriptcode);
 				const sectorSize = 4096;
-				const writeSize = 512;
+				const writeSize = 522;
 				const payloadSlotBlocks = document.getElementById(slotValue).name;
 				const payloadSlotSectors = document.getElementById(slotValue).value;
 				const payloadSlotSize = payloadSlotSectors * sectorSize;
@@ -3538,7 +3537,6 @@
 				payloadEditorFilename.innerHTML = slotValue;
 				payloadEditorBootable = document.getElementById('payloadEditorBootable');
 
-				console.log(bootpair);
 				if (bootpair == slotValue) {
 					payloadSlotSave("bootscript");
 					payloadEditorFilename.innerHTML = bootpairvalue;
@@ -3559,7 +3557,7 @@
 
 			// Payload Run
 			function split_process(hexPayload) {
-				const payloadMaxSize = 936;
+				const payloadMaxSize = 510;
 				const operations = Math.ceil(hexPayload.length / payloadMaxSize);
 				const split_payloads = [];
 
@@ -3677,8 +3675,8 @@
 				if (mode === 'run') {
 					footerNavPayloadRun.classList.add("buttonRunning");
 				}
-
 				let payload = removeComments(replaceFunctions(replaceDefines(payloadElement.innerText)));
+				payload = replaceBlocksWithLines(payload);
 
 				if (payloadElement.value === '') {
 					footerNavPayloadRun.classList.remove("buttonRunning");
@@ -3919,6 +3917,21 @@
 					});
 				});
 				return payload;
+			}
+
+			function replaceBlocksWithLines(script) {
+				const blockRegex = /^STRINGLN_BLOCK\n([\s\S]*?)\nEND_STRINGLN/gm;
+
+				let match;
+				while ((match = blockRegex.exec(script)) !== null) {
+					const blockContent = match[1];
+					const lines = blockContent.split('\n');
+					const replacedLines = lines.map(line => `STRINGLN ${line}`);
+					const replacedBlock = replacedLines.join('\n');
+
+					script = script.replace(match[0], replacedBlock);
+				}
+				return script;
 			}
 
 			const commandConfigs = {
