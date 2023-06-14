@@ -1548,7 +1548,7 @@
 					<div id="columnLeft"><input class="payloadList" type="text" id="payloadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltipPayloadSelect', 'payload-list')"><datalist id="payload-list"></datalist><span class="tooltiptext arrowTop" id="tooltipPayloadSelect"></span></div>
 					<div id="columnRight"><button id="payload-loadButton" class="updateButtonLarge buttonMergeLeft" onclick="payload.payloadSlotLoad(document.getElementById('payloadSelect').value)">Load</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="payload.payloadCompile('save'); payload.payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button></div>
 				</div><span class="bigLabel">Run this payload at boot:</span> <span class="button-container" style="display: inline-block;">
-					<div id="payload-bootableToggle" class="toggle-button" onclick="if(this.classList.contains('active')) { payload.payloadSetBootSlot('off') } else { payload.payloadSetBootSlot('on'); payload.payloadSlotPair(document.getElementById('payloadSelect').value);};">
+					<div id="payload-bootableToggle" class="toggle-button" onclick="if(this.classList.contains('active')) { payload.payloadSetBootSlot('off'); this.classList.remove('active'); payload.payloadSlotPair('');} else { payload.payloadSetBootSlot('on'); this.classList.add('active'); payload.payloadSlotPair(document.getElementById('payloadSelect').value); };">
 						<div class="inner-circle"></div>
 					</div>
 				</span>
@@ -1634,7 +1634,7 @@
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230613";
+		frontendVersionNumber = "3.0-230614";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1741,7 +1741,7 @@
 		const modelMap = {
 			'c': ['Basic', 'BASIC'],
 			'k': ['Plus', 'PLUS'],
-			'd': ['Plug Elite', 'ELITE'],
+			'd': ['Elite', 'ELITE'],
 			'e': ['Elite', 'ELITE'],
 			'default': ['Unknown Device', 'UNKNOWN'],
 		};
@@ -2654,93 +2654,61 @@
 				return;
 			}
 			prevDataCTList = data;
-
-			apiResponse(data, 'CTList');
-			const responseSplit = data.split('{')[1].split('}')[0];
-			const responseSplitArray = responseSplit.split(',');
-
-			const elementValues = {};
-			const activeClassElements = [];
-			const toggleClassElements = {};
-
-			const keyActions = {
-				'uicolor': 'color',
-				'hidxboot': 'active',
-				'hidxhost': 'value',
-				'hidxport': 'value',
-				'bootscript': 'boot',
-				'bootpair': 'value',
-				'slotmode': 'slotmode',
-				'showmsgtime': 'log'
-			};
-
 			let uicolorExists = false;
+			let splitData = data.split('\t');
+			let listName = splitData[0];
+			let jsonData = splitData[1];
+			let jsonObject = JSON.parse(jsonData);
 
-			for (const key in keyActions) {
-				const item = responseSplitArray.find(item => item.startsWith(`"${key}"`));
-				if (item) {
-					const elementId = item.split('"')[1];
-					const elementValue = item.split(':')[1].replace(/"/g, '').trim();
+			console.log(jsonObject);
+			for (let key in jsonObject) {
+				// console.log(key + ": " + jsonObject[key]);
 
-					if (elementId == "bootpair") {
-						bootpair = elementValue;
-					}
+				if (key == "bootpair") {
+					bootpair = jsonObject[key];
+					document.getElementById('bootscriptPair').value = bootpair;
+				}
 
-					if (keyActions[key] === 'value' || keyActions[key] === 'innerHTML') {
-						elementValues[elementId] = {
-							value: elementValue,
-							method: keyActions[key]
-						};
-					}
+				if (key == "bootscript" && jsonObject[key] !== '0') {
+					document.getElementById(`toggle-BootScript`).classList.add(`active`);
+					// document.getElementById(`payload-bootableToggle`).classList.add(`active`);
+				}
 
-					if (keyActions[key] === 'active') {
-						activeClassElements.push(elementId);
-					}
+				if (key == "bootscript" && jsonObject[key] == '0') {
+					document.getElementById(`toggle-BootScript`).classList.remove(`active`);
+					document.getElementById(`payload-bootableToggle`).classList.remove(`active`);
+				}
 
-					if (keyActions[key] === 'log') {
-						if (elementId == "showmsgtime") {
-							alwaysDisplayLastPoll = elementValue;
+				if (key == "hidxboot") {
+					activeClassElements.push(key);
+				}
 
-							const toggleElems = ['c2logAlwaysShow'];
-							toggleElems.forEach((elemId) => {
-								const toggleElem = document.getElementById(elemId);
-								if (toggleElem) {
-									if (elementValue !== '0') {
-										toggleElem.classList.add('active');
-									} else {
-										toggleElem.classList.remove('active');
-									}
-								}
-							});
-						}
-					}
-
-					if (keyActions[key] === 'boot') {
-						const toggleElems = ['toggle-BootScript', 'toggle-SaveBootScript'];
-						toggleElems.forEach((elemId) => {
-							const toggleElem = document.getElementById(elemId);
-							if (toggleElem) {
-								if (elementValue !== '0') {
-									toggleElem.classList.add('active');
-								} else {
-									toggleElem.classList.remove('active');
-								}
+				if (key == "showmsgtime") {
+					alwaysDisplayLastPoll = elementValue;
+					const toggleElems = ['c2logAlwaysShow'];
+					toggleElems.forEach((elemId) => {
+						const toggleElem = document.getElementById(elemId);
+						if (toggleElem) {
+							if (elementValue !== '0') {
+								toggleElem.classList.add('active');
+							} else {
+								toggleElem.classList.remove('active');
 							}
-						});
-					}
+						}
+					});
+				}
 
-					if (keyActions[key] === 'color') {
-						customColor = document.getElementById('uicolorCustom');
-						customColor.value = elementValue;
-						customColorSlider = document.getElementById('color-slider');
-						customColorSlider.value = elementValue;
-						setAccentColors(elementValue);
-						uicolorExists = true;
-					}
+				if (key == "slotmode") {
+					slotmode = jsonObject[key];
+				}
 
-					if (keyActions[key] == 'slotmode') {
-						slotmode = elementValue;
-					}
+				if (key == "uicolor") {
+					customColor = document.getElementById('uicolorCustom');
+					customColor.value = jsonObject[key];
+					customColorSlider = document.getElementById('color-slider');
+					customColorSlider.value = jsonObject[key];
+					setAccentColors(jsonObject[key]);
+					uicolorExists = true;
 				}
 			}
 
@@ -2754,9 +2722,7 @@
 					setAccentColors("red");
 				}
 			}
-
-			setElementValues(elementValues, null, activeClassElements, toggleClassElements);
-		};
+		}
 
 		let globalJson = {};
 		let resolveFunction = null;
@@ -3202,8 +3168,12 @@
 		function updateWifiSettings() {
 			let mode = document.getElementById("CW1").checked ? 1 : 2;
 			const wifiCommands = [
-				`CW${mode}\t${document.getElementById("device-WIFISSID").value}\t${document.getElementById("device-WIFIPassword").value}`,
-				`CTSet\twifimac\t${document.getElementById("device-CustomMACAddress").value}`
+				//		`CW${mode}\t${document.getElementById("device-WIFISSID").value}\t${document.getElementById("device-WIFIPassword").value}`,
+				`CTSet\twifimode\t${mode}`,
+				`CTSet\twifissid\t${document.getElementById("device-WIFISSID").value}`,
+				`CTSet\twifikey\t${document.getElementById("device-WIFIPassword").value}`,
+				`CTSet\twifimac\t${document.getElementById("device-CustomMACAddress").value}`,
+				`CR1`
 			];
 
 			sendCommands(wifiCommands);
@@ -3384,6 +3354,7 @@
 			}
 
 			function payloadSetBootSlot(mode) {
+				console.log(mode);
 				if (mode == "on") {
 					connect.sendMessage(`CTSet\tbootscript\tbootscript`);
 				} else if (mode == "off") {
@@ -3395,6 +3366,7 @@
 			function payloadSlotPair(slotValue) {
 				var payloadSlotPair = `CTSet\tbootpair\t${slotValue}`;
 				connect.sendMessage(payloadSlotPair);
+				connect.sendMessage(`CTList`);
 			}
 
 			// Payload Load
@@ -3550,12 +3522,25 @@
 				}
 			}
 
+			let slotSaveTimeoutId = null;
+
 			function apiResponsePayloadSave(data) {
 				logger.sendMessage(`CRIT`, `apiResponsePayloadSave: ${typeof data}`);
 				logger.sendMessage(`WARN`, `Writing Payload to Slot - ${splitPayloadCounter + 1} of ${iterations}`, `Payload Saved to Slot.`);
+
+				if (slotSaveTimeoutId !== null) {
+					clearTimeout(slotSaveTimeoutId);
+				}
+
+				slotSaveTimeoutId = setTimeout(() => {
+					viewDialog('payloadsaving', 'remove');
+				}, 4000);
+
 				splitPayloadCounter += 1;
+
 				if (splitPayloadCounter == iterations) {
 					viewDialog('payloadsaving', 'remove');
+					clearTimeout(slotSaveTimeoutId);
 				}
 			}
 
