@@ -1634,7 +1634,7 @@
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230614";
+		frontendVersionNumber = "3.0-230616";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -3354,7 +3354,6 @@
 			}
 
 			function payloadSetBootSlot(mode) {
-				console.log(mode);
 				if (mode == "on") {
 					connect.sendMessage(`CTSet\tbootscript\tbootscript`);
 				} else if (mode == "off") {
@@ -4082,31 +4081,54 @@
 			function handleMouseCommands(args) {
 				const command = args[0].toUpperCase();
 				const direction = {
-					"-": "04",
-					"+": "03"
+					"-1": "04",
+					"1": "03",
+					"0": "03"
 				};
 
-				function updatePayload(prefix, value) {
-					while (value > 100) {
-						payloadIntermediate += `;cePayload += "${prefix} + toHex(99) + toHex(0)";`;
-						value -= 100;
+				payloadIntermediate = "";
+
+				function toHex(value) {
+					return value.toString(16).padStart(2, '0');
+				}
+
+				function updatePayload(x, y) {
+					let isNegativeX = x < 0;
+					let isNegativeY = y < 0;
+					let limitX = isNegativeX ? 127 : 128;
+					let limitY = isNegativeY ? 127 : 128;
+					while (Math.abs(x) > limitX || Math.abs(y) > limitY) {
+						let stepX = 0,
+							stepY = 0;
+						if (Math.abs(x) > limitX) {
+							stepX = isNegativeX ? -limitX : limitX;
+							x -= stepX;
+						}
+						if (Math.abs(y) > limitY) {
+							stepY = isNegativeY ? -limitY : limitY;
+							y -= stepY;
+						}
+						const prefixX = direction[Math.sign(stepX).toString()];
+						const prefixY = direction[Math.sign(stepY).toString()];
+						payloadIntermediate += `;cePayload += "${prefixX}" + toHex(${Math.abs(stepX)}) + "00";`;
+						payloadIntermediate += `;cePayload += "${prefixY}" + "00" + toHex(${Math.abs(stepY)});`;
 					}
-					payloadIntermediate += `;cePayload += "${prefix} + toHex(0) + ${toHex(value)}";`;
+					const prefixX = direction[Math.sign(x).toString()];
+					const prefixY = direction[Math.sign(y).toString()];
+					payloadIntermediate += `;cePayload += "${prefixX}" + toHex(${Math.abs(x)}) + "00";`;
+					payloadIntermediate += `;cePayload += "${prefixY}" + "00" + toHex(${Math.abs(y)});`;
 				}
 
 				if (command === 'MOVE') {
-					const x = Math.abs(parseInt(args[1]));
-					const y = Math.abs(parseInt(args[2]));
+					let x = parseInt(args[1]);
+					let y = parseInt(args[2]);
 					if (!Number.isNaN(x) && !Number.isNaN(y)) {
-						const xPrefix = direction[Math.sign(args[1])];
-						const yPrefix = direction[Math.sign(args[2])];
-						updatePayload(xPrefix, x);
-						updatePayload(yPrefix, y);
+						updatePayload(x, y);
 					}
 				} else if (command === 'CLICK') {
 					const mouseButtonID = parseInt(args[1]);
 					if (!Number.isNaN(mouseButtonID)) {
-						payloadIntermediate += `;cePayload += "05000" + ${toHex(mouseButtonID)};`;
+						payloadIntermediate += `;cePayload += "0500" + ${toHex(mouseButtonID)};`;
 					}
 				}
 			}
