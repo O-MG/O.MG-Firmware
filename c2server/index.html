@@ -4128,7 +4128,7 @@
 				} else if (command === 'CLICK') {
 					const mouseButtonID = parseInt(args[1]);
 					if (!Number.isNaN(mouseButtonID)) {
-						payloadIntermediate += `;cePayload += "0500" + ${toHex(mouseButtonID)};`;
+						payloadIntermediate += `;cePayload += "05000" + ${toHex(mouseButtonID)};`;
 					}
 				}
 			}
