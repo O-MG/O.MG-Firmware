@@ -2,6 +2,9 @@
 # This has certain limitations on size of packets and writes
 # You may need root access to use this.
 # mischief gadgets, wasabi 2023
+#
+# Usage: python3 universal-hidxcli.py <host> <port>
+#
 import os
 import sys
 import socket
@@ -171,4 +174,6 @@ if __name__ == "__main__":
         logger_sent.setLevel(logging.INFO)
 
     hidxcli(args.host, args.port)
+
+
 
