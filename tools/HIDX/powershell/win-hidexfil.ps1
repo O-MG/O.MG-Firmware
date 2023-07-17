@@ -1,6 +1,6 @@
 <#
 HIDXExfil.ps1
-Author: [REDACTED] (@01p8or13)
+Author: Ø1phor1³ (@01p8or13)
 Acknowledgements: spiceywasabi, rogandawes
 Required Dependencies: Activated HIDX on OMG Elite device
 #>
@@ -67,7 +67,7 @@ https://github.com/rogandawes
             $ProductID = "D34D" # Default value
     )
 
-    $omg = $vendorID + "&PID_" + $productID
+    $omg = $VendorID + "&PID_" + $ProductID
     function Get-OMGDevice(){
         #Identify OMG device
         $devs = gwmi Win32_USBControllerDevice
