@@ -1,6 +1,6 @@
 <#
 win-hidshell.ps1
-Authors:  Wasabi (@spiceywasabi), [REDACTED] (@01p8or13)
+Authors:  Wasabi (@spiceywasabi), Ø1phor1³(@01p8or13)
 Acknowledgements: rogandawes
 Required Dependencies: Activated HIDX on OMG Elite device
 #>
