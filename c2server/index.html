@@ -1325,11 +1325,20 @@
 			border-color: red transparent transparent transparent;
 		}
 
-		.editor-wrapper {}
+		.editor-wrapper {
+			background-color: var(--bgColor3);
+			width: calc(100% - 22px);
+			left: 11px;
+			margin-left: 0px;
+			padding-left: 0px;
+			margin-bottom: -8px;
+			padding-bottom: 20px;
+			overflow: scroll;
+		}
 
 		#lineNumbers {
 			width: 30px;
-			left: 12px;
+			left: 0px;
 			background-color: var(--inactiveGradient2);
 			padding: 5px;
 			text-align: right;
@@ -1337,13 +1346,13 @@
 			line-height-step: 1.5em;
 			font-family: monospace;
 			position: absolute;
-			height: 100%;
-			z-index: -1;
+			height: calc(100% - 30px);
+			overflow: hidden;
 		}
 
 		#payload {
 			padding: 5px;
-			left: 52px;
+			left: 45px;
 			margin-left: 0px;
 			border: none;
 			outline: none;
@@ -1353,16 +1362,14 @@
 			white-space: pre;
 			background: transparent;
 			position: relative;
-			z-index: 0;
-			background-color: var(--bgColor3);
 			width: calc(100% - 63px);
-			margin-bottom: -7px;
+			overflow: scroll;
 		}
 
 		.line-red {
 			background-color: red;
 			width: 30px;
-			padding-right: calc(100vw - 55px);
+			padding-right: calc(100vw - 60px);
 		}
 
 		.line-orange {
@@ -1740,7 +1747,7 @@ DELAY 2000
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230723";
+		frontendVersionNumber = "3.0-230724";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1871,42 +1878,55 @@ DELAY 2000
 		const modifiers = {
 			'CTRL': 0x01,
 			'LCTRL': 0x01,
+			'LEFTCTRL': 0x01,
 			'LEFT-CTRL': 0x01,
 			'CONTROL': 0x01,
 			'LCONTROL': 0x01,
+			'LEFTCONTROL': 0x01,
 			'LEFT-CONTROL': 0x01,
 			'SHIFT': 0x02,
 			'LSHIFT': 0x02,
+			'LEFTSHIFT': 0x02,
 			'LEFT-SHIFT': 0x02,
 			'ALT': 0x04,
 			'LALT': 0x04,
+			'LEFTALT': 0x04,
 			'LEFT-ALT': 0x04,
 			'OPT': 0x04,
 			'LOPT': 0x04,
+			'LEFTOPT': 0x04,
 			'LEFT-OPT': 0x04,
 			'OPTION': 0x04,
 			'LOPTION': 0x04,
+			'LEFTOPTION': 0x04,
 			'LEFT-OPTION': 0x04,
 			'CMD': 0x08,
 			'LCMD': 0x08,
+			'LEFTCMD': 0x08,
 			'LEFT-CMD': 0x08,
 			'COMMAND': 0x08,
 			'LCOMMAND': 0x08,
+			'LEFTCOMMAND': 0x08,
 			'LEFT-COMMAND': 0x08,
 			'GUI': 0x08,
 			'LGUI': 0x08,
+			'LEFTGUI': 0x08,
 			'LEFT-GUI': 0x08,
 			'WIN': 0x08,
 			'LWIN': 0x08,
+			'LEFTWIN': 0x08,
 			'LEFT-WIN': 0x08,
 			'WINDOWS': 0x08,
 			'LWINDOWS': 0x08,
+			'LEFTWINDOWS': 0x08,
 			'LEFT-WINDOWS': 0x08,
 			'META': 0x08,
 			'LMETA': 0x08,
+			'LEFTMETA': 0x08,
 			'LEFT-META': 0x08,
 			'SUPER': 0x08,
 			'LSUPER': 0x08,
+			'LEFTSUPER': 0x08,
 			'LEFT-SUPER': 0x08,
 			'RCTRL': 0x10,
 			'RIGHT-CTRL': 0x10,
@@ -1998,7 +2018,7 @@ DELAY 2000
 					payloadEditorSavedElement = document.getElementById('payloadEditorSaved');
 					payloadEditorSavedElement.innerHTML = "Edited";
 					compileDuckyScript();
-				}, 10000);
+				}, 2000);
 			});
 
 			const colorSlider = document.querySelector("#color-slider");
@@ -3536,15 +3556,38 @@ DELAY 2000
 			payloadScript = "";
 			payloadLines = "";
 			payloadCompiled = "";
-			line = ""
+			line = "";
 
 			payloadScript = getPayload();
+			const originalPayloadLines = payloadScript.split('\n');
 			payloadScript = processPayload(payloadScript);
 
 			payloadLines = payloadScript.split('\n');
 			payloadLines = payloadLines.map(cleanInvisibles);
 
-			payloadCompiled = payloadLines.map(line => duckyscriptToBytecodeConverter(line)).join('\n');
+			try {
+				payloadCompiled = payloadLines.map((line, index) => {
+					try {
+						return duckyscriptToBytecodeConverter(line);
+					} catch (error) {
+						console.error(`Error on processed line ${index + 1}: ${error.message}`);
+						const originalLineIndex = originalPayloadLines.findIndex(originalLine =>
+							originalLine.toLowerCase().includes(line.toLowerCase())
+						);
+						if (originalLineIndex !== -1) {
+							logMessage(`INFO`, `Payload Compiler Error: Line ${originalLineIndex + 1} - ${originalPayloadLines[originalLineIndex]}. [${error.message}]`);
+							setEditorLineColors(`${originalLineIndex + 1}`, `red`);
+						} else {
+							console.error(`Could not find original line for processed line ${index + 1}`);
+						}
+						throw error;
+					}
+				}).join('\n');
+			} catch (error) {
+				// Handle or re-throw the error as needed
+				throw error;
+			}
+
 			payloadCompiled = payloadCompiled.replace(/\s/g, '');
 			payloadCompiled = payloadCompiled.toUpperCase();
 			crc16 = crc16augccitt(payloadCompiled);
@@ -3745,6 +3788,7 @@ DELAY 2000
 				case 'KEYLOGGER':
 					line = handleKeyloggerCommands(args);
 					break;
+				case 'HIDX':
 				case 'USB':
 				case 'JIGGLER':
 					line = handleUsbJigglerCommands(cmd, args);
@@ -4170,7 +4214,8 @@ DELAY 2000
 			"PRO": "16",
 			"SER": "17",
 			"USB": "10",
-			"JIGGLER": "11"
+			"JIGGLER": "11",
+			"HIDX": "32"
 		};
 
 		function handleGeofencingCommands(cmd, args) {
@@ -5040,11 +5085,6 @@ DELAY 2000
 				"role": "Researcher @sensepost"
 			},
 			{
-				"name": "Troy",
-				"twitter": "waveguyd",
-				"role": "RF / Antenna"
-			},
-			{
 				"name": "Wasabi",
 				"twitter": "spiceywasabi",
 				"role": "Tooling & Infrastructure"
@@ -5436,6 +5476,17 @@ DELAY 2000
 				},
 				{
 					"example": "USB OFF"
+				}
+			]
+		}, {
+			"feat": "payload",
+			"name": "HIDX",
+			"desc": "Turn HIDX TCP Service on/off",
+			"code": [{
+					"example": "HIDX ON"
+				},
+				{
+					"example": "HIDX OFF"
 				}
 			]
 		}, {
@@ -6421,7 +6472,7 @@ DELAY 2000
 		})();
 
 		function keyToHidMapping(key) {
-			if (key === " " || key === " ") {
+			if (key === " " || key === " ") {
 				key = "SPACE";
 			}
 			if (key === "DOWN" || key === "DOWNARROW" || key === "DOWN_ARROW") {
@@ -6678,10 +6729,6 @@ DELAY 2000
 			}, 1000);
 		}
 
-		if (hostname == "localhost") {
-			hostname = "192.168.1.151";
-		}
-
 		const editor = document.getElementById('payload');
 		const lineNumbers = document.getElementById('lineNumbers');
 
@@ -6725,6 +6772,10 @@ DELAY 2000
 
 
 		// ConnectMode
+		if (hostname == "localhost") {
+			hostname = "192.168.1.231"
+		}
+
 		function downloadFrontendlog() {
 			downloadFile('debuglog', 'frontend-log', true);
 			downloadFile('c2log', 'c2-log', true);
