@@ -59,6 +59,11 @@
 			font-size: 1rem;
 			font-weight: 400;
 			row-gap: 1px;
+			scrollbar-width: none;
+		}
+
+		body::-webkit-scrollbar {
+			display: none;
 		}
 
 		button,
@@ -1334,6 +1339,14 @@
 			margin-bottom: -8px;
 			padding-bottom: 20px;
 			overflow: scroll;
+			-ms-overflow-style: none;
+			/* IE and Edge */
+			scrollbar-width: none;
+			/* Firefox */
+		}
+
+		.editor-wrapper::-webkit-scrollbar {
+			display: none;
 		}
 
 		#lineNumbers {
@@ -1347,7 +1360,15 @@
 			font-family: monospace;
 			position: absolute;
 			height: calc(100% - 30px);
-			overflow: hidden;
+			overflow: scroll;
+			-ms-overflow-style: none;
+			/* IE and Edge */
+			scrollbar-width: none;
+			/* Firefox */
+		}
+
+		#lineNumbers::-webkit-scrollbar {
+			display: none;
 		}
 
 		#payload {
@@ -1364,6 +1385,14 @@
 			position: relative;
 			width: calc(100% - 63px);
 			overflow: scroll;
+			-ms-overflow-style: none;
+			/* IE and Edge */
+			scrollbar-width: none;
+			/* Firefox */
+		}
+
+		#payload::-webkit-scrollbar {
+			display: none;
 		}
 
 		.line-red {
@@ -1574,14 +1603,7 @@
 					</select> <label for="uiAccentColor">Custom Color</label>
 					<div id="color-container"><span><input type="range" id="color-slider" min="0" max="360" value="0">
 							<div id="color-box"></div>
-						</span><span><button id="apply-color" onclick="applyEffect(this);">Save</button></span></div><label for="debugLevel">Log Level</label> <select name="debugLevel" id="debugLevel">
-						<option value="NONE">NONE</option>
-						<option value="INFO">INFO</option>
-						<option value="WARN">WARN</option>
-						<option value="CRIT">CRIT</option>
-						<option value="DIAG">DIAG</option>
-						<option value="DEBUG">DEBUG</option>
-					</select> <label for="sidebar_settings_debug_feLog">Download Frontend Log</label> <button class="submitButton" id="sidebar_settings_debug_feLog" onclick="applyEffect(this); downloadFrontendlog();">Download Frontend Log</button><br><label for="sidebar_settings_config_reboot">Reboot</label> <button class="submitButton" id="sidebar_settings_config_reboot" onclick="applyEffect(this); sendMessage(`CR1`)">Reboot</button>
+						</span><span><button id="apply-color" onclick="applyEffect(this);">Save</button></span></div><label for="sidebar_settings_debug_feLog">Download Frontend Log</label> <button class="submitButton" id="sidebar_settings_debug_feLog" onclick="applyEffect(this); downloadFrontendlog();">Download Frontend Log</button><br><label for="sidebar_settings_config_reboot">Reboot</label> <button class="submitButton" id="sidebar_settings_config_reboot" onclick="applyEffect(this); sendMessage(`CR1`)">Reboot</button>
 					<div class="selfDestruct">
 						<h3>Self Destruct</h3><button class="submitButton" id="sidebar_settings_config_selfDestructFull" onclick="applyEffect(this); sendMessage(`CD1`)">Self Destruct (Full)</button>
 						<aside>Completely erase all data and disconnect data lines to make device behave "broken". You will need to reflash the firmware to recover.</aside><br><button class="submitButton" id="sidebar_settings_config_selfDestructPartial" onclick="applyEffect(this); sendMessage(`CD2`)">Self Destruct (Partial)</button>
@@ -1670,7 +1692,14 @@ DELAY 2000
 		<content id="contentArea_syslog" class="hidden"><label for="syslog" class="hidden">Syslog Area</label> <textarea id="syslog" spellcheck="false" class="editorSyslog" readonly="readonly"></textarea> <textarea id="debuglog" class="hidden"></textarea></content>
 		<content id="contentArea_c2log" class="hidden"><label for="c2log" class="hidden">c2log Area</label> <textarea id="c2log" spellcheck="false" class="editorc2log" readonly="readonly"></textarea></content>
 		<content id="contentArea_debug" class="hidden">
-			<div><label for="device-CalibrationStatus">Calibration Status</label> <input id="device-CalibrationStatus" readonly="readonly">
+			<div><label for="debugLevel">Log Level</label> <select name="debugLevel" id="debugLevel">
+					<option value="NONE">NONE</option>
+					<option value="INFO">INFO</option>
+					<option value="WARN">WARN</option>
+					<option value="CRIT">CRIT</option>
+					<option value="DIAG">DIAG</option>
+					<option value="DEBUG">DEBUG</option>
+				</select> <label for="device-CalibrationStatus">Calibration Status</label> <input id="device-CalibrationStatus" readonly="readonly">
 				<div>Calibration Status: <span id="device-CalibrationStatusDecoded" spellcheck="false"></span></div><label for="device-FlashSize">Device Flash Size</label> <input id="device-FlashSize" readonly="readonly"> <label for="device-Uptime">Device Uptime</label> <input id="device-Uptime" readonly="readonly"> <label for="partitionEditorAvailable">Partition Editor Usable Space</label> <input id="partitionEditorAvailable" readonly="readonly"> <label for="bootscriptPair">Bootscript to Payload Pair</label> <input id="bootscriptPair" readonly="readonly">
 			</div>
 			<div id="keyloggerStatus" class="keylog"></div>
@@ -1747,7 +1776,7 @@ DELAY 2000
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230724";
+		frontendVersionNumber = "3.0-230731";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -4159,9 +4188,14 @@ DELAY 2000
 			const footerNavPayloadRun = document.getElementById("footerNavPayloadRun");
 			scriptcode = compileDuckyScript();
 
+			let counter = 0;
 			scriptcode.forEach(payload => {
-				const command_line = `CE[${crc16}]${payload}`;
-				//		const command_line = `CE${payload}`;
+				var trimmedPayload = payload.slice(6, payload.length - 6);
+				console.log(trimmedPayload);
+				crc16segment = crc16augccitt(trimmedPayload);
+
+				let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE[${crc16segment}]${payload}`;
+				counter++;
 
 				if (!payload) {
 					footerNavPayloadRun.classList.remove("buttonRunning");
@@ -4172,6 +4206,7 @@ DELAY 2000
 				sendMessage(command_line);
 				logMessage(`CRIT`, `Sending Payload Segment: [cmd]:[${command_line}]`);
 			});
+
 			logMessage(`INFO`, `Payload Running`);
 			sendMessage("CEStatus");
 		}
@@ -4336,11 +4371,11 @@ DELAY 2000
 			switch (args[0].toUpperCase()) {
 				case 'ON':
 				case '1':
-					payloadIntermediate += `100001`;
+					payloadIntermediate += `${prefix}0001`;
 					break
 				case 'OFF':
 				case '0':
-					payloadIntermediate += `100000`;
+					payloadIntermediate += `${prefix}0000`;
 					break
 				default:
 					logMessage(`INFO`, `! ERROR: Invalid ${cmd} Argument. Requires ON or OFF`);
@@ -6727,6 +6762,10 @@ DELAY 2000
 			setTimeout(function() {
 				element.classList.remove('apply-effect');
 			}, 1000);
+		}
+
+		if (hostname == "localhost") {
+			hostname = "192.168.1.151";
 		}
 
 		const editor = document.getElementById('payload');
