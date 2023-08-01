@@ -1497,7 +1497,7 @@
 		<div id="sidebar_settings" class="hidden"><button class="close" type="button" onclick="sidebarAreaToggle('close')"><span>&times;</span></button>
 			<h1>Settings</h1>
 			<div id="sidebar_settings_subnav" class="subnav"><button id="sidebarNav_queue" onclick="sidebarSettingsAreaToggle('queue')" class="hidden">Queue</button> <button id="sidebarNav_net" onclick="sidebarSettingsAreaToggle('net')" class="buttonSelected">Net</button> <button id="sidebarNav_config" onclick="sidebarSettingsAreaToggle('config')">USB</button> <button id="sidebarNav_debug" onclick="sidebarSettingsAreaToggle('debug')">GENERAL</button></div>
-			<div id="sidebar_settings_queue" class="hidden"><label for="data">Add CMD to Queue:</label> <input type="text" id="data" name="data"> <button id="modifyQueueC2">Submit</button><br><label for="queueContactRate">Contact Rate:</label> <input type="text" id="queueContactRate" name="queueContactRate"> <label for="queuePollRate">Poll Rate:</label> <input type="text" id="queuePollRate" name="queuePollRate"> <label for="queueFastRate">Fast Rate:</label> <input type="text" id="queueFastRate" name="queueFastRate"> <button id="queuePollUpdate" onclick="changePollRate()">Update Queue Polling Rates</button>
+			<div id="sidebar_settings_queue" class="hidden"><label for="data">Add CMD to Queue:</label> <input type="text" id="data" name="data"> <button id="modifyQueueC2" onclick="applyEffect(this);">Submit</button><br><label for="queueContactRate">Contact Rate:</label> <input type="text" id="queueContactRate" name="queueContactRate"> <label for="queuePollRate">Poll Rate:</label> <input type="text" id="queuePollRate" name="queuePollRate"> <label for="queueFastRate">Fast Rate:</label> <input type="text" id="queueFastRate" name="queueFastRate"> <button id="queuePollUpdate" onclick="applyEffect(this); changePollRate();">Update Queue Polling Rates</button>
 				<table id="cmdQueueTable">
 					<thead>
 						<tr>
@@ -1506,7 +1506,7 @@
 						</tr>
 					</thead>
 					<tbody></tbody>
-				</table><br><button id="deleteAllButton">Delete All in Queue</button><br><button id="queryDeviceStatus">Query Device Status</button><br>
+				</table><br><button id="deleteAllButton" onclick="applyEffect(this);">Delete All in Queue</button><br><button id="queryDeviceStatus" onclick="applyEffect(this);">Query Device Status</button><br>
 				<div class="button-container"><label for="c2logAlwaysShow">Always Show Last Check-In</label>
 					<div id="c2logAlwaysShow" class="toggle-button" onclick="document.getElementById(`c2logAlwaysShow`).classList.toggle('active'); if(this.classList.contains('active')) { alwaysDisplayLastPoll = '1'; sendMessage(`CTSet\tshowmsgtime\t1`); } else { alwaysDisplayLastPoll = '0'; sendMessage(`CTSet\tshowmsgtime\t0`); };">
 						<div class="inner-circle"></div>
@@ -1516,7 +1516,7 @@
 					<div id="c2logAbridge" class="toggle-button" onclick="document.getElementById(`c2logAbridge`).classList.toggle('active'); if(this.classList.contains('active')) { c2logAbridge = '1' } else { c2logAbridge = '0' };">
 						<div class="inner-circle"></div>
 					</div>
-				</div><br><button id="clearLogsButton">Clear &nbsp;<data id="clearLogsAlias"></data>&nbsp; Logs</button> <button id="clearAllLogsButton">Clear All Logs</button>
+				</div><br><button id="clearLogsButton" onclick="applyEffect(this);">Clear &nbsp;<data id="clearLogsAlias"></data>&nbsp; Logs</button> <button id="clearAllLogsButton" onclick="applyEffect(this);">Clear All Logs</button>
 			</div>
 			<div id="sidebar_settings_net">
 				<div id="wifi-Settings">
@@ -1526,12 +1526,12 @@
 				</div>
 				<div id="c2-Settings" class="c2">
 					<h3>C2 Settings</h3>
-					<p>C2 is currently in beta. Click <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Elite-Early-Access#c2">https://github.com/O-MG/O.MG-Firmware/wiki/Elite-Early-Access#c2</a> to learn more.</p><label for="c2config">C2 Config - <span id="c2configApplied"></span></label> <input type="text" id="c2config" name="c2config" spellcheck="false"> <button id="update-C2Settings" class="submitButton" onclick="updateC2Settings()">Change Settings</button>
+					<p>C2 is currently in beta. Click <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Elite-Early-Access#c2">https://github.com/O-MG/O.MG-Firmware/wiki/Elite-Early-Access#c2</a> to learn more.</p><label for="c2config">C2 Config - <span id="c2configApplied"></span></label> <input type="text" id="c2config" name="c2config" spellcheck="false"> <button id="update-C2Settings" class="submitButton" onclick="applyEffect(this); updateC2Settings()">Change Settings</button>
 					<div class="button-container"><label for="c2status">C2</label>
 						<div id="c2status" class="toggle-button" onclick="document.getElementById(`c2status`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`C2Start`) } else { sendMessage(`C2Stop`); };">
 							<div class="inner-circle"></div>
 						</div>
-					</div><button id="button-C2Wipe" class="submitButton hidden" onclick="sendMessage('C2Wipe')">Erase C2 Config</button>
+					</div><button id="button-C2Wipe" class="submitButton hidden" onclick="applyEffect(this); sendMessage('C2Wipe')">Erase C2 Config</button>
 				</div>
 			</div>
 			<div id="sidebar_settings_config" class="hidden">
@@ -1634,7 +1634,7 @@
 			<div id="helpExamples"><button id="btn_helppayloadGithub" class="helpHeader" onclick="document.getElementById('helppayloadGithub').classList.toggle('hidden');">Hak5 Community Payloads</button>
 				<div id="helppayloadGithub" class="hidden">
 					<p>Community created payloads can be found at: <a href="http://github.com/hak5/omg-payloads" target="_blank">http://github.com/hak5/omg-payloads</a></p>
-					<p>If you have internet access, you can also search below.</p><input id="searchGithubPayloads" type="text" placeholder="Search Github..."> <button class="updateButton buttonMergeLeft" onclick="searchGithubPayloads()">Search</button><br>
+					<p>If you have internet access, you can also search below.</p><input id="searchGithubPayloads" type="text" placeholder="Search Github..."> <button class="updateButton buttonMergeLeft" onclick="applyEffect(this); searchGithubPayloads()">Search</button><br>
 					<div id="githubPayloadExamples"></div><br>
 				</div><button id="btn_helppayloadExample" class="helpHeader" onclick="document.getElementById('helppayloadExample').classList.toggle('hidden');">Example Payloads</button>
 				<div id="helppayloadExample" class="hidden"></div><button id="btn_helppayload" class="helpHeader" onclick="document.getElementById('helppayload').classList.toggle('hidden');">General</button>
@@ -1768,7 +1768,7 @@ DELAY 2000
 				<option value="64">256 KB</option>
 				<option value="128">512 KB</option>
 			</select></div>
-		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Keylog</span> <span id="keylogSize"></span></div><br><br><button id="partitionEditorDefault" class="submitButton" onclick="partitionEditorApply();">Apply Layout</button>
+		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Keylog</span> <span id="keylogSize"></span></div><br><br><button id="partitionEditorDefault" class="submitButton" onclick="applyEffect(this); partitionEditorApply();">Apply Layout</button>
 	</dialog>
 	<dialog id="partitionApplied"><button class="closeModal" type="button" onclick="viewDialog('partitonApplied', 'close')">&times;</button>
 		<h2>Partition Applied</h2>
@@ -1776,7 +1776,7 @@ DELAY 2000
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230731";
+		frontendVersionNumber = "3.0-230801";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1811,6 +1811,7 @@ DELAY 2000
 		var lastDateTime;
 		var fccID = "Unknown";
 		var crc16 = "";
+		var previousLocale = "";
 
 		// Feature Flags
 		const features = {
@@ -2075,18 +2076,39 @@ DELAY 2000
 		};
 
 		// Data Transform
-		function toHex(number, size) {
-			if (!size) size = 2;
-			number = parseInt(number);
-			let b1 = number.toString(16);
-			if (b1.length === 1) {
-				b1 = 0 + b1;
-			}
-			b1 = b1.toString();
-			while (b1.length < size) b1 = "0" + b1;
-			logMessage(`DEBUG`, `toHex: [number]:[${number}] [b1]:[${b1}] [size]:[${size}]`);
-			return b1.toUpperCase();
-		}
+		const toHex = (() => {
+			let cache = {};
+
+			const memoizedFunction = (number, size = 2) => {
+				const key = number + ',' + size;
+				if (cache[key]) {
+					return cache[key];
+				}
+				number = parseInt(number);
+				let b1 = number.toString(16);
+				if (b1.length === 1) {
+					b1 = '0' + b1;
+				}
+				while (b1.length < size) b1 = '0' + b1;
+				const result = b1.toUpperCase();
+
+				logMessage(`DEBUG`, `toHex: [number]:[${number}] [b1]:[${b1}] [size]:[${size}]`);
+
+				if (result === undefined || result === null) {
+					console.log("No matching value for key: ", key);
+					return;
+				}
+
+				cache[key] = result;
+				return result;
+			};
+
+			memoizedFunction.invalidateCache = () => {
+				cache = {};
+			};
+
+			return memoizedFunction;
+		})();
 
 		function padHex(num) {
 			return num.toString(16).padStart(2, '0');
@@ -3447,7 +3469,8 @@ DELAY 2000
 				'DIAG': 4,
 				'DEBUG': 5
 			};
-			const datetime = new Date().toLocaleString();
+			const now = new Date();
+			const datetime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()} ${now.getMilliseconds().toString().padStart(3, '0')}ms`;
 			const debugLevel = document.getElementById('debugLevel').value;
 
 			if (level !== "DEBUG" || level !== "NONE") {
@@ -3913,7 +3936,7 @@ DELAY 2000
 				split_payloads.push(this_sof + parsement + this_eof);
 			}
 
-			logMessage(`CRIT`, `split_process: [hexPayload]:[${hexPayload}] [split_payloads]:[${split_payloads}]`);
+			logMessage(`CRIT`, `split_process: [split_payloads]:[${split_payloads}]`);
 			return split_payloads;
 		}
 
@@ -4194,7 +4217,9 @@ DELAY 2000
 				console.log(trimmedPayload);
 				crc16segment = crc16augccitt(trimmedPayload);
 
-				let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE[${crc16segment}]${payload}`;
+				//		let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE[${crc16segment}]${payload}`;
+				let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE[${crc16}]${payload}`;
+				//		let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE${payload}`;
 				counter++;
 
 				if (!payload) {
@@ -4204,7 +4229,7 @@ DELAY 2000
 				}
 
 				sendMessage(command_line);
-				logMessage(`CRIT`, `Sending Payload Segment: [cmd]:[${command_line}]`);
+				logMessage(`CRIT`, `Queueing Payload Segment: [cmd]:[${command_line}]`);
 			});
 
 			logMessage(`INFO`, `Payload Running`);
@@ -4281,7 +4306,7 @@ DELAY 2000
 
 				let cmdData = "";
 				for (let i = 0; i < argToUse.length; i++) {
-					cmdData += (argToUse[i].length % 2 !== 0) ? `${cmdPrefix}${argToUse[i]}00` : `${cmdPrefix}${argToUse[i]}`;
+					cmdData += (argToUse[i].length % 2 !== 0) ? `${cmdPrefix}${asciiToHex(argToUse[i])}00` : `${cmdPrefix}${asciiToHex(argToUse[i])}`;
 				}
 
 				if (!validateAndLogError(argSIGNAL, cmd, [2, 3], `SIGNAL is invalid. Must be a number between 0 and 99`)) return;
@@ -4295,7 +4320,7 @@ DELAY 2000
 
 				const cmdArguments = (cmd === "IF_PRESENT" || cmd === "IF_NOTPRESENT") ? cmdSignal : `${cmdMinutes}${cmdInterval}`;
 
-				let payloadIntermediate = `${cmdPrefix}0106${cmdData}${cmdArguments}${cmdPrefix}${config.cmdFooter}`;
+				payloadIntermediate = `${cmdPrefix}0106${cmdData}${cmdArguments}${cmdPrefix}${config.cmdFooter}`;
 			} else {
 				logMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} requires one of the following: SSID and BSSID.`);
 			}
@@ -5728,14 +5753,16 @@ DELAY 2000
 		function addGlobalKeysToHelpMenuItems(keymapGlobalArray) {
 			keymapGlobalArray.forEach((valueArray, key) => {
 				valueArray.forEach(value => {
-					helpMenuItems.push({
-						"feat": "globalKeys",
-						"name": value,
-						"desc": `Use the ${value} key`,
-						"code": [{
-							example: value
-						}],
-					});
+					if (value !== " ") {
+						helpMenuItems.push({
+							"feat": "globalKeys",
+							"name": value,
+							"desc": `Use the ${value} key`,
+							"code": [{
+								example: value
+							}],
+						});
+					}
 				});
 			});
 		}
@@ -6438,13 +6465,19 @@ DELAY 2000
 		}
 
 		function generateKeymap(localeName) {
-			keymapLocal = processKeymapLocal(getLocale(localeName));
-			unpacked = unpackKeymap(keymapLocal);
-			keymapData = Object.assign({}, generateFullKeymapGlobal(), unpacked);
-			keymapInverted = generateInvertedKeymap(keymapData);
-			updateKeymapViewer(keymapData, keymapViewerKeys);
-			memoizedKeyToHidMapping.invalidateCache();
-			memoizedHidToKeyMapping.invalidateCache();
+			if (previousLocale !== localeName) {
+				previousLocale = localeName;
+				keymapLocal = processKeymapLocal(getLocale(localeName));
+				unpacked = unpackKeymap(keymapLocal);
+				keymapData = Object.assign({}, generateFullKeymapGlobal(), unpacked);
+				keymapInverted = generateInvertedKeymap(keymapData);
+				updateKeymapViewer(keymapData, keymapViewerKeys);
+				memoizedKeyToHidMapping.invalidateCache();
+				memoizedHidToKeyMapping.invalidateCache();
+				//	memoizedHexMapping.invalidateCache();
+			} else {
+				logMessage("CRIT", `Locale Unchanged from ${localeName}`);
+			}
 		}
 
 		function generateFullKeymapGlobal() {
