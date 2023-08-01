@@ -37,9 +37,9 @@ if 'idlelib.run' in sys.modules:
 
 VERSION = "FIRMWARE FLASHER VERSION NUMBER [ 230228 @ 142312 UTC ]"
 FLASHER_VERSION = 1 # presume we have an old style flasher = 1
-FLASHER_VERSION_DETECT = False
+FLASHER_VERSION_DETECT = True
 
-BRANCH = "master"
+BRANCH = "stable"
 FIRMWARE_DIR="./firmware"
 FIRMWARE_URL = "https://raw.githubusercontent.com/O-MG/O.MG-Firmware/%BRANCH%"
 MEMMAP_URL = "https://raw.githubusercontent.com/O-MG/WebFlasher/main/assets/memmap.json"
@@ -362,12 +362,26 @@ def ask_for_port():
     FLASHER_VERSION = 1 # update back to 1
     if FLASHER_VERSION_DETECT:       
         try:      
-            if 'cp2102n' in str(ports_info[port]['desc'].lower()):
+            sercheck = serial.Serial(port=port,dsrdtr=True)
+            sercheck.dtr=0
+            # we do 3 checks
+            final_check = True
+            if sercheck.dsr == sercheck.dtr and sercheck.dsr == 0:
+                # we will set it to true
+                for check in [True,False,True]:
+                    sercheck.dtr=int(check)
+                    curr_check = False
+                    if sercheck.dtr == int(check) and sercheck.dsr == sercheck.dtr:
+                        curr_check = True
+                    final_check = final_check & curr_check
+            sercheck.close()
+            if final_check:
                 print("Found programmer version: 2")
                 print("This programmer will not require reconnection, please utilize the visual indicators on the programmer to ensure omg device is properly connected.")
                 FLASHER_VERSION = 2
             else:
                 print("Found programmer version: 1")
+                #print("You will need to reconnect this when doing operations.")
         except KeyError:
             print("Defaulting to programmer version: 1")
     # finish
@@ -468,6 +482,7 @@ def omg_fetch_latest_firmware(create_dst_dir=False,dst_dir="./firmware"):
             pymap[mem_size]=file_map
         #pprint(pymap)
         #pprint(dl_files)
+        print(f"\n\n<<<< WARNING: Firmware was not found in {dst_dir}! Resetting and attempting to download {curr_branch} firmware from the internet. >>>> \n\n")
         for dl_file in dl_files:
             dl_url = ("%s/firmware/%s"%(FIRMWARE_URL,dl_file)).replace("%BRANCH%",curr_branch)
             n = get_resource_file(dl_url)    
@@ -684,7 +699,8 @@ def omg_input():
         while not SANITIZED_SELECTION:
             try:
                 CUST_INPUT = str(input("\nCUSTOMIZE PAYLOAD AND KEYLOG ALLOCATIONS?\n(Note: Only compatible with Plus and Elite O.MG Devices)\nBegin Customization? (Yes or No) ")).lower()
-                if "yes" in CUST_INPUT or "no" in CUST_INPUT:
+                if "yes" in CUST_INPUT or "no" in CUST_INPUT or '' in CUST_INPUT:
+                    print("Using default")
                     SANITIZED_SELECTION = True
                 if "yes" in CUST_INPUT:
                     FLASH_CUSTOMIZE=1
@@ -699,7 +715,9 @@ def omg_input():
                 if CUST_INPUT>0 and CUST_INPUT<101:
                     SANITIZED_SELECTION=True
                     FLASH_PAYLOAD_PERCENT = CUST_INPUT
-                    break
+                elif '' in CUST_INPUT:
+                    SANITIZED_SELECTION=True
+                    print("Using default")
             except:
                 pass
     
@@ -886,4 +904,3 @@ if __name__ == '__main__':
         print("<<< FATAL ERROR: %s. PLEASE DISCONNECT AND RECONNECT DEVICE AND START TASK AGAIN >>>"%str(e))
         sys.exit(1) # special case
     complete(0)
-
