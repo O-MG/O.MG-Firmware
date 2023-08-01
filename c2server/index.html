@@ -1737,23 +1737,31 @@ DELAY 2000
 				</select></div>
 			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Count</span> <select id="payloadSlotCount" onchange="generatePartitionEditor();"></select></div>
 			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Size</span> <select id="payloadSlotSize" onchange="generatePartitionEditor();">
-					<option value="1">x-small</option>
-					<option value="2">small</option>
-					<option value="4" selected="selected">medium</option>
-					<option value="8">large</option>
-					<option value="16">x-large</option>
-					<option value="32">xx-large</option>
-					<option value="64">xxx-large</option>
+					<option value="1">4 KB</option>
+					<option value="2">8 KB</option>
+					<option value="4" selected="selected">16 KB</option>
+					<option value="8">32 KB</option>
+					<option value="16">64 KB</option>
+					<option value="32">128 KB</option>
+					<option value="64">256 KB</option>
+				</select></div>
+			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Payload Cache</span> <select id="plcacheSlotSize" onchange="generatePartitionEditor();">
+					<option value="0">none</option>
+					<option value="10">40 KB</option>
+					<option value="20">80 KB</option>
+					<option value="40">160 KB</option>
+					<option value="80" selected="selected">320 KB</option>
+					<option value="120">480 KB</option>
 				</select></div>
 			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Bootscript</span> <select id="bootscriptSlotSize" onchange="generatePartitionEditor();">
 					<option value="0">none</option>
-					<option value="1">x-small</option>
-					<option value="2">small</option>
-					<option value="4" selected="selected">medium</option>
-					<option value="8">large</option>
-					<option value="16">x-large</option>
-					<option value="32">xx-large</option>
-					<option value="64">xxx-large</option>
+					<option value="1">4 KB</option>
+					<option value="2">8 KB</option>
+					<option value="4" selected="selected">16 KB</option>
+					<option value="8">32 KB</option>
+					<option value="16">64 KB</option>
+					<option value="32">128 KB</option>
+					<option value="64">256 KB</option>
 				</select></div>
 		</div><br>
 		<h2>Exfiltration</h2>
@@ -2982,11 +2990,20 @@ DELAY 2000
 
 			let payloadSlotAvailable = 0;
 			for (let key in globalJson) {
-				if (key.startsWith("bootscript") || key.startsWith("payload") || key.startsWith("exec") || key.startsWith("keylog") || key.startsWith("<free>")) {
+				if (key.startsWith("bootscript") || key.startsWith("payload") || key.startsWith("exec") || key.startsWith("keylog") || key.startsWith("plcache") || key.startsWith("hidxfile") || key.startsWith("<free>")) {
 					payloadSlotAvailable += parseInt(globalJson[key][1]);
 				}
 			}
-			updateElement('partitionEditorAvailable', payloadSlotAvailable);
+			//	console.log(`[payloadSlotAvailable]:[${payloadSlotAvailable}]`);
+			const elementIds = {
+				'partitionEditorAvailable': {
+					value: payloadSlotAvailable,
+					method: 'value'
+				},
+			};
+			setElementValues(elementIds);
+
+			//	updateElement('partitionEditorAvailable', payloadSlotAvailable);
 			updateElement('response-CFList', JSON.stringify(globalJson));
 			globalJson = {};
 		}
@@ -3524,6 +3541,7 @@ DELAY 2000
 		}
 
 		function processPayload(payload) {
+			updateLineNumbers();
 			let originalPayload = payload;
 			let payloadLines = payload.split('\n');
 			try {
@@ -3564,7 +3582,7 @@ DELAY 2000
 
 		function runDuckyScriptByLine() {
 			payloadCompiled = compileDuckyScriptByLine();
-			console.log(payloadCompiled);
+			//	console.log(payloadCompiled);
 		}
 
 		function compileDuckyScriptByLine() {
@@ -4033,6 +4051,9 @@ DELAY 2000
 		}
 
 		function payloadSlotLoad(slotValue) {
+			if (slotValue == "") {
+				return;
+			}
 			createDialog({
 				id: 'payloadloading',
 				title: 'Loading Payload',
@@ -4110,6 +4131,10 @@ DELAY 2000
 
 		// Payload Save
 		function payloadSlotSave(slotValue) {
+			if (slotValue == "") {
+				return;
+			}
+
 			iterations = 0;
 			createDialog({
 				id: 'payloadsaving',
@@ -4129,7 +4154,7 @@ DELAY 2000
 			const sectorSize = 4096;
 			if (slotValue == "bootscript") {
 				scriptcode = compileDuckyScript();
-				writeSize = 1008;
+				writeSize = 1020;
 			} else {
 				scriptcode = [unescapeHtml(payloadEditor.value)];
 				writeSize = 1024;
@@ -4154,13 +4179,16 @@ DELAY 2000
 
 			iterations = Math.ceil(totalLength / writeSize);
 
+			//	console.log(`[slotValue]:[${slotValue}] [writeSize]:[${writeSize}] [payloadSlotBlocks]:[${payloadSlotBlocks}] [payloadSlotSectors]:[${payloadSlotSectors}] [payloadSlotSize]:[${payloadSlotSize}] [payloadSlotAddress]:[${payloadSlotAddress}] [totalLength]:[${totalLength}] [iterations]:[${iterations}] [scriptcode]:[${scriptcode}]`);
+
 			scriptcode.forEach(payload => {
 				for (let i = 0; i < iterations; i++) {
 					parsement = payload.substr(i * writeSize, writeSize);
+					//			console.log(`[iterations]:[${iterations}] [parsement]:[${parsement}]`);
 					const alignment = Math.ceil(parsement.length / 4) * 4;
 					const slotAddress = parseInt(payloadSlotAddress) + i * writeSize;
 					cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
-					if (slotValue == "bootscript") {
+					if (slotValue == "bootscript" && parsement !== "") {
 						cmd = `[pS-${i}.${iterations}]CEStore\tbootscript\t${parsement}`;
 						//cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
 					}
@@ -4213,13 +4241,11 @@ DELAY 2000
 
 			let counter = 0;
 			scriptcode.forEach(payload => {
-				var trimmedPayload = payload.slice(6, payload.length - 6);
-				console.log(trimmedPayload);
-				crc16segment = crc16augccitt(trimmedPayload);
+				//		var trimmedPayload = payload.slice(6, payload.length - 6);
+				//		console.log(trimmedPayload);
+				//		crc16segment = crc16augccitt(trimmedPayload);
 
-				//		let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE[${crc16segment}]${payload}`;
 				let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE[${crc16}]${payload}`;
-				//		let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE${payload}`;
 				counter++;
 
 				if (!payload) {
@@ -5863,15 +5889,18 @@ DELAY 2000
 		// Partition Editor Module
 		function partitionEditorCurrent() {
 			let cfbootscriptSize = document.getElementById("bootscript") ? document.getElementById("bootscript").value : '1';
-			let cfhidxfileSize = document.getElementById("hidxfile") ? document.getElementById("hidxfile").value : '0';
+			let cfhidxfileSize = document.getElementById("hidxfile") ? document.getElementById("hidxfile").value : '16';
 			let cfpayload1Size = document.getElementById("payload1") ? document.getElementById("payload1").value : '1';
+			let cfplcacheSize = document.getElementById("plcache") ? document.getElementById("plcache").value : '80';
 			let payloadList = document.getElementById("payload-list");
 			let cfpayloadSlots = payloadList ? payloadList.querySelectorAll("option").length : 0;
+			//	console.log(`[cfpayloadSlots]:[${cfpayloadSlots}] [payloadList]:[${payloadList}]`);
 
 			let cfpayloadSlotType = document.getElementById("payloadSlotType") ? document.getElementById("payloadSlotType").value : '1';
 
 			document.getElementById("bootscriptSlotSize").value = cfbootscriptSize;
 			document.getElementById("hidxfileSize").value = cfhidxfileSize;
+			document.getElementById("plcacheSlotSize").value = cfplcacheSize;
 			document.getElementById("payloadSlotCount").value = cfpayloadSlots;
 			document.getElementById("payloadSlotSize").value = cfpayload1Size;
 			document.getElementById("payloadSlotType").value = slotmode;
@@ -5882,15 +5911,17 @@ DELAY 2000
 			let availableSpace = document.getElementById("partitionEditorAvailable").value;
 			let bootslotSize = document.getElementById("bootscriptSlotSize").value;
 			let hidxfileSize = document.getElementById("hidxfileSize").value;
+			let plcacheSize = document.getElementById("plcacheSlotSize").value;
 			let slotSize = document.getElementById("payloadSlotSize").value;
 			let slotCount = document.getElementById("payloadSlotCount").value;
 			let payloadSlotType = document.getElementById("payloadSlotType").value;
-			let existingUsed = parseInt(bootslotSize) + parseInt(hidxfileSize);
+			let existingUsed = parseInt(bootslotSize) + parseInt(hidxfileSize) + parseInt(plcacheSize);
 
 			document.getElementById("payloadSlotCount").innerHTML = "";
 
 			let payloadList = document.getElementById("payload-list");
 
+			//	console.log(`[availableSpace]:[${availableSpace}] [slotSize]:[${slotSize}] [payloadSlotType]:[${payloadSlotType}] [existingUsed]:[${existingUsed}]`);
 			listValues = generatePartitionSlotList(availableSpace, slotSize, payloadSlotType, existingUsed);
 			if (slotCount == "") {
 				slotCount = payloadList ? payloadList.querySelectorAll("option").length : 7;
@@ -5932,6 +5963,7 @@ DELAY 2000
 		function partitionEditorApply() {
 			let bootslotSize = document.getElementById("bootscriptSlotSize").value;
 			let hidxfileSize = document.getElementById("hidxfileSize").value;
+			let plcacheSize = document.getElementById("plcacheSlotSize").value;
 			let slotSize = document.getElementById("payloadSlotSize").value;
 			let slotCount = document.getElementById("payloadSlotCount").value;
 			let payloadSlotType = document.getElementById("payloadSlotType").value;
@@ -5944,7 +5976,7 @@ DELAY 2000
 			let wifiSSID = wifiInfo[2];
 			let wifiPASS = wifiInfo[3];
 
-			let toRunMiddle = `INIT;F:keylog=0;F:payload1=0;F:payload2=0;F:payload3=0;F:payload4=0;F:payload5=0;F:payload6=0;F:payload7=0;F:bootscript=${bootslotSize};F:hidxfile=${hidxfileSize};`;
+			let toRunMiddle = `INIT;F:keylog=0;F:payload1=0;F:payload2=0;F:payload3=0;F:payload4=0;F:payload5=0;F:payload6=0;F:payload7=0;F:bootscript=${bootslotSize};F:hidxfile=${hidxfileSize};F:plcache=${plcacheSize};`;
 			let toRunPostfix = `F:keylog=100%F;S:wifimode=${wifiMODE};S:wifissid=${wifiSSID};S:wifikey=${wifiPASS};`;
 			let toRunContent = "";
 			for (let i = 0; i < slotCount; i++) {
