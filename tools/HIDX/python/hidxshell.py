@@ -3,6 +3,10 @@
 # You may need root access to use this.
 # mischief gadgets, wasabi 2023
 
+# This is a POC
+# X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+
+
 ##### 
 ##### NOTE: THIS REQUIRES pyusb and libusb (either via pip3 install libusb_package or libusb1.0 library on your system)
 #####
