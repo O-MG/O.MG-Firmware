@@ -6,7 +6,6 @@
 # This is a POC
 # X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
 
-
 ##### 
 ##### NOTE: THIS REQUIRES pyusb and libusb (either via pip3 install libusb_package or libusb1.0 library on your system)
 #####
@@ -209,7 +208,8 @@ class HIDX():
                 for _r in rawdata:
                     if 32 <= _r <= 126 or _r in [10]:
                         procdata+=chr(_r).encode()
-                raw_message+=procdata 
+                raw_message+=procdata
+                #print(f"{remainder}/{report_size} = {procdata}")
                 recv_packets += 1
                 recv_bytes += len(rawdata)
         except uc.USBTimeoutError:
@@ -390,3 +390,5 @@ if __name__ == "__main__":
         if debug:
             print("In Interactive Shell Mode")
         hdx.start()
+
+

@@ -15,6 +15,9 @@ This POC will allow data exfiltration back to the O.MG’s flash storage or
 act as a proxy between the target host and another device, via the O.MG
 Device's built-in WiFi interface, which can allow you to receive data via listeners 
 like nc, netcat, or similar tools.
+This is a POC
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+
 
 .PARAMETER Message
 Message which gets exfiltrated.
