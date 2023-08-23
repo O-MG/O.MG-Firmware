@@ -10,6 +10,17 @@ from datetime import datetime
 from time import sleep
 from pprint import pprint
 
+###  READ ME ###
+# Known Issues
+# 1. This version converts everything to ascii characters
+#(e.g. latin or unicode are converted) so not recommended for binary copies.  Use StealthLinkFile instead
+# 2. This version does not error check or validate messages which means some 
+# messages may be incomplete or corrupted and it will attempt to continue
+# 3. any packetloss or latency on the link may cause packet loss in this version some messages may not come through 
+# 4. tcp socket may stay open on this client, please wait a minute or two and it will unbind.
+
+## The code
+
 ## These we can set but aren't meant to be changed regularly
 ## So not a part of the user inputs and flags
 nowait = True # wait or not wait for end of message control characters 
@@ -19,7 +30,7 @@ delay = None # delay between messages (0.2-0.5 is fine) default to None
 
 def pad_input(input_str, left_pad=False, right_pad=False, chunk_size = 8):
     if left_pad and right_pad:
-        raise Exception("Cannot add padding on both the left and right side!")
+        raise Exception("[!] Cannot add padding on both the left and right side!")
     # default to right pad
     if not left_pad and not right_pad:
         right_pad = True
