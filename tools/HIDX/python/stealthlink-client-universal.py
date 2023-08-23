@@ -31,7 +31,6 @@ def handle_client(client_socket,run):
 			run.clear()
 			break
 		else:
-			pprint(data)
 			recvlog(f">{data}")
 	
 def console_input(client_socket,run):
