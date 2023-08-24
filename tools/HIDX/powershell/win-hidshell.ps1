@@ -8,10 +8,8 @@ Required Dependencies: Activated HIDX on OMG Elite device
 function HIDXShell {
 <#
 .DESCRIPTION
+This is a POC.
 This powershell script is a PoC for a bidirectional, shell-like connection between a host and an O.MG Elite device.
-Best usage with listener: https://github.com/O-MG/O.MG-Firmware/blob/beta/tools/HIDX/python/universal-hidxcli.py
-This is a POC
-X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
 
 .PARAMETER VendorID
 Defining vendor ID of the device. (Default: D3C0)
@@ -32,6 +30,7 @@ https://github.com/spiceywasabi
 https://github.com/rogandawes
 
 #Credits to Rogan for idea of filehandle and device identification
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H* amsiscanbuffer
 #>
 
     [cmdletbinding()]
