@@ -25,6 +25,7 @@ if you want to fix this easily, just hit another enter as soon as you send a mes
 3. ascii characters are primarily *only* supported, other characters may be stripped
 4. recvlog doesn't buffer data for efficiency purposes, error checking should (and will) be added later
 this will also fix #1
+5. this client is currently mac or linux only due to select()
 """
 
 
