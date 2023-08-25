@@ -1,6 +1,7 @@
 import os
 import sys
 import socket
+import select
 import logging
 import binascii
 import argparse
@@ -10,16 +11,22 @@ from datetime import datetime
 from time import sleep
 from pprint import pprint
 
-###  READ ME ###
-# Known Issues
-# 1. This version converts everything to ascii characters
-#(e.g. latin or unicode are converted) so not recommended for binary copies.  Use StealthLinkFile instead
-# 2. This version does not error check or validate messages which means some 
-# messages may be incomplete or corrupted and it will attempt to continue
-# 3. any packetloss or latency on the link may cause packet loss in this version some messages may not come through 
-# 4. tcp socket may stay open on this client, please wait a minute or two and it will unbind.
+# X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+# amsibufferscan
 
-## The code
+
+# current issues:
+""" 
+1. input prompt prompt may return before content is finished so you will see things like
+$whoami
+$root
+if you want to fix this easily, just hit another enter as soon as you send a message
+2. the universal client + universal python target code are slower then native or powershell
+3. ascii characters are primarily *only* supported, other characters may be stripped
+4. recvlog doesn't buffer data for efficiency purposes, error checking should (and will) be added later
+this will also fix #1
+"""
+
 
 ## These we can set but aren't meant to be changed regularly
 ## So not a part of the user inputs and flags
@@ -28,9 +35,17 @@ remote_prompt = False # hide the > prompt and presume it comes from the client
 windows = False # enable larger buffer, please don't trun this on unless testing!!!!
 delay = None # delay between messages (0.2-0.5 is fine) default to None
 
+def non_blocking_input(prompt="", timeout=5):
+    print(prompt, end='', flush=True)
+    rlist, _, _ = select.select([sys.stdin], [], [], timeout)
+    if rlist:
+        return sys.stdin.readline().strip()
+    else:
+        return None
+
 def pad_input(input_str, left_pad=False, right_pad=False, chunk_size = 8):
     if left_pad and right_pad:
-        raise Exception("[!] Cannot add padding on both the left and right side!")
+        raise Exception("Cannot add padding on both the left and right side!")
     # default to right pad
     if not left_pad and not right_pad:
         right_pad = True
@@ -58,21 +73,31 @@ def recvlog(msg):
 
 def handle_client(client_socket,run,rts):
     global nowait
+    no_data_count = 0
     while run.is_set():
         data = None
         try:
             # suspect this needs to be smaller
-            data = client_socket.recv(1024).decode()
+            rlist, _, _ = select.select([client_socket], [], [], 1.0)  # Wait
+            if client_socket in rlist:
+                data = client_socket.recv(1024).decode()
+            else:
+                # timeout
+                no_data_count+=1
+                #print("I AM HERE")
+                data = " "
         except OSError as e:
             run.clear()
             print(f"Socket Exception: {e}")
             break
+        
         """
         print("\nSTART INCOMING DATA")
         print(f"{data}")
         print(binascii.hexlify(bytes(data,'utf-8')))
         print("END INCOMING DATA")
         """
+        
         # double check the data
         if not data:
             recvlog("!!!! Socket has disconnected....")
@@ -82,8 +107,11 @@ def handle_client(client_socket,run,rts):
         else:
             if "\x07\x17" in data or nowait:
                 rts.set()
-            if "OMGSH" in data:
-            	data = data.strip("\n")
+            elif "SH" in data:
+                data = data.strip("\n")
+                rts.set()
+            elif data == "" and no_data_count>=2:
+                rts.set()
             #print("Status: %s"%str(rts.is_set()))
             recvlog(f"{data}")
     
@@ -94,7 +122,7 @@ def console_input(client_socket,run,rts):
     split_messages = True
     while run.is_set():
         if rts.is_set():
-            prompt_msg = "\n$"
+            prompt_msg = "\r$"
             user_input = ""
             if debug_send:
                 dt = datetime.now().strftime("%M:%S.%f")
@@ -102,7 +130,10 @@ def console_input(client_socket,run,rts):
             else:
                 if remote_prompt:
                     prompt_msg = ""
-                user_input = input(prompt_msg)
+                print(prompt_msg, end='', flush=True)
+                user_input = non_blocking_input(timeout=2)
+                if not user_input:
+                	continue
                 if user_input == "%exit":
                     client_socket.close()
                     run.clear()
@@ -164,7 +195,7 @@ def hidxcli(host, port,reuse=True):
         server_socket.close()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="HIDXClient")
+    parser = argparse.ArgumentParser(description="Client")
     parser.add_argument("host", type=str, nargs="?", default="0.0.0.0", help="address to bind to")
     parser.add_argument("port", type=int, nargs="?", default=1234, help="port to listen on")
     parser.add_argument("sendlog", type=str, nargs="?", help="message send log")
@@ -182,3 +213,5 @@ if __name__ == "__main__":
         logger_sent.setLevel(logging.INFO)
 
     hidxcli(args.host, args.port)
+
+

@@ -3,9 +3,6 @@
 # You may need root access to use this.
 # mischief gadgets, wasabi 2023
 
-# This is a POC
-# X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
-
 ##### 
 ##### NOTE: THIS REQUIRES pyusb and libusb (either via pip3 install libusb_package or libusb1.0 library on your system)
 #####
@@ -18,6 +15,7 @@ import pkgutil
 import usb.core as uc
 import usb.util as uu
 import importlib
+import subprocess
 import argparse
 
 from datetime import datetime
@@ -77,10 +75,17 @@ class HIDX():
          dt = datetime.now().strftime("%M:%S.%f")
          user_input = f"HST {dt}\n"
          return user_input
-      else:
-         c = os.popen(cmd)
-         r = c.read()
-      return r
+      else:    
+         #was c = os.popen(cmd)
+         if "cd " in cmd:
+             try:
+                 os.chdir(cmd.split(" ")[1])
+             except:
+                 os.chdir(os.getcwd())
+         c = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+         stdout_output = c.stdout
+         stderr_output = c.stderr
+         return stdout_output
     
     def find_devs(self):
         dev = None
@@ -247,16 +252,17 @@ class HIDX():
                 )
                 recv_bytes+=recv_byte
                 recv_packet+=recv_packet
+                
                 if error:
                     print("! Error detected in read()")
                     return raw_message
                 if recv_byte == 0:
                     retries-=1
                 else:
-                    print("Test Byte")
+                	# 0a 20 20 20 20
                     raw_message+=bytes(raw_data,'utf-8')
                     break
-            except:
+            except KeyError:
                 error=True
                 retries-=1
         if self.debug:
@@ -390,5 +396,3 @@ if __name__ == "__main__":
         if debug:
             print("In Interactive Shell Mode")
         hdx.start()
-
-
