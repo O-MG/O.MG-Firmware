@@ -132,7 +132,7 @@ def console_input(client_socket,run,rts):
                 if remote_prompt:
                     prompt_msg = ""
                 print(prompt_msg, end='', flush=True)
-                user_input = non_blocking_input(timeout=2)
+                user_input = input()
                 if not user_input:
                 	continue
                 if user_input == "%exit":
