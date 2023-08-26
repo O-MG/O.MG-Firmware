@@ -79,14 +79,14 @@ def handle_client(client_socket,run,rts):
         data = None
         try:
             # suspect this needs to be smaller
-            rlist, _, _ = select.select([client_socket], [], [], 1.0)  # Wait
-            if client_socket in rlist:
-                data = client_socket.recv(1024).decode()
-            else:
-                # timeout
-                no_data_count+=1
-                #print("I AM HERE")
-                data = " "
+            #rlist, _, _ = select.select([client_socket], [], [], 1.0)  # Wait
+            #if client_socket in rlist:
+            data = client_socket.recv(1024).decode()
+            #else:
+            #    # timeout
+            #    no_data_count+=1
+            #    #print("I AM HERE")
+            #    data = " "
         except OSError as e:
             run.clear()
             print(f"Socket Exception: {e}")
