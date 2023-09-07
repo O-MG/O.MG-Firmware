@@ -35,7 +35,7 @@ if 'idlelib.run' in sys.modules:
     print("If you have any questions please see the wiki https://github.com/O-MG/O.MG-Firmware/wiki")
     sys.exit(1)
 
-VERSION = "FIRMWARE FLASHER VERSION NUMBER [ 230228 @ 142312 UTC ]"
+VERSION = "FIRMWARE FLASHER VERSION NUMBER [ 230907 @ 153241 UTC ]"
 FLASHER_VERSION = 1 # presume we have an old style flasher = 1
 FLASHER_VERSION_DETECT = True
 
