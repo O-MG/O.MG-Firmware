@@ -354,8 +354,13 @@ def ask_for_port():
                     print(f"!! Warning: Manually selecting port {port}, but unable to verify it is a CP210x device")
                 break
             else:
-                print("Invalid option. You must enter an index or full path to the device")
-                pass
+                if len(ports)==1:
+                    print("<<< ONLY ONE PROGRAMMER FOUND, SELECTING PROGRAMMER 1 >>>")
+                    port = ports[0]
+                    break
+                else:
+                    print("Invalid option. You must enter an index or full path to the device")
+                    pass
         else:
             port = ports[index]
             break
@@ -760,7 +765,7 @@ def omg_flashfw(mac=None,flash_size=None):
         print("\n<<< SOMETHING FAILED WHILE FLASHING >>>")
         complete(1)
 
-def omg_runflash(pre_erase=False,skip_flash=False):
+def omg_runflash(pre_erase=False,skip_flash=False,skip_input=False,skip_reset=False):
     # get info
     mac, flash_size = get_dev_info(results.PORT_PATH)
     if (pre_erase and skip_flash) or FLASHER_VERSION>=2:
@@ -774,7 +779,8 @@ def omg_runflash(pre_erase=False,skip_flash=False):
             command = ['--baud', baudrate, '--port', results.PORT_PATH, 'erase_region', '0x70000', '0x18A000']
         omg_flash(command)
     if not skip_flash:
-        omg_input()
+        if not skip_input:
+            omg_input()
         omg_patch(results.WIFI_SSID, results.WIFI_PASS, results.WIFI_MODE, results.FLASH_SLOTS, results.FLASH_PAYLOAD_SIZE)
         omg_flashfw(mac,flash_size)
         print("\n[ WIFI SETTINGS ]")
@@ -789,7 +795,8 @@ def omg_runflash(pre_erase=False,skip_flash=False):
             np=results.NUMBER_SLOTS
             print(f"\n    PERCENT FLASH PAYLOAD SPACE: {pp}\n    PERCENT FLASH KEYLOG SPACE: {kp} (Where Applicable)\n    NUMBER OF PAYLOADS: {np}\n    SIZE OF PAYLOAD SLOTS: {ns}k\n    ")
     # attempt to always erase settings
-    omg_reset_settings()
+    if not skip_reset:
+        omg_reset_settings()
     
 def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -866,16 +873,17 @@ if __name__ == '__main__':
             omg_input()
             repeating = ''
             while repeating != 'e':
-                omg_runflash(True)
+                omg_runflash(True,skip_input=True,skip_reset=True)
                 repeating = input("\n\n<<< PRESS ENTER TO UPGRADE NEXT DEVICE, OR 'E' TO EXIT >>>\n")
-                complete(0)
+            omg_reset_settings()
+            complete(0)
         elif MENU_MODE == '4':
             baudrate = '460800'
             print("\nFACTORY RESET - BATCH MODE")
             omg_input()
             repeating = ''
             while repeating != 'e':
-                omg_runflash(True,True)
+                omg_runflash(True,True,skip_input=True,skip_reset=True)
                 repeating = input("\n\n<<< PRESS ENTER TO RESTORE NEXT DEVICE, OR 'E' TO EXIT >>>\n")
         elif MENU_MODE == '5':
             print("\nBACKUP DEVICE")
