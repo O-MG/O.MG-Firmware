@@ -1537,11 +1537,8 @@
 			<div id="sidebar_settings_config" class="hidden">
 				<h3>USB ID Defaults</h3><label>Change the default USB identifiers. Any identifiers specified in a payload will override these defaults.</label><br><label for="device-USBVID">USB Vendor ID</label> <input type="text" id="device-USBVID" name="device-USBVID"> <label for="device-USBPID">USB Product ID</label> <input type="text" id="device-USBPID" name="device-USBPID"> <label for="device-USBMAN">USB Manufacturer</label> <input type="text" id="device-USBMAN" name="device-USBMAN"> <label for="device-USBPRO">USB Product</label> <input type="text" id="device-USBPRO" name="device-USBPRO"> <label for="device-USBSER">USB Serial Number</label> <input type="text" id="device-USBSER" name="device-USBSER"> <button class="submitButton" id="update-USBIDs" onclick="applyEffect(this); updateUSBIDs();">Update All USB IDs at once</button>
 				<div class="hidx">
-					<h4>Experimental Speed</h4><select name="experimentalSpeed" id="experimentalSpeed" onchange="sendMessage(`CTSet\tusbinterval\t${this.value}`);sendMessage(`CTList`);">
+					<h4>USB Overclock</h4><select name="experimentalSpeed" id="experimentalSpeed" onchange="sendMessage(`CTSet\tusbinterval\t${this.value}`);sendMessage(`CTList`);">
 						<option value="10">100%</option>
-						<option value="8">125%</option>
-						<option value="4">250%</option>
-						<option value="2">500%</option>
 						<option value="1">1000%</option>
 					</select> <button class="submitButton" id="experimentalSpeed" onclick="applyEffect(this); sendMessage(`CR1`)">Apply + Reboot</button>
 				</div>
@@ -1608,7 +1605,7 @@
 						<h3>Self Destruct</h3><button class="submitButton" id="sidebar_settings_config_selfDestructFull" onclick="applyEffect(this); sendMessage(`CD1`)">Self Destruct (Full)</button>
 						<aside>Completely erase all data and disconnect data lines to make device behave "broken". You will need to reflash the firmware to recover.</aside><br><button class="submitButton" id="sidebar_settings_config_selfDestructPartial" onclick="applyEffect(this); sendMessage(`CD2`)">Self Destruct (Partial)</button>
 						<aside>Erase all data, but leave data lines connected, so it behaves like a normal device. You will need to reflash the firmware to recover.</aside>
-					</div>
+					</div><label for="sidebar_settings_debug_cldelete" class="keylog">Erase Keylog</label> <button class="submitButton" id="sidebar_settings_debug_cldelete" onclick="applyEffect(this); sendMessage(`CLDelete`);">Erase Keylog</button><br>
 					<h2>Custom Command</h2><label for="customCommandInput">Input</label> <input type="text" id="customCommandInput" name="customCommandInput" spellcheck="false"> <button id="customCommandRun" class="updateButton" onclick="applyEffect(this); issueCustomCommand();">Run</button> <label for="customCommandOutput">Output</label> <textarea id="customCommandOutput" spellcheck="false"></textarea> <button id="enableDebugMenu" class="" onclick="applyEffect(this); document.getElementById(`contentSubNav_debug`).classList.remove(`hidden`);document.getElementById(`debug-info`).classList.remove(`hidden`);document.getElementById(`footerNavPayloadEvalByLine`).classList.remove(`hidden`);document.getElementById(`footerNavPayloadRunByLine`).classList.remove(`hidden`);">Enable Debug Menu</button>
 				</div>
 			</div>
@@ -1776,7 +1773,7 @@ DELAY 2000
 				<option value="64">256 KB</option>
 				<option value="128">512 KB</option>
 			</select></div>
-		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Keylog</span> <span id="keylogSize"></span></div><br><br><button id="partitionEditorDefault" class="submitButton" onclick="applyEffect(this); partitionEditorApply();">Apply Layout</button>
+		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Keylog</span> <span id="keylogSize"></span><span>&nbsp;keys</span></div><br><br><button id="partitionEditorDefault" class="submitButton" onclick="applyEffect(this); partitionEditorApply();">Apply Layout</button>
 	</dialog>
 	<dialog id="partitionApplied"><button class="closeModal" type="button" onclick="viewDialog('partitonApplied', 'close')">&times;</button>
 		<h2>Partition Applied</h2>
@@ -1784,7 +1781,7 @@ DELAY 2000
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230801";
+		frontendVersionNumber = "3.0-230914";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1889,6 +1886,7 @@ DELAY 2000
 
 		const typeMap = {
 			'a': ['* to USB-A Cable', 'red'],
+			'b': ['Unblocker', 'red'],
 			'c': ['* to USB-C Cable', 'red'],
 			'd': ['USB-C Directional Cable', 'red'],
 			'p': ['Plug', 'blue'],
@@ -1906,6 +1904,7 @@ DELAY 2000
 
 		const featureFlagMap = {
 			'pc': ['global', 'syslog', 'debug', 'payload'],
+			'bd': ['global', 'syslog', 'debug', 'payload', 'c2', 'hidx', 'stealth'],
 			'pd': ['global', 'syslog', 'debug', 'payload', 'c2', 'hidx', 'stealth'],
 			'xc': ['global', 'syslog', 'debug', 'payload', 'c2', 'hidx', 'stealth'],
 			'c': ['global', 'syslog', 'debug', 'payload', 'stealth'],
@@ -3612,7 +3611,7 @@ DELAY 2000
 			payloadCompiled = payloadCompiled.toUpperCase();
 
 			let payload1Size = document.getElementById("payload1") ? document.getElementById("payload1").value : '1';
-			let payloadStoragePercent = (((payloadCompiled.length / 6) / (payload1Size * 4096)) * 100).toFixed(0) + '%';
+			let payloadStoragePercent = (((payloadCompiled.length / 2) / (payload1Size * 4096)) * 100).toFixed(0) + '%';
 			document.getElementById('payloadStorageUsedBar').style.width = payloadStoragePercent;
 			document.getElementById('payloadStoragePercent').innerHTML = payloadStoragePercent;
 			payloadCompiled = split_process(payloadCompiled);
@@ -6212,10 +6211,10 @@ DELAY 2000
 			"AR_101": ['ش ؤيثبلاهتنمةىخحضقسفعرصءغئ1234567890-=جد\\كطذوزظ ', '  }] [ أ÷ـ،/’آ×؛    ‘{  إ~!@#$%^&*)(_+<>|:" ,.؟ '],
 			"AR_102": ['ش ؤيثبلاهتنمةىخحضقسفعرصءغئ1234567890-=جدذكط>وزظـ', '\\  ] [ أ÷ـ،/’آ×؛    ‘   إ~!@#$%^&*)(_+}{ :"<,.؟|', '                             ¤                 ²'],
 			"AR_FR": ['ش ؤيثبلاهتنمةىخحضقسفعرصءغئ&é"\'(-è_çà)=جدذكط>وزظ\\', '\\  ] [ أ÷ـ،/’آ×؛    ‘   إ~1234567890°+}{ :"<,.؟|', '                             ¤                 ²'],
-			"AR_SY_P": ['ܐܒܤܕܖܔܓܗܥܛܟܠܡܢܧܦܩܪܣܬܜܫܘܨܝܙ1234567890-=][܆ܚܞ܏܀.܇܆', 'ܑܱܸܷܻܾܿܶ̈ـ̤̱݂ܹܴܼ̄̇ܰܺܽ݁ܳܵ݀ܲ!̥̊݉♰♱܊»)(«+̃݊:̣̰̮،؛؟:', 'ِ   ُءٰٕ݈݄݆݃  ٌٍَ̭݅ٓ݇ ًْٔ ܁܂܃܄܅܈܉܋܌܍┌┐     ّ   ²'],
-			"AR_SY_S": ['ܫܧܤܝܖܒܠܐܗܬܢܡ.܀ܞܚܔܩܣܦܥܪܨ[ܜ]1234567890-=ܓܕ܆ܟܛ܏ܘܙ܇܆', 'ܑܱܸܷܻܾܿܶ̈ـ̤̱݂ܹܴܼ̄̇ܰܺܽ݁ܳܵ݀ܲ!̥̊݉♰♱܊»)(«+̃݊:̣̰̮،؛؟:', 'ِ   ُءٰٕ݈݄݆݃  ٌٍَ̭݅ٓ݇ ًْٔ ܁܂܃܄܅܈܉܋܌܍┌┐     ّ   ²'],
+			"AR_SY_P": ['ܐܒܤܕܖܔܓܗܥܛܟܠܡܢܧܦܩܪܣܬܜܫܘܨܝܙ1234567890-=][܆ܚܞ܏܀.܇܆', 'ܑܱܸܷܻܾܿܶ̈ـ̤̱݂ܹܴܼ̄̇ܰܺܽ݁ܳܵ݀ܲ!̥̊݉♰♱܊»)(«+̃݊:̣̰̮،؛؟:', 'ِ   ُءٰٕ݈݄݆݃  ٌٍَ̭݅ٓ݇ ًْٔ ܁܂܃܄܅܈܉܋܌܍┌┐     ّ   ²'],
+			"AR_SY_S": ['ܫܧܤܝܖܒܠܐܗܬܢܡ.܀ܞܚܔܩܣܦܥܪܨ[ܜ]1234567890-=ܓܕ܆ܟܛ܏ܘܙ܇܆', 'ܑܱܸܷܻܾܿܶ̈ـ̤̱݂ܹܴܼ̄̇ܰܺܽ݁ܳܵ݀ܲ!̥̊݉♰♱܊»)(«+̃݊:̣̰̮،؛؟:', 'ِ   ُءٰٕ݈݄݆݃  ٌٍَ̭݅ٓ݇ ًْٔ ܁܂܃܄܅܈܉܋܌܍┌┐     ّ   ²'],
 			"AR_US": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]`;\'<,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}~:">,.? '],
-			"AS": ['োৱম্ািুপগৰকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট॥,.য় ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ !@ ₹    ()ঃঋঢঞ ছঠ ষ।য '],
+			"AS": ['োৱম্ািুপগৰকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট॥,.য় ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ !@ ₹    ()ঃঋঢঞ ছঠ ষ।য '],
 			"AZ": ['gkvsşarnyəliqeohpuıdmtüfbç1234567890-=xj cğ#zö. ', 'GKVSŞARNYƏLİQEOHPUIDMTÜFBÇ!"№;%:?*()_+XJ CĞ~ZÖ, '],
 			"AZ_C": ['фисвуапршолдғтһзјкыегмүчнә1234567890-=хҹ\\жҝ`бө.\\', 'ФИСВУАПРШОЛДҒТҺЗЈКЫЕГМҮЧНӘ!"№;%:?*()_+ХҸ/ЖҜ~БӨ,|', '                           @ ₼                 ²'],
 			"AZ_L": ['abcdefghijklmnopqrstuvüxyz1234567890-=öğ\\ıə`çş. ', 'ABCDEFGHİJKLMNOPQRSTUVÜXYZ!"Ⅶ;%:?*()_+ÖĞ/IƏ~ÇŞ, '],
@@ -6225,18 +6224,18 @@ DELAY 2000
 			"BG_P": ['абцдефгхийклмнопчрстувшжъз1234567890-=ящь;\'ю,./ѝ', 'АБЦДЕФГХИЙКЛМНОПЧРСТУВШЖЪЗ!@№$%€§*()–+ЯЩѝ:"Ю„“?Ѝ'],
 			"BG_PT": ['абцдефгхийклмнопярстужвьъз1234567890-=шщю;\'ч,./ ', 'АБЦДЕФГХИЙКЛМНОПЯРСТУЖВѝЪЗ!@№$%€§*()_+ШЩЮ:"Ч<>? ', '                                      ЫЭ        '],
 			"BG_T": ['ьфъаеожгстнвпхдз,ияшкэуйщю1234567890-.ц;(мч`рлб\\', 'ЬФЪАЕОЖГСТНВПХДЗыИЯШКЭУЙЩЮ!?+"%=:/_№ІVЦ§)МЧ~РЛБ|'],
-			"BN": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব 1234567890-ৃড় চট ,.য ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ         ()ঃঋঢঞ ছঠ ষ{য় ', '৴  ৸ ৢ   ৰ      ৗৣ৶    ৺  ১২৩৪৫৬৭৮৯০ ৢড়         ', '৵  ৹ ঌ   ৱ       ৡ৷                  ৠঢ়         '],
-			"BN_I": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট॥,.য় ', 'ও ণঅআইউফঘৎখথশ ধঝঔঈএঊঙ ঐঁভ !@ ₹    ()ঃঋঢঞ ছঠ ষ।য '],
-			"BN_IL": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট ,.য় ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ !@      ()ঃঋঢঞ ছঠ ষ য '],
-			"BO": ['འཔཀདེབངམི་གལmནོཕཅརསཏུཁཆཤཡཟ༡༢༣༤༥༦༧༨༩༠ཧཝཙཚཛཞ།ཨཐཇཉ ', 'ཱ྆ཀྵཌ༗༾༿࿏༙༂༃༆Mཎ༚༛༕ྼ༟ཊ༘྇༖ཥྻ༴༪༫༬༭༮༯༰༱༲༳༼༽༜༝༞༇༸༁ཋ༺༻ ', '࿄ྂྐྵྜ྾བྷ࿆࿇ཱི࿈གྷ࿉དྷྞ࿀࿁ྉཪ࿅ྚཱུ༶ྈྵ྿࿌ྲྀཷླྀཹཱི༉༊༏༐༒༌༓࿂࿃ཛྷ࿊࿋ༀྛྋྊ '],
-			"BO_U": ['འཔཀདེབངམི་གལmནོཕཅརསཏུཁཆཤཡཟ༡༢༣༤༥༦༧༨༩༠ཧཝཙཚཛཞ།ཨཐཇཉ ', 'ཱ྆ཀྵཌ༗༾༿࿏༙༂༃༆Mཎ༚༛༕ྼ༟ཊ༘྇༖ཥྻ༴༪༫༬༭༮༯༰༱༲༳༼༽༜༝༞༇༸༁ཋ༺༻ ', '࿄ྂྐྵྜ྾བྷ࿆࿇ ࿈གྷ࿉དྷྞ࿀࿁ྉཪ࿅ྚ ༶ྈྵ྿࿌ྲྀ ླྀ  ༉༊༏༐༒༌༓࿂࿃ཛྷ࿊࿋ༀྛྋྊ '],
+			"BN": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব 1234567890-ৃড় চট ,.য ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ         ()ঃঋঢঞ ছঠ ষ{য় ', '৴  ৸ ৢ   ৰ      ৗৣ৶    ৺  ১২৩৪৫৬৭৮৯০ ৢড়         ', '৵  ৹ ঌ   ৱ       ৡ৷                  ৠঢ়         '],
+			"BN_I": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট॥,.য় ', 'ও ণঅআইউফঘৎখথশ ধঝঔঈএঊঙ ঐঁভ !@ ₹    ()ঃঋঢঞ ছঠ ষ।য '],
+			"BN_IL": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট ,.য় ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ !@      ()ঃঋঢঞ ছঠ ষ য '],
+			"BO": ['འཔཀདེབངམི་གལmནོཕཅརསཏུཁཆཤཡཟ༡༢༣༤༥༦༧༨༩༠ཧཝཙཚཛཞ།ཨཐཇཉ ', 'ཱ྆ཀྵཌ༗༾༿࿏༙༂༃༆Mཎ༚༛༕ྼ༟ཊ༘྇༖ཥྻ༴༪༫༬༭༮༯༰༱༲༳༼༽༜༝༞༇༸༁ཋ༺༻ ', '࿄ྂྐྵྜ྾བྷ࿆࿇ཱི࿈གྷ࿉དྷྞ࿀࿁ྉཪ࿅ྚཱུ༶ྈྵ྿࿌ྲྀཷླྀཹཱི༉༊༏༐༒༌༓࿂࿃ཛྷ࿊࿋ༀྛྋྊ '],
+			"BO_U": ['འཔཀདེབངམི་གལmནོཕཅརསཏུཁཆཤཡཟ༡༢༣༤༥༦༧༨༩༠ཧཝཙཚཛཞ།ཨཐཇཉ ', 'ཱ྆ཀྵཌ༗༾༿࿏༙༂༃༆Mཎ༚༛༕ྼ༟ཊ༘྇༖ཥྻ༴༪༫༬༭༮༯༰༱༲༳༼༽༜༝༞༇༸༁ཋ༺༻ ', '࿄ྂྐྵྜ྾བྷ࿆࿇ ࿈གྷ࿉དྷྞ࿀࿁ྉཪ࿅ྚ ༶ྈྵ྿࿌ྲྀ ླྀ  ༉༊༏༐༒༌༓࿂࿃ཛྷ࿊࿋ༀྛྋྊ '],
 			"BR": ['abcdefghijklmnopqrstuvwxyz1234567890-=´[]ç~\',.;/', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%¨&*()_+`{}Ç^"<>:?', '  ₢ °           /     ?   ¹²³£¢¬     § ªº      °'],
 			"BS": ['абцдефгхијклмнопљрстувњџзѕ1234567890\'+шђжчћ`,.- ', 'АБЦДЕФГХИЈКЛМНОПЉРСТУВЊЏЗЅ!"#$%&/()=?*ШЂЖЧЋ~;:_ ', ' {  €[]     §}  \\    @|     ^ °             <>  '],
 			"BUG": ['ᨕᨅᨌᨉᨙᨃᨁᨖᨗᨍᨀᨒᨆᨊᨚᨄᨛᨑᨔᨈᨘᨓᨏᨂᨐᨎ1234567890-=[]\\;\'ꧏ᨞᨟/ ', '            ᨇᨋ            !@#$%^&*()_+{}|:"~,.? '],
 			"BY": ['фисвуапршолдьтізйкыегмцчня1234567890-=хў\\жэёбю. ', 'ФИСВУАПРШОЛДЬТІЗЙКЫЕГМЦЧНЯ!"№;%:?*()_+ХЎ/ЖЭЁБЮ, '],
 			"CA": ['abcdefghijklmnopqrstuvwxyz1234567890-=^¸<;`#,.é«', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"/$%?&*()_+^¨>:`|\'.É»', '            µ §¶          ±@£¢¤¬¦²³¼½¾[]}~{\\¯ ´°'],
 			"CA_FR": ['abcdefghijklmnopqrstuvwxyz1234567890-=^çà;è°,.éù', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%?&*()_+^ÇÀ:È°\'.ÉÙ', 'æ ¢ð ª      µ øþ ¶ß    »¥«¹@³¼½¾{[]}|¸°~`´ ¬<>/\\', 'Æ ©Ð        º ØÞ ®§       ¡²£¤    ± ¿  ¨`´     |'],
-			"CA_N": ['abcdefghijklmnopqrstuvwxyz1234567890-=^çà;è/,.éù', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%?&*()_+¨ÇÀ:È\\\'"ÉÙ', 'æ”¢ðœ ŋħ→ĳĸŀµŉøþ ¶ßŧ↓“ł»←«¹²³¼½¾   ] ¸ ~ ´ |―·  ', 'Æ’©ÐŒªŊĦıĲ Ŀº♪ØÞΩ®§Ŧ↑‘Ł ¥ ¡ £€⅜⅝⅞™± ¿˛˚¯˘˝ˇ ×÷·¦'],
+			"CA_N": ['abcdefghijklmnopqrstuvwxyz1234567890-=^çà;è/,.éù', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%?&*()_+¨ÇÀ:È\\\'"ÉÙ', 'æ”¢ðœ ŋħ→ĳĸŀµŉøþ ¶ßŧ↓“ł»←«¹²³¼½¾   ] ¸ ~ ´ |―·  ', 'Æ’©ÐŒªŊĦıĲ Ŀº♪ØÞΩ®§Ŧ↑‘Ł ¥ ¡ £€⅜⅝⅞™± ¿˛˚¯˘˝ˇ ×÷·¦'],
 			"CHR": ['ᎠᎨᏓᏗᎡᎩᎦᎯᎢᏚᎸᎵᏅᎾᎣᏁᎪᏛᏍᏔᎤᎥᎳᏴᏯᎬ   ᏙᏦᏜᏋᏖᏒᏄᎿᏳᏕᎶᏩᏨ\'`,.Ꮒ ', 'ᏌᏰᏟᏐᏣᏈᏥᎲᏱᎫᎧᎮᎷᎻᏬᏪᏆᏏᏎᏘᎭᏞᏫᏭᏲᏃᎱᏇᏧᎰᎹᏝᏡᎺ()ᎼᎽᏑᏤᏮᏠ"ᏊᏢᎴᏉ ', 'abcdefghijklmnopqrstuvwxyz1234567890-=[]\\; Ꮐ<>/ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|: ~  ? '],
 			"CS": ['abcdefghijklmnopqrstuvwxzy+ĕščřžýáíé=´ú)¨ů§;,.-&', 'ABCDEFGHIJKLMNOPQRSTUVWXZY1234567890%ˇ/(\'"!°?:_*', ' {&Đ []   łŁ }  \\ đ  @|# >~ˇ^˘°˛`·´˝¨¸÷×¤$ß <>*<'],
 			"CS_101": ['abcdefghijklmnopqrstuvwxyz+ěščřžýáíé=´ú)¨ů§;,.-\\', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890%ˇ/(\'"!°?:_|', '    €                     !@#$%^&*()-=[]\\;¤`<>/ß', '                                    _+{}|:^~×÷?˝'],
@@ -6251,17 +6250,17 @@ DELAY 2000
 			"DVORAK_R": ['7ixzqaehutdcwnyb5.8os,60r91234jlmfp/[];=\\k-`vg\' ', '&IXZQAEHUTDCWNYB%>*OS<^)R(!@#$JLMFP?{}:+|K_~VG" '],
 			"DZ": ['ཏརའདགནཔཕོབམཙཤལཅཆཀངཐིེཡཁཟུཞ༡༢༣༤༥༦༧༨༩༠༔།ཇཉཝཚཛ༉སཧཨ ', 'ྟྲཱྡྒྣྤྥཽྦྨྩྴླྕྖྐྔྠྀཻྱྑྯ྄ྮ༄༅༆ ༎༈༸༴༼༽ཿ༑ྗྙྭྪྫ༊ྶྷྸ ', 'ཊཪ༃ཌྌཎ  ༝༷ཾ༹ཥ༒༞༟ྈྃཋ༚༜༏ྉ྾༛༓1234567890-=()\\;\'࿑,./ ', 'ྚྼྰྜྏྞ  ༗༵྇྆ྵ ༘༙ྍྂྛ  ྻྎ྿ ༶࿓࿔༺༻྅༁ྊ*  ࿒+༿༾ྺ:"࿐࿙࿚? '],
 			"EL": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890-=[]\\΄\'`,./ ', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ΅ΧΥΖ!@#$%^&*()_+{}|¨"~<>? ', '  © €            ®      ¥  ²³£§¶ ¤¦°±½«»¬΅      '],
-			"EL_220": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890\']+}#΄¨½,.-<', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ~ΧΥΖ!"£$%&/()=?[*{@¨΅±;:_>', '  © €            ®      ¥  ²³£§¶ ¤¦°±½«»¬΅΅     '],
+			"EL_220": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890\']+}#΄¨½,.-<', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ~ΧΥΖ!"£$%&/()=?[*{@¨΅±;:_>', '  © €            ®      ¥  ²³£§¶ ¤¦°±½«»¬΅΅     '],
 			"EL_220L": ['abcdefghijklmnopqrstuvwxyz1234567890\']+}#΄¨\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&/()=?[*{@¨΅|;:_>', '    €                      ²³£§¶ ¤¦°±½«»¬΅΅     '],
 			"EL_319": ['αβψδεφγηιξκλμνοπ·ρστθωςχυζ1234567890\'+[]²΄’½,.-§', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ―ΡΣΤΘΩ¦ΧΥΖ!"£$%¬/()=°*«»³¨‘±;:_©', '                                         ΅      '],
 			"EL_319L": ['abcdefghijklmnopqrstuvwxyz1234567890\'+[]`´^\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&/()=?*{}@¨~|;:_>', '    €                                           '],
 			"EL_L": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'á ©ðé   í  øµñóöä®ßþú å üæ¡²³¤€¼½¾‘’¥×«»¬¶´ ç ¿ ', 'Á ¢ÐÉ   Í  Ø ÑÓÖÄ §ÞÚ Å ÜÆ¹  £       ÷  ¦°¨ Ç   '],
-			"EL_P": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890-=[]\\΄\'~,./ ', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ΅ΧΥΖ!@#$%^&*()_+{}|¨"`<>? ', '  © €           ´®      ¥ ϚϞϠ£§¶ ¤¦°±½«»¬΅᾿῁  ι ', '                           ²³        ῟ ·῝ ῾   ῞ '],
+			"EL_P": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890-=[]\\΄\'~,./ ', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ΅ΧΥΖ!@#$%^&*()_+{}|¨"`<>? ', '  © €           ´®      ¥ ϚϞϠ£§¶ ¤¦°±½«»¬΅᾿῁  ι ', '                           ²³        ῟ ·῝ ῾   ῞ '],
 			"ES": ['abcdefghijklmnopqrstuvwxyz1234567890\'¡`+çñ´º,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"·$%&/()=?¿^*ÇÑ¨ª;:_>', '                          |@#  ¬      []} {\\   ²'],
 			"ES_A": ['abcdefghijklmnopqrstuvwxyz1234567890-¨÷`´ñç\',.=<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZª"/()¡!¿?₧+¨×`´ÑÇ·;:%>', '$  @€[]| £±       &       |@#¼½¬_#§\\*~[]}~{\\ ^ ²'],
 			"ET": ['abcdefghijklmnopqrstuvwxyz1234567890+´üõ\'öäˇ,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#¤%&/()=?`ÜÕ*ÖÄ~;:_>', '    €             š      ž @£$€ {[]}\\  §½ ^    |', '                  Š      Ž                      '],
-			"FA": ['شذزیثبلاهتنمئدخحضقسفعرصطغظ1234567890-=جچپکگ÷و./پ', 'َإژٍِّۀآ]ـ«»ءأ[\\ً ُ،,ؤٌي؛ة!@#$%^&*)(_+}{|:"×<>؟|', '                                   ہ            '],
-			"FA_S": ['شذزیثبلاهتنمپدخحضقسفعرصطغظ۱۲۳۴۵۶۷۸۹۰-=جچ\\کگ و./ ', 'ؤ ژيٍإأآّة»«ءٔ][ًْئٌَُٰطِك!٬٫ ٪×،*)(ـ+}{|:؛ ><؟ '],
+			"FA": ['شذزیثبلاهتنمئدخحضقسفعرصطغظ1234567890-=جچپکگ÷و./پ', 'َإژٍِّۀآ]ـ«»ءأ[\\ً ُ،,ؤٌي؛ة!@#$%^&*)(_+}{|:"×<>؟|', '                                   ہ            '],
+			"FA_S": ['شذزیثبلاهتنمپدخحضقسفعرصطغظ۱۲۳۴۵۶۷۸۹۰-=جچ\\کگ و./ ', 'ؤ ژيٍإأآّة»«ءٔ][ًْئٌَُٰطِك!٬٫ ٪×،*)(ـ+}{|:؛ ><؟ '],
 			"FI": ['abcdefghijklmnopqrstuvwxyz1234567890+´å¨\'öä§,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#¤%&/()=?`Å^*ÖÄ½;:_>', '    €       µ              @£$€ {[]}\\  ~       |'],
 			"FI_S": ['abcdefghijklmnopqrstuvwxyz1234567890+´å¨\'öä§,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#¤%&/()=?`Å^*ÖÄ½;:_>', 'áʒčđ€ǥǧȟï ǩ µŋõ â šŧ ǯ   ž @£$€ {[]}\\  ~ øæ    |', 'ÁƷČĐ ǤǦȞÏ Ǩ  ŊÕ Â ŠŦ Ǯ   Ž               ØÆ     '],
 			"FO": ['abcdefghijklmnopqrstuvwxyz1234567890+´åð\'æø½,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#¤%&/()=?`ÅÐ*ÆØ§;:_>', '    €       µ              @£$€ {[]} |¨~  ^    \\'],
@@ -6276,8 +6275,8 @@ DELAY 2000
 			"HA": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', ' ɓ ɗ      ƙ             ƴ     €   ‘’     ¶’     ', ' Ɓ Ɗ      Ƙ             Ƴ               ¦       '],
 			"HAWAII": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;ʻ`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ā   ē   ī     ō     ū                     \'     ', 'Ā   Ē   Ī     Ō     Ū                     "     '],
 			"HE": ['שנבגקכעיןחלךצמםפ/רדאוה\'סטז1234567890-=][\\ף,;תץ. ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*)(_+}{|:"~><? ', '    €  ײ ױ          װ        ₪      ֿ           '],
-			"HE_S": ['שנבגקכעיןחלךצמםפ/רדאוה\'סטז1234567890-=][\\ף,;תץ. ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*)(_+}{|:"~><? ', 'ְ ֱ ָ ױײ ִ ”ֵ  ֳַּׂ ֹ ֶׁװ   €₪°ֽ֫×  ־–ֲֻֿ„״׳’‚÷ ', ' ׆͏        “        ֺ                    ”  ‘’  '],
-			"HI": ['ोवम्ािुपगरकतसलदजौीेूहनैंब 1234567890-ृड़ॉचट ,.यॉ', 'ओ णअआइउफघऱखथशळधझऔईएऊङ ऐँभ ऍॅ ₹    ()ःऋढञऑछठ ष।य़ऑ', '                          १२३४५६७८९०-=[]\\;\'`,./²', '                       ॐ  !@#$%^&*()_+{}|:"~<>? '],
+			"HE_S": ['שנבגקכעיןחלךצמםפ/רדאוה\'סטז1234567890-=][\\ף,;תץ. ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*)(_+}{|:"~><? ', 'ְ ֱ ָ ױײ ִ ”ֵ  ֳַּׂ ֹ ֶׁװ   €₪°ֽ֫×  ־–ֲֻֿ„״׳’‚÷ ', ' ׆͏        “        ֺ                    ”  ‘’  '],
+			"HI": ['ोवम्ािुपगरकतसलदजौीेूहनैंब 1234567890-ृड़ॉचट ,.यॉ', 'ओ णअआइउफघऱखथशळधझऔईएऊङ ऐँभ ऍॅ ₹    ()ःऋढञऑछठ ष।य़ऑ', '                          १२३४५६७८९०-=[]\\;\'`,./²', '                       ॐ  !@#$%^&*()_+{}|:"~<>? '],
 			"HR": ['abcdefghijklmnopqrstuvwxzy1234567890\'+šđžčć¸,.- ', 'ABCDEFGHIJKLMNOPQRSTUVWXZY!"#$%&/()=?*ŠĐŽČĆ¨;:_ ', ' {  €[]   łŁ§}  \\    @|   ~ˇ^˘°˛`˙´˝¨¸÷×¤ ß <>  '],
 			"HU": ['abcdefghijklmnopqrstuvwxzy123456789öüóőúűéá0,.-í', 'ABCDEFGHIJKLMNOPQRSTUVWXZY\'"+!%/=()ÖÜÓŐÚŰÉÁ§?:_Í', 'ä{&ĐÄ[] ÍíłŁ<}  \\ đ €@|# >~ˇ^˘°˛`˙´˝¨¸÷×¤$ß ;>*<'],
 			"HU_101": ['abcdefghijklmnopqrstuvwxyz123456789öüóőúűéáí,.-í', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ\'"+!%/=()ÖÜÓŐÚŰÉÁÍ?:;Í', 'ä{&ĐÄ[] ÍíłŁ<}  \\ đ  @|# >~ ^   ` ´   ÷×\\$ß0;>_<'],
@@ -6288,7 +6287,7 @@ DELAY 2000
 			"IE": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]#;\'`,./\\', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"£$%^&*()_+{}~:@¬<>?|', 'á   é   í     ó     ú        €            ´¦   ²', 'Á   É   Í     Ó     Ú                     `¦    '],
 			"IG": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', '        ị    ṅọ     ụ         €   ‘’    ¦¶´     ', '        Ị    ṄỌ     Ụ                           '],
 			"IN_EN": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ā  ḍē ṅḥī   ṁṇō æ śṭū  ṣñ    ₹      -           ', 'Ā  ḌĒ ṄḤĪ   ṀṆŌ Æ ŚṬŪ  ṢÑ    ₹ ˆ  ˘ ˍ           '],
-			"IN_SD": ['ोवम्ािुपगरकतसलदजौीेूहनैंबॆ1234567890-ृड़ॉचटॊ,.यॉ', 'ओऴणअआइउफघऱखथशळधझऔईएऊङऩऐँभऎऍॅ      ()ःऋढञऑछठऒष।य़ऑ', '  ॔  ॢ  ग़ क़    ज़ ॣ       ॓१२३४५६७८९० ॄड़  ॒  ॰॥ ²', '     ऌ फ़  ख़      ॡ     ॐ             ॠढ़   ॑  ऽ  '],
+			"IN_SD": ['ोवम्ािुपगरकतसलदजौीेूहनैंबॆ1234567890-ृड़ॉचटॊ,.यॉ', 'ओऴणअआइउफघऱखथशळधझऔईएऊङऩऐँभऎऍॅ      ()ःऋढञऑछठऒष।य़ऑ', '  ॔  ॢ  ग़ क़    ज़ ॣ       ॓१२३४५६७८९० ॄड़  ॒  ॰॥ ²', '     ऌ फ़  ख़      ॡ     ॐ             ॠढ़   ॑  ऽ  '],
 			"IS": ['abcdefghijklmnopqrstuvwxyz1234567890ö-ð\'+æ´°,.þ<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&/()=Ö_Ð?*Æ\'¨;:Þ>', '            µ   @               {[]}\\  ~` ^°   |'],
 			"IT": ['abcdefghijklmnopqrstuvwxyz1234567890\'ìè+ùòà\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"£$%&/()=?^é*§ç°|;:_>', '                                      [] @#    ²', '                                      {}        '],
 			"IT_142": ['abcdefghijklmnopqrstuvwxyz1234567890\'ìè+ùòà\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"£$%&/()=?^é*§ç°|;:_>', '    €           @           # € {[]}   ~`      ²'],
@@ -6331,7 +6330,7 @@ DELAY 2000
 			"MN": ['ймёбуөахшролтиүзфжыэгсцчня№-"₮:._,%?ещкъ\\дп=ьвю ', 'ЙМЁБУӨАХШРОЛТИҮЗФЖЫЭГСЦЧНЯ1234567890ЕЩКЪ|ДП+ЬВЮ '],
 			"MN_S": ['ᠠᠪᠼᠳᠡᠹᠭᠬᠢᠵᠺᠯᠮᠨᠥᠫᠴᠷᠰᠲᠦᠤᠣᠱᠶᠽ1234567890 =〔〕᠁;᠋᠍᠂᠃. ', '  ᡂ ᠧ  ᠾ  ᠻᡀ ᠩ   ᠿ    ᠸ  ᡁ!⁈⁉—% ᠊ ()᠎+〈〉|᠄᠌~《》? '],
 			"MN_T": ['ᠠᠪᠴᠳᠡᠹᠭᠬᠢᠵᠺᠯᠮᠨᠥᠫᠣᠷᠰᠲᠦᠤᠸᠱᠶᠽ1234567890 =[]᠁ ᠋᠍᠂᠃· ', '  ᠼ ᠧ  ᠾ  ᠻᡀ ᠩ  ᡂᠿ       ᡁ ⁈⁉ % ᠊ ()᠎+〈〉 ᠄᠌~《》  '],
-			"MR": ['ोवम्ािुपगरकतसलदजौीेूहनैंब १२३४५६७८९०-ृड़ॉचट ,.यॉ', 'ओ णअआइउफघऱखथशळधझऔईएऊङ ऐँभ ऍॅ      ()ःऋढञऑछठ ष।य़ऑ', '                         ऽ1234567890-=[]\\;\'`,./²', '                       ॐ  !@#$%^&*()_+{}|:"~<>? '],
+			"MR": ['ोवम्ािुपगरकतसलदजौीेूहनैंब १२३४५६७८९०-ृड़ॉचट ,.यॉ', 'ओ णअआइउफघऱखथशळधझऔईएऊङ ऐँभ ऍॅ      ()ःऋढञऑछठ ष।य़ऑ', '                         ऽ1234567890-=[]\\;\'`,./²', '                       ॐ  !@#$%^&*()_+{}|:"~<>? '],
 			"MT_47": ['abcdefghijklmnopqrstuvwxyz1234567890-=ġħż;\'ċ,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@€$%^&*()_+ĠĦŻ:"Ċ<>? ', 'à   è   ì     ò     ù       £         []\\  `    ', 'À   È   Ì     Ò     Ù                 {}|  ~    '],
 			"MT_48": ['abcdefghijklmnopqrstuvwxyz1234567890-=ġħ#;\'ċ,./ż', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"€$%^&*()_+ĠĦ~:@Ċ<>?Ż', 'à   è   ì     ò     ù       £         []   `   \\', 'À   È   Ì     Ò     Ù                 {}   ¬   |'],
 			"NE": ['बदअमभानजषवपिफलयउ चकतगखधहथश घङझछटठडढण(.ृे सुञ,।र ', '  ऋ  ँ     ीः इएो         १२३४५६७८९०)ं ै् ू ?   ', '              ईऐौ         !@#$%^&*\'"-= ओ        ', '  आ            ऊ          1234567890 + औ        '],
@@ -6344,12 +6343,12 @@ DELAY 2000
 			"NTL": ['ᦰᦢᦈᦡᦵᦚᦄᦠᦲᦕᦂᦜᦖᦐᦷᦔᦀᦏᦉᦎᦳᦛᧈᦃᦊ᧞！＠＃＄％…＆*（）—+[]、； ～，。/ ', 'ᦱᦥᦋᦤᦶᦝᦇᦣᧀᦘᦅᦟᦙᦓᦸᦗᦁᦒᦌᦑᦴᦞᧉᦆᦍ᧟᧑᧒᧓᧔᧕᧖᧗᧘᧙᧐-={}|： ᧚《》？ ', 'ᦫᧇᦩᧆᦹ ᧂᦦᦿᦨᧅᦺᧄᧃᦽ  ᦾᦪ ᦼᧁ ᦧᦻ                       '],
 			"OGHAM": ['ᚐᚁᚉᚇᚓᚃᚌᚆᚔᚗᚖᚂᚋᚅᚑᚚᚊᚏᚄᚈᚒᚍᚕᚙᚘᚎ              ᚛       ', '                                        ᚜       '],
 			"OLCHIKI": ['ᱳᱣᱢᱚᱟᱤᱩᱯᱜᱨᱠᱛᱥᱞᱫᱡ  ᱮ ᱦᱱ ᱸᱵᱷ᱑᱒᱓᱔᱕᱖᱗᱘᱙᱐  ᱰᱹ ᱪᱴ ,.ᱭ ', ' ᱶᱬ                 ᱝ    ᱽ   ₹      ᱼ ᱲᱧ ᱺ ᱻ᱿᱾  '],
-			"OR": ['ୋୱମ୍ାିୁପଗରକତସଲଦଜୌୀେୂହନୈଂବୟ1234567890-ୃଡ଼ ଚଟ ,.ୟ ', 'ଓ ଣଅଆଇଉଫଘ ଖଥଶଳଧଝଔଈଏଊଙ ଐଁଭୱ   ₹    ()ଃଋଢଞ ଛଠ ଷ।ଯ ', ' ଵ   ୢ           ୣ     ୰  ୧୨୩୪୫୬୭୮୯୦ ୄଡ଼      ॥  ', '     ଌ           ୡ                   ୠଢ଼      ଽ  '],
-			"PA": ['ੋਵਮ੍ਾਿੁਪਗਰਕਤਸਲਦਜੌੀੇੂਹਨੈੰਬ 1234567890- ਡ਼ ਚਟ ,.ਯ ', 'ਓੲਣਅਆਇਉਫਘੜਖਥਸ਼ਲ਼ਧਝਔਈਏਊਙ ਐਂਭ    ੱ    ()  ਢਞ ਛਠ  ।  ', ' ੳ   ੲੳਫ਼ਗ਼ ਖ਼    ਜ਼       ੴ  ੧੨੩੪੫੬੭੮੯੦  ੜ      ॥  ', '                             ₹                  '],
+			"OR": ['ୋୱମ୍ାିୁପଗରକତସଲଦଜୌୀେୂହନୈଂବୟ1234567890-ୃଡ଼ ଚଟ ,.ୟ ', 'ଓ ଣଅଆଇଉଫଘ ଖଥଶଳଧଝଔଈଏଊଙ ଐଁଭୱ   ₹    ()ଃଋଢଞ ଛଠ ଷ।ଯ ', ' ଵ   ୢ           ୣ     ୰  ୧୨୩୪୫୬୭୮୯୦ ୄଡ଼      ॥  ', '     ଌ           ୡ                   ୠଢ଼      ଽ  '],
+			"PA": ['ੋਵਮ੍ਾਿੁਪਗਰਕਤਸਲਦਜੌੀੇੂਹਨੈੰਬ 1234567890- ਡ਼ ਚਟ ,.ਯ ', 'ਓੲਣਅਆਇਉਫਘੜਖਥਸ਼ਲ਼ਧਝਔਈਏਊਙ ਐਂਭ    ੱ    ()  ਢਞ ਛਠ  ।  ', ' ੳ   ੲੳਫ਼ਗ਼ ਖ਼    ਜ਼       ੴ  ੧੨੩੪੫੬੭੮੯੦  ੜ      ॥  ', '                             ₹                  '],
 			"PHAGS": ['ꡖꡎꡄꡊꡠꡤꡂꡜꡞꡆꡀꡙꡏꡋꡡꡌꡢꡘꡛꡈꡟꡧꡓꡣꡗꡕ1234567890 =〔〕᠁ꡃ꡶꡴᠂᠃᠅ ', 'ꡝ ꡅ ꡦꡰꡥꡯ  ꡁ ꡳ  ꡍ ꡲꡚꡉ  ꡧ ꡨꡔ!⁈⁉—% & () +〈〉fe00ꡇ꡷꡵、。? ', '  ꡐ      ꡒ   ꡬ   ꡱꡮꡩ    ꡭ             《》     ᠄  ', '  ꡑꡫ               ꡪ                            '],
 			"PL": ['abcdefghijklmnopqrstuvwxzy1234567890+\'żśółą˛,.- ', 'ABCDEFGHIJKLMNOPQRSTUVWXZY!"#¤%&/()=?*ńćźŁę·;:_ ', ' { Đ        §}  \\ đ €@¦   ~ˇ^˘°˛`·´˝¨¸÷× $ß <>  '],
 			"PL_P": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ą ć ę      ł ńó   ś €  ź ż                      ', 'Ą Ć Ę      Ł ŃÓ   Ś    Ź Ż                      '],
-			"PS": ['شذزیثبلاهتنمړدخحضقسفعرصطغظ۱۲۳۴۵۶۷۸۹۰-=جچ\\کګ وږ/ ', 'ښ ژيٍپأآّټڼةؤډځڅًْۍَُءٌېِئ!٬٫؋٪×»«)(ـ+][*:؛ٔ،.؟ ', '   ےىںڷإٰٹ><ڑڈ\'"€   ٙ ٱ;ٓ?~@#$%^&٭•°_÷}{|كگ`,ۇۉ '],
+			"PS": ['شذزیثبلاهتنمړدخحضقسفعرصطغظ۱۲۳۴۵۶۷۸۹۰-=جچ\\کګ وږ/ ', 'ښ ژيٍپأآّټڼةؤډځڅًْۍَُءٌېِئ!٬٫؋٪×»«)(ـ+][*:؛ٔ،.؟ ', '   ےىںڷإٰٹ><ڑڈ\'"€   ٙ ٱ;ٓ?~@#$%^&٭•°_÷}{|كگ`,ۇۉ '],
 			"PT": ['abcdefghijklmnopqrstuvwxyz1234567890\'«+´~çº\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&/()=?»*`^Çª|;:_>', '    €                      @£§€ {[]}  ¨]       ²'],
 			"RO": ['abcdefghijklmnopqrstuvwxzy1234567890+\'ăîâşţ],.- ', 'ABCDEFGHIJKLMNOPQRSTUVWXZY!"#¤%&/()=?*ĂÎÂŞŢ[;:_ ', ' { Đ      łŁ§}  \\ đ  @|   ~ˇ^˘°˛`·´˝¨¸÷× $ß <>  '],
 			"RO_P": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ă ©đ€   î  ł   §â șț  ß   ~ˇ^˘°˛`˙´˝¨¸„”    «»  ', 'Ă  Đ    Î  Ł    Â ȘȚ                –±          '],
@@ -6830,7 +6829,11 @@ DELAY 2000
 		}
 
 		if (hostname == "localhost") {
-			hostname = "192.168.1.151";
+			hostname = "192.168.1.251";
+		}
+
+		function downloadFrontendlog() {
+			downloadFile('debuglog', 'frontend-log', true);
 		}
 
 		const editor = document.getElementById('payload');
@@ -6875,7 +6878,6 @@ DELAY 2000
 
 
 
-		// ConnectMode
 		if (hostname == "localhost") {
 			hostname = "192.168.1.231"
 		}
