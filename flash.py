@@ -417,7 +417,7 @@ def omg_flash(command,tries=2):
             try:
                 ret = flashapi.main(command)
                 print("<<< GOOD FLASH. PLEASE UNPLUG AND REPLUG DEVICE BEFORE CONTINUING >>>")
-                input("Press Enter to continue when ready...")
+                input("")
                 ret = True
                 break
             except (flashapi.FatalError, serial.SerialException, serial.serialutil.SerialException) as e:
@@ -658,7 +658,7 @@ def omg_input():
 
         try:
             notemsg = "Hitting enter without an option will default to AP Mode with SSID: %s Pass: %s"%(results.WIFI_SSID,results.WIFI_PASS)
-            WIFI_MODE = input("\nSELECT WIFI MODE\n1: STATION - (Connect to existing network. 2.4GHz)\n2: ACCESS POINT - (Create SSID. IP: 192.168.4.1)\n[%s]\n"%notemsg)
+            WIFI_MODE = input("\nSELECT WIFI MODE\n1: STATION - (Connect to existing network. 2.4GHz)\n2: ACCESS POINT - (Create SSID. IP: 192.168.4.1)\n[%s]\nWifi Configuration [Hit Enter to use Defaults]: "%notemsg)
             if WIFI_MODE == '' or WIFI_MODE == '1' or WIFI_MODE == '2':
                 SANITIZED_SELECTION = True
         except:
@@ -712,7 +712,7 @@ def omg_input():
     if PROMPT_FLASH_CUSTOMIZE:
         while not SANITIZED_SELECTION:
             try:
-                CUST_INPUT = str(input("\nCUSTOMIZE PAYLOAD AND KEYLOG ALLOCATIONS?\n(Note: Only compatible with Plus and Elite O.MG Devices)\nBegin Customization? (Yes or No) ")).lower()
+                CUST_INPUT = str(input("\nCUSTOMIZE PAYLOAD AND KEYLOG ALLOCATIONS?\n(Note: Only compatible with Plus and Elite O.MG Devices)\nBegin Customization? (Yes or No) [Default: No] ")).lower()
                 if "yes" in CUST_INPUT or "no" in CUST_INPUT or '' in CUST_INPUT:
                     print("Using default")
                     SANITIZED_SELECTION = True
