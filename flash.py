@@ -416,7 +416,7 @@ def omg_flash(command,tries=2):
         while tries>0:
             try:
                 ret = flashapi.main(command)
-                print("<<< GOOD FLASH. PLEASE UNPLUG AND REPLUG DEVICE BEFORE CONTINUING >>>")
+                print("<<< OPERATION SUCCESSFUL. PLEASE UNPLUG AND REPLUG DEVICE BEFORE CONTINUING >>>")
                 input("")
                 ret = True
                 break
