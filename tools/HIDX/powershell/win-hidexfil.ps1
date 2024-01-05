@@ -44,7 +44,9 @@ https://github.com/spiceywasabi
 https://github.com/rogandawes
 
 #Credits to Rogan for the idea of filehandle and device identification
-X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H* amsiscanbuffer
+#AMSI Test Sample: 7e72c3ce-861b-4339-8740-0ac1484c1386
+
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
 #>
 
     [cmdletbinding()]
