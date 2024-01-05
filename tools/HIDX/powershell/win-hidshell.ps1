@@ -32,8 +32,9 @@ https://github.com/rogandawes
 https://github.com/O-MG/O.MG-Firmware/blob/beta/tools/HIDX/python/stealthlink-client-universal.py
 
 #Credits to Rogan for idea of filehandle and device identification
+#AMSI Test Sample: 7e72c3ce-861b-4339-8740-0ac1484c1386
 
-X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H* amsiscanbuffer
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
 #>
 
     [cmdletbinding()]
