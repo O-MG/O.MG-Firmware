@@ -424,7 +424,7 @@ def omg_flash(command,tries=2):
                 tries-=1
                 print("Unsuccessful communication,", tries, "trie(s) remain")
         if not ret:
-            print("<<< ERROR DURING FLASHING PROCESS PREVENTED SUCCESSFUL FLASH. TRY TO RECONNECT DEVICE OR REBOOT >>>")
+            print("<<< ERROR DURING OPERATION PREVENTED SUCCESSFUL FLASH. TRY TO RECONNECT DEVICE OR REBOOT >>>")
             complete(1)
         else:
             return ret
@@ -768,6 +768,7 @@ def omg_flashfw(mac=None,flash_size=None):
             command = ['--baud', baudrate, '--port', results.PORT_PATH, 'write_flash', '-fs', '1MB', '-fm', 'dout', '0xfc000', FILE_INIT, '0x00000', FILE_ELF0, '0x10000', FILE_ELF1, '0x80000', FILE_PAGE, '0x7f000', FILE_OFAT_INIT]
         else:
             command = ['--baud', baudrate, '--port', results.PORT_PATH, 'write_flash', '-fs', '2MB', '-fm', 'dout', '0x1fc000', FILE_INIT, '0x00000', FILE_ELF0, '0x10000', FILE_ELF1, '0x80000', FILE_PAGE, '0x7f000', FILE_OFAT_INIT]
+        print("\n\n")
         omg_flash(command)
 
     except:
