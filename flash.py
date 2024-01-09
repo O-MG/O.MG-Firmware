@@ -704,7 +704,7 @@ def omg_input():
         
     # enable to let user customize on plus an elite devices
     # beta feature
-    PROMPT_FLASH_CUSTOMIZE = True 
+    PROMPT_FLASH_CUSTOMIZE = False 
     FLASH_CUSTOMIZE = 0
     FLASH_SIZE = 4
     FLASH_PAYLOAD_PERCENT = 60
