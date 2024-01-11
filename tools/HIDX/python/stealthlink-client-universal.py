@@ -1,3 +1,36 @@
+#Name: Stealth-client-universal.py
+#Author: Wasabi (@spiceywasabi)
+#Acknowledgments: Ø1phor1³(@01p8or13)
+#Required Dependencies: Python3, Network connectivity to O.MG device
+
+#Description:
+"""
+This Python-script acts as a listener for HIDX Stealthlink, mainly the PoCs provided under:
+- https://github.com/O-MG/O.MG-Firmware/blob/stable/tools/HIDX/powershell/win-hidshell.ps1
+- https://github.com/O-MG/O.MG-Firmware/blob/stable/tools/HIDX/python/stealthlink-host-universal.py
+
+Configuration in lines 49 - 52
+"""
+
+# current issues:
+""" 
+- %quit not closing as intended. CTRL +C required
+
+-  input prompt may return before content is finished so you will see things like
+$whoami
+$root
+if you want to fix this easily, just hit another enter as soon as you send a message
+
+- the universal client + universal python target code are slower than native or powershell
+
+- ascii characters are primarily *only* supported, other characters may be stripped
+
+- recvlog doesn't buffer data for efficiency purposes, error checking should (and will) be added later
+this will also fix #1
+
+- this client is currently mac or linux only due to select()
+"""
+
 import os
 import sys
 import socket
@@ -12,29 +45,12 @@ from time import sleep
 from pprint import pprint
 
 # X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
-# amsibufferscan
 
-
-# current issues:
-""" 
-1. input prompt prompt may return before content is finished so you will see things like
-$whoami
-$root
-if you want to fix this easily, just hit another enter as soon as you send a message
-2. the universal client + universal python target code are slower then native or powershell
-3. ascii characters are primarily *only* supported, other characters may be stripped
-4. recvlog doesn't buffer data for efficiency purposes, error checking should (and will) be added later
-this will also fix #1
-5. this client is currently mac or linux only due to select()
-"""
-
-
-## These we can set but aren't meant to be changed regularly
-## So not a part of the user inputs and flags
+## These can be set but aren't meant to be changed regularly.
+remote_prompt = True # Assume that prompt gets received from host - Set to true for Powershell usage
 nowait = True # wait or not wait for end of message control characters 
-remote_prompt = False # hide the > prompt and presume it comes from the client
-windows = False # enable larger buffer, please don't trun this on unless testing!!!!
 delay = None # delay between messages (0.2-0.5 is fine) default to None
+windows = False # enable larger buffer, ONLY meant for testing!
 
 def non_blocking_input(prompt="", timeout=5):
     print(prompt, end='', flush=True)
@@ -46,7 +62,7 @@ def non_blocking_input(prompt="", timeout=5):
 
 def pad_input(input_str, left_pad=False, right_pad=False, chunk_size = 8):
     if left_pad and right_pad:
-        raise Exception("Cannot add padding on both the left and right side!")
+        raise Exception("[!]Cannot add padding on both the left and right side!")
     # default to right pad
     if not left_pad and not right_pad:
         right_pad = True
@@ -78,30 +94,15 @@ def handle_client(client_socket,run,rts):
     while run.is_set():
         data = None
         try:
-            # suspect this needs to be smaller
-            #rlist, _, _ = select.select([client_socket], [], [], 1.0)  # Wait
-            #if client_socket in rlist:
             data = client_socket.recv(1024).decode()
-            #else:
-            #    # timeout
-            #    no_data_count+=1
-            #    #print("I AM HERE")
-            #    data = " "
         except OSError as e:
             run.clear()
-            print(f"Socket Exception: {e}")
+            print(f"[!]Socket Exception: {e}")
             break
-        
-        """
-        print("\nSTART INCOMING DATA")
-        print(f"{data}")
-        print(binascii.hexlify(bytes(data,'utf-8')))
-        print("END INCOMING DATA")
-        """
-        
         # double check the data
         if not data:
-            recvlog("!!!! Socket has disconnected....")
+            recvlog("[!]Socket has disconnected....")
+            client_socket.shutdown(socket.SHUT_RDWR)
             client_socket.close()
             run.clear()
             break
@@ -116,9 +117,14 @@ def handle_client(client_socket,run,rts):
             #print("Status: %s"%str(rts.is_set()))
             recvlog(f"{data}")
     
-def console_input(client_socket,run,rts):
-    print("\nHIDX Shell (type '%quit' to exit)")
+def console_input(client_socket,run,rts, server_socket = None):
     global nowait, windows, delay, remote_prompt
+    print("\nHIDX StealthLink Universal Client (type '%quit' to exit)")
+
+    #Fake prompt, mainly intended for powershell PoC
+    if remote_prompt:
+        print("> ", end='')    
+    
     debug_send = False
     split_messages = True
     while run.is_set():
@@ -134,8 +140,11 @@ def console_input(client_socket,run,rts):
                 print(prompt_msg, end='', flush=True)
                 user_input = input()
                 if not user_input:
-                	continue
-                if user_input == "%exit":
+                    continue
+                if user_input == "%exit" or "%quit" in user_input:
+                    if server_socket:
+                        server_socket.settimeout(1)
+                    #client_socket.shutdown()
                     client_socket.close()
                     run.clear()
                     break
@@ -158,8 +167,9 @@ def console_input(client_socket,run,rts):
                 if not nowait:
                     rts.clear()
             except OSError as e:
-                print(f"Socket Exception: {e}")
+                print(f"[!]Socket Exception: {e}")
                 run.clear()
+                #client_socket.shutdown()
                 client_socket.close()
                 break
 
@@ -176,23 +186,24 @@ def hidxcli(host, port,reuse=True):
     try:
         server_socket.bind((host, port))
         server_socket.listen(1)
-        print(f"Server listening on {host}:{port}")
-    
-        while run:
-            client_socket, addr = server_socket.accept()
-            print()
-            recvlog(f"!!!! Client connected from {addr[0]}:{addr[1]}")
-            rts.set()
-            client_thread = threading.Thread(target=handle_client, args=(client_socket,run,rts,))
-            client_thread.start()
-
-            console_thread = threading.Thread(target=console_input, args=(client_socket,run,rts,))
-            console_thread.start()
-    except OSError as e:
-        print(f"Error with socket: {e}")
-        run.clear()
+        server_socket.settimeout(1) 
+        print(f"[*]Server listening on {host}:{port}")
+        while run.is_set():
+            client_socket,addr = None,None
+            try:
+                client_socket, addr = server_socket.accept()
+                recvlog(f"[+]O.MG Device connected from {addr[0]}:{addr[1]}")
+                rts.set()
+            except socket.timeout:
+                pass
+            if client_socket:
+                client_thread = threading.Thread(target=handle_client, args=(client_socket,run,rts,))
+                client_thread.start()
+                console_thread = threading.Thread(target=console_input, args=(client_socket,run,rts,server_socket,))
+                console_thread.start()
     finally:
-        print("Attempting to close..")
+        print("[?]Attempting to close..")
+        server_socket.shutdown(socket.SHUT_RDWR)
         server_socket.close()
 
 if __name__ == "__main__":
@@ -214,5 +225,3 @@ if __name__ == "__main__":
         logger_sent.setLevel(logging.INFO)
 
     hidxcli(args.host, args.port)
-
-
