@@ -119,11 +119,7 @@ def handle_client(client_socket,run,rts):
     
 def console_input(client_socket,run,rts, server_socket = None):
     global nowait, windows, delay, remote_prompt
-    print("\nHIDX StealthLink Universal Client (type '%quit' to exit)")
-
-    #Fake prompt, mainly intended for powershell PoC
-    if remote_prompt:
-        print("> ", end='')    
+    print("\nHIDX StealthLink Universal Client (type '%quit' to exit)")    
     
     debug_send = False
     split_messages = True
