@@ -101,7 +101,7 @@ X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
         $filehandle.Write($bytes, 0, 65)
         }
     }
-
+                #Creating filehandle - Method by rogandawes
                 Add-Type -TypeDefinition @"
 using System;
 using System.IO;
