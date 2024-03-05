@@ -624,7 +624,8 @@ def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
     settings = {
         "wifimode": _mode,
         "wifissid": _ssid,
-        "wifikey": _pass
+        "wifikey": _pass,
+        "devicename": "omg"
     }
     for config,value in settings.items():
         init_cmd+="S:{KEY}{SEP}{VALUE};".format(SEP="=", KEY=config,VALUE=value)
