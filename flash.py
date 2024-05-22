@@ -18,7 +18,7 @@ from math import floor
 from signal import signal, SIGINT
 from serial.tools import hexlify_codec
 from serial.tools.list_ports import comports
-
+from scripts.helpers import MacGenerator
 from pprint import pprint
 
 try:
@@ -41,6 +41,7 @@ FLASHER_VERSION_DETECT = True
 
 BRANCH = "stable"
 FIRMWARE_DIR="./firmware"
+MACPREFIX_DIR="./mac-prefixes"
 FIRMWARE_URL = "https://raw.githubusercontent.com/O-MG/O.MG-Firmware/%BRANCH%"
 MEMMAP_URL = "https://raw.githubusercontent.com/O-MG/WebFlasher/main/assets/memmap.json"
 
@@ -246,7 +247,7 @@ def omg_dependency_imports():
     except:
         if not os.path.exists('./scripts/'):
             os.mkdir("./scripts/")
-        dependencies = ['flashapi.py', 'miniterm.py']
+        dependencies = ['flashapi.py', 'miniterm.py', 'helpers.py']
         for dependency in dependencies:
             file_path = "scripts/"+dependency
             file_url = FIRMWARE_URL.replace("%BRANCH%",BRANCH) + "/scripts/" + dependency
@@ -280,7 +281,9 @@ class omg_results():
         self.WIFI_SSID = "O.MG"
         self.WIFI_PASS = "12345678"
         self.WIFI_MODE = "2"
-        self.WIFI_TYPE = "STATION"
+        self.WIFI_TYPE = "ACCESS POINT"
+        self.WIFI_MAC = ""
+        self.WIFI_DEVICE = ""
         self.FILE_PAGE = "page.mpfs"
         self.FILE_INIT = "esp_init_data_default_v08.bin"
         self.FILE_ELF0 = "image.elf-0x00000.bin"
@@ -617,7 +620,7 @@ def omg_reset_settings():
         print("Warning: Unable to reset " + FILE_INIT)
 
 
-def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
+def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60, _macaddress="", _devicename=""):
     FILE_INIT = results.FILE_OFAT_INIT
 
     init_cmd = "INIT;"
@@ -625,8 +628,11 @@ def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
         "wifimode": _mode,
         "wifissid": _ssid,
         "wifikey": _pass,
-        "devicename": "omg"
     }
+    if _devicename:
+        settings["devicename"] = _devicename
+    if _macaddress:
+        settings["wifimac"] = _macaddress
     for config,value in settings.items():
         init_cmd+="S:{KEY}{SEP}{VALUE};".format(SEP="=", KEY=config,VALUE=value)
     #  once booted we know more, this is a sane default for now
@@ -652,13 +658,12 @@ def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
 
 
 def omg_input():
-    WIFI_MODE = ''
+    WIFI_MODE = results.WIFI_MODE
     SANITIZED_SELECTION = False
-
     while not SANITIZED_SELECTION:
 
         try:
-            notemsg = "Hitting enter without an option will default to AP Mode with SSID: %s Pass: %s"%(results.WIFI_SSID,results.WIFI_PASS)
+            notemsg = "Hitting enter without an option will default to %s Mode with SSID: %s Pass: %s"%(results.WIFI_TYPE,results.WIFI_SSID,results.WIFI_PASS)
             WIFI_MODE = input("\nSELECT WIFI MODE\n1: STATION - (Connect to existing network. 2.4GHz)\n2: ACCESS POINT - (Create SSID. IP: 192.168.4.1)\n[%s]\nWifi Configuration [Hit Enter to use Defaults]: "%notemsg)
             if WIFI_MODE == '' or WIFI_MODE == '1' or WIFI_MODE == '2':
                 SANITIZED_SELECTION = True
@@ -702,6 +707,67 @@ def omg_input():
                 pass
 
         results.WIFI_PASS = WIFI_PASS
+
+    WIFI_MAC = ""
+    SANITIZED_SELECTION = False
+
+    while not SANITIZED_SELECTION:
+        try:
+            MAC_MODE = input("\nSELECT MAC ADDRESS MODE\n1: ENTER - (Enter a specific mac address)\n2: MANUFACTURER - (Generate a random mac address by manufacturer)\n3: RANDOM - (Generate a random mac address)\n4: ACTUAL - (Use devices real mac address)\nMac Address Mode [Hit Enter to use Actual]: ")
+            mac_generator = MacGenerator()
+            match MAC_MODE:
+                case "1":
+                    WIFI_MAC = input("ENTER WIFI MAC (6 octets): ")
+                case "2":
+                    if not os.path.exists(MACPREFIX_DIR):
+                        print("Valid MACPREFIX_DIR required for this option")
+                        continue
+                    else:
+                        manufacturers = mac_generator.get_manufacturers(MACPREFIX_DIR)
+                        for index, item in enumerate(manufacturers, start=1):
+                            print(f"{index}: {item.capitalize()}")
+                        user_input = input("Choose Manufacturer: ")
+                        try:
+                            index = int(user_input)
+                            selected_manufacturer = manufacturers[index - 1]
+                            manufacturers_prefixes = mac_generator.get_manufacturer_prefixes(selected_manufacturer)
+                            WIFI_MAC = mac_generator.generate(manufacturers_prefixes)
+                        except:
+                            print("\nInvalid selection, try again")
+                            continue
+
+                case "3":
+                    WIFI_MAC = mac_generator.generate()
+                case other:
+                    print("Using devices real mac address")
+                    results.WIFI_MAC = ''
+                    SANITIZED_SELECTION = True
+                    continue
+
+            if mac_generator.valid_mac_address(WIFI_MAC):
+                results.WIFI_MAC = WIFI_MAC
+                print(f"Generated Mac Address: {WIFI_MAC}")
+                SANITIZED_SELECTION = True
+            else:
+                print("Invalid mac address, try again")
+        except:
+            pass
+
+    WIFI_DEVICE = ""
+    SANITIZED_SELECTION = False
+
+    while not SANITIZED_SELECTION:
+        try:
+            notemsg = f"[Hit Enter to use {f"'{results.WIFI_DEVICE}'" if results.WIFI_DEVICE != "" else "Actual"}] "
+            DEVICE_MODE = input(f"\nSELECT DEVICE NAME MODE\n1: ENTER - (Enter a device name)\n{notemsg}")
+            match DEVICE_MODE:
+                case "1":
+                    WIFI_DEVICE = input(f"\nENTER DEVICE NAME: {notemsg}")
+                    if WIFI_DEVICE:
+                        results.WIFI_DEVICE = WIFI_DEVICE
+        except:
+            pass
+        SANITIZED_SELECTION = True
         
     # enable to let user customize on plus an elite devices
     # beta feature
@@ -791,10 +857,10 @@ def omg_runflash(pre_erase=False,skip_flash=False,skip_input=False,skip_reset=Fa
     if not skip_flash:
         if not skip_input:
             omg_input()
-        omg_patch(results.WIFI_SSID, results.WIFI_PASS, results.WIFI_MODE, results.FLASH_SLOTS, results.FLASH_PAYLOAD_SIZE)
+        omg_patch(results.WIFI_SSID, results.WIFI_PASS, results.WIFI_MODE, results.FLASH_SLOTS, results.FLASH_PAYLOAD_SIZE, results.WIFI_MAC, results.WIFI_DEVICE)
         omg_flashfw(mac,flash_size)
         print("\n[ WIFI SETTINGS ]")
-        print("\n    WIFI_SSID: {SSID}\n    WIFI_PASS: {PASS}\n    WIFI_MODE: {MODE}\n    WIFI_TYPE: {TYPE}".format(SSID=results.WIFI_SSID, PASS=results.WIFI_PASS, MODE=results.WIFI_MODE, TYPE=results.WIFI_TYPE))
+        print("\n    WIFI_SSID: {SSID}\n    WIFI_PASS: {PASS}\n    WIFI_MODE: {MODE}\n    WIFI_TYPE: {TYPE}\n    WIFI_MAC: {MAC}\n    WIFI_DEVICE: {DEVICE}\n".format(SSID=results.WIFI_SSID, PASS=results.WIFI_PASS, MODE=results.WIFI_MODE, TYPE=results.WIFI_TYPE, MAC=results.WIFI_MAC, DEVICE=results.WIFI_DEVICE))
         print("\n[ FIRMWARE USED ]")
         print("\n    INIT: {INIT}\n    ELF0: {ELF0}\n    ELF1: {ELF1}\n    PAGE: {PAGE}".format(INIT=results.FILE_INIT, ELF0=results.FILE_ELF0, ELF1=results.FILE_ELF1, PAGE=results.FILE_PAGE))
         if results.FLASH_SLOTS > 0:
