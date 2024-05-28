@@ -39,7 +39,7 @@ Exfiltrating systeminfo with proper formatting:
 systeminfo | Out-String | HIDXExfil
 
 .LINK
-https://github.com/0iphor13
+https://github.com/0i41E
 https://github.com/spiceywasabi
 https://github.com/rogandawes
 

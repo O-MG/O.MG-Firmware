@@ -25,7 +25,7 @@ HIDXShell usage with defined device:
 HIDXShell -VendorID D3C0 -ProductID D34D
 
 .LINK
-https://github.com/0iphor13
+https://github.com/0i41E
 https://github.com/spiceywasabi
 https://github.com/rogandawes
 https://github.com/O-MG/O.MG-Firmware/blob/stable/tools/HIDX/python/stealthlink-client-universal.py
