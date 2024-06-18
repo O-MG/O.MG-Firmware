@@ -449,12 +449,15 @@ def make_request(url):
         conn = http.client.HTTPConnection(host=url_parts[0], port=url_parts[1])
     return conn
 
-def get_resource_file(url,params=None):
+def get_resource_file(url,params=None,data_type='text'):
+    dta = "text/plain"
+    if data_type == "json":
+        dta = "application/json"
     pyver = sys.version_info
     uas = "httplib ({0}) python/{1}.{2}.{3}-{4}".format(sys.platform,pyver.major,pyver.minor,pyver.micro,pyver.serial)
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
-        "Accept": "text/plain",
+        "Accept": dta,
         "User-Agent": uas
     }
     status = None
@@ -469,8 +472,34 @@ def get_resource_file(url,params=None):
         status = 500
     return {'data': data, 'status': status}
 
+def get_release_data():
+    global BRANCH
+    release_url = "https://api.github.com/repos/O-MG/O.MG-Firmware/releases?per_page=100"
+    release_data = get_resource_file(url=release_url,data_type='json')
+    if release_data['status'] == 200:
+        raw_releases = json.loads(release_data['data'])
+        releases = {}
+        release_list = []
+        for element in raw_releases:
+            if "target_commitish" in element and element["target_commitish"] not in releases:
+                # add
+                if not element["draft"] :
+                    releases[element["target_commitish"]] = element
+                    releases[element["target_commitish"]]["version"] = element["tag_name"]
+                    releases[element["target_commitish"]]["author"] = element["author"]["login"]
+                    #del element["target_commitish"]["author"]
+                    release_list.append(releases[element["target_commitish"]])
+        if BRANCH in releases:
+            return releases[BRANCH]["tag_name"]
+        else:
+            return None
+        
 def omg_fetch_latest_firmware(create_dst_dir=False,dst_dir="./firmware"):
     curr_branch = BRANCH
+    try:
+      curr_branch = get_release_data()
+    except OSError:
+      pass
     mem_map = get_resource_file(MEMMAP_URL)
     data = None
     if mem_map is not None and 'status' in mem_map and mem_map['status'] == 200:
