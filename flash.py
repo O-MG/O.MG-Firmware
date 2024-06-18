@@ -416,7 +416,7 @@ def omg_flash(command,tries=2):
         while tries>0:
             try:
                 ret = flashapi.main(command)
-                print("<<< GOOD FLASH. PLEASE UNPLUG AND REPLUG DEVICE BEFORE CONTINUING >>>")
+                print("<<< OPERATION SUCCESSFUL. PLEASE UNPLUG AND REPLUG DEVICE BEFORE CONTINUING >>>")
                 input("")
                 ret = True
                 break
@@ -424,7 +424,7 @@ def omg_flash(command,tries=2):
                 tries-=1
                 print("Unsuccessful communication,", tries, "trie(s) remain")
         if not ret:
-            print("<<< ERROR DURING FLASHING PROCESS PREVENTED SUCCESSFUL FLASH. TRY TO RECONNECT DEVICE OR REBOOT >>>")
+            print("<<< ERROR DURING OPERATION PREVENTED SUCCESSFUL FLASH. TRY TO RECONNECT DEVICE OR REBOOT >>>")
             complete(1)
         else:
             return ret
@@ -449,12 +449,15 @@ def make_request(url):
         conn = http.client.HTTPConnection(host=url_parts[0], port=url_parts[1])
     return conn
 
-def get_resource_file(url,params=None):
+def get_resource_file(url,params=None,data_type='text'):
+    dta = "text/plain"
+    if data_type == "json":
+        dta = "application/json"
     pyver = sys.version_info
     uas = "httplib ({0}) python/{1}.{2}.{3}-{4}".format(sys.platform,pyver.major,pyver.minor,pyver.micro,pyver.serial)
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
-        "Accept": "text/plain",
+        "Accept": dta,
         "User-Agent": uas
     }
     status = None
@@ -469,8 +472,34 @@ def get_resource_file(url,params=None):
         status = 500
     return {'data': data, 'status': status}
 
+def get_release_data():
+    global BRANCH
+    release_url = "https://api.github.com/repos/O-MG/O.MG-Firmware/releases?per_page=100"
+    release_data = get_resource_file(url=release_url,data_type='json')
+    if release_data['status'] == 200:
+        raw_releases = json.loads(release_data['data'])
+        releases = {}
+        release_list = []
+        for element in raw_releases:
+            if "target_commitish" in element and element["target_commitish"] not in releases:
+                # add
+                if not element["draft"] :
+                    releases[element["target_commitish"]] = element
+                    releases[element["target_commitish"]]["version"] = element["tag_name"]
+                    releases[element["target_commitish"]]["author"] = element["author"]["login"]
+                    #del element["target_commitish"]["author"]
+                    release_list.append(releases[element["target_commitish"]])
+        if BRANCH in releases:
+            return releases[BRANCH]["tag_name"]
+        else:
+            return None
+        
 def omg_fetch_latest_firmware(create_dst_dir=False,dst_dir="./firmware"):
     curr_branch = BRANCH
+    try:
+      curr_branch = get_release_data()
+    except OSError:
+      pass
     mem_map = get_resource_file(MEMMAP_URL)
     data = None
     if mem_map is not None and 'status' in mem_map and mem_map['status'] == 200:
@@ -624,8 +653,7 @@ def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
     settings = {
         "wifimode": _mode,
         "wifissid": _ssid,
-        "wifikey": _pass,
-        "devicename": "omg"
+        "wifikey": _pass
     }
     for config,value in settings.items():
         init_cmd+="S:{KEY}{SEP}{VALUE};".format(SEP="=", KEY=config,VALUE=value)
@@ -705,7 +733,7 @@ def omg_input():
         
     # enable to let user customize on plus an elite devices
     # beta feature
-    PROMPT_FLASH_CUSTOMIZE = True 
+    PROMPT_FLASH_CUSTOMIZE = False 
     FLASH_CUSTOMIZE = 0
     FLASH_SIZE = 4
     FLASH_PAYLOAD_PERCENT = 60
@@ -769,6 +797,7 @@ def omg_flashfw(mac=None,flash_size=None):
             command = ['--baud', baudrate, '--port', results.PORT_PATH, 'write_flash', '-fs', '1MB', '-fm', 'dout', '0xfc000', FILE_INIT, '0x00000', FILE_ELF0, '0x10000', FILE_ELF1, '0x80000', FILE_PAGE, '0x7f000', FILE_OFAT_INIT]
         else:
             command = ['--baud', baudrate, '--port', results.PORT_PATH, 'write_flash', '-fs', '2MB', '-fm', 'dout', '0x1fc000', FILE_INIT, '0x00000', FILE_ELF0, '0x10000', FILE_ELF1, '0x80000', FILE_PAGE, '0x7f000', FILE_OFAT_INIT]
+        print("\n\n")
         omg_flash(command)
 
     except:
