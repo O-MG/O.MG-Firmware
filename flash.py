@@ -655,6 +655,8 @@ def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
         "wifissid": _ssid,
         "wifikey": _pass
     }
+    # get our size before we start
+    settingfsize = os.path.getsize(FILE_INIT)
     for config,value in settings.items():
         init_cmd+="S:{KEY}{SEP}{VALUE};".format(SEP="=", KEY=config,VALUE=value)
     #  once booted we know more, this is a sane default for now
@@ -671,7 +673,7 @@ def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
     try:
         with open(FILE_INIT,'wb') as f:
             length = len(init_cmd)
-            fill = (4*1024)-length
+            fill = (int(settingfsize/1024)*1024)-length
             init_cmd += "\00"*abs(fill)
             f.write(bytes(init_cmd.encode("utf-8")))  
     except:
@@ -951,3 +953,4 @@ if __name__ == '__main__':
         print("<<< FATAL ERROR: %s. PLEASE DISCONNECT AND RECONNECT DEVICE AND START TASK AGAIN >>>"%str(e))
         sys.exit(1) # special case
     complete(0)
+
