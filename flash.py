@@ -673,7 +673,7 @@ def omg_patch(_ssid, _pass, _mode, slotsize=4, percent=60):
     try:
         with open(FILE_INIT,'wb') as f:
             length = len(init_cmd)
-            fill = (int(settingfsize/1024)*1024)-length
+            fill = (settingfsize)-length
             init_cmd += "\00"*abs(fill)
             f.write(bytes(init_cmd.encode("utf-8")))  
     except:
