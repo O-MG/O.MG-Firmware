@@ -48,7 +48,7 @@
 			-webkit-padding-after: 0;
 			-webkit-padding-start: 0;
 			width: 100%;
-			height: 100%;
+			height: calc(100dvh - 200px);
 			margin: 0;
 			padding: 0;
 		}
@@ -109,11 +109,6 @@
 			padding: 8px;
 			padding-left: 16px;
 			padding-right: 36px;
-		}
-
-		body,
-		code {
-			line-height: 1.5;
 		}
 
 		code {
@@ -659,7 +654,7 @@
 		#payloadSaveMenu,
 		#payloadFileMenu {
 			position: fixed;
-			height: 200px;
+			height: 240px;
 			bottom: 57px;
 			left: 10px;
 			padding: 10px;
@@ -906,7 +901,7 @@
 			outline: 0;
 			overflow-y: auto;
 			margin-left: 11px;
-			height: calc(100vh - 185px);
+			height: calc(100dvh - 195px);
 			padding-bottom: 0;
 			border-bottom: 0;
 		}
@@ -918,7 +913,7 @@
 		.editorKeylog {
 			padding-bottom: 0;
 			border-bottom: 0;
-			height: calc(100vh - 185px);
+			height: calc(100dvh - 195px);
 			border-left-color: var(--accentGradient1);
 		}
 
@@ -941,7 +936,7 @@
 
 		.editorSyslog,
 		.editorc2log {
-			height: calc(100vh - 117px);
+			height: calc(100dvh - 127px);
 			border-left-color: var(--inactiveGradient1);
 		}
 
@@ -1192,6 +1187,18 @@
 			#navbarAlerts {
 				display: none;
 			}
+
+			.toast {
+				width: 320px;
+				right: 150px;
+			}
+		}
+
+		@media (max-width:550px) {
+			.toast {
+				width: 320px;
+				right: 10px;
+			}
 		}
 
 		@media (max-width:530px) {
@@ -1236,11 +1243,11 @@
 			}
 		}
 
-		@media (max-width:414px) {
+		@media (max-width:400px) {
 			.toast {
-				right: 50px;
+				width: 100%;
+				right: 0px;
 			}
-
 		}
 
 		@media (max-width:1px) {
@@ -1254,11 +1261,11 @@
 			.footer {
 				padding: 0;
 				margin: 0;
-				width: 100vw
+				width: 100vw;
 			}
 
 			.editor {
-				height: 100vh
+				height: calc(100dvh - 200px);
 			}
 		}
 
@@ -1395,6 +1402,10 @@
 			display: none;
 		}
 
+		#labipaddress {
+			color: black;
+		}
+
 		.line-red {
 			background-color: red;
 			width: 30px;
@@ -1522,11 +1533,11 @@
 				<div id="wifi-Settings">
 					<h3>WiFi Settings</h3><label for="device-WIFIMode">WiFi Mode</label><data id="device-WIFIMode" class="hidden"></data><input type="radio" id="CW0" name="WIFIMode" value="AP"><data>AP (Broadcast a new AP)</data><br><input type="radio" id="CW1" name="WIFIMode" value="Station"><data>Station (Connect to Infrastructure)</data>
 					<div class="input-wrapper"><label for="device-WIFISSID">SSID</label> <input type="text" id="device-WIFISSID" name="device-WIFISSID" spellcheck="false" pattern="^[\x00-\x7F]{1,32}$|^$" title="SSID must be 1-32 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifissid')"> <span class="tooltiptext" id="tooltipwifissid"></span></div>
-					<div class="input-wrapper"><label for="device-WIFIPassword">Password (8-63 Characters, 0 = Open)</label> <input class="tooltip" type="text" id="device-WIFIPassword" name="device-WIFIPassword" spellcheck="false" pattern="^[\x00-\x7F]{8,63}$|^$" title="Password must be 8-63 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifipass')"> <span class="tooltiptext" id="tooltipwifipass"></span></div><label for="device-WIFIChannel">Channel</label> <input type="text" id="device-WIFIChannel" name="device-WIFIChannel" spellcheck="false"> <label for="device-CustomMACAddress">Custom MAC (Default:<data id="device-HardwareMACAddress"></data>)</label> <input type="text" id="device-CustomMACAddress" name="device-CustomMACAddress" spellcheck="false"> <label for="device-IPAddress">Device IP Address</label> <span type="text" id="device-IPAddress"></span> <button id="update-WIFISettings" class="submitButton" onclick="applyEffect(this); updateWifiSettings();">Change Settings</button>
+					<div class="input-wrapper"><label for="device-WIFIPassword">Password (8-63 Characters, 0 = Open)</label> <input class="tooltip" type="text" id="device-WIFIPassword" name="device-WIFIPassword" spellcheck="false" pattern="^[\x00-\x7F]{8,63}$|^$" title="Password must be 8-63 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifipass')"> <span class="tooltiptext" id="tooltipwifipass"></span></div><label for="device-WIFIChannel">Channel</label> <input type="text" id="device-WIFIChannel" name="device-WIFIChannel" spellcheck="false"> <label for="device-CustomMACAddress">Custom MAC (Default:<data id="device-HardwareMACAddress"></data>)</label> <input type="text" id="device-CustomMACAddress" name="device-CustomMACAddress" spellcheck="false"> <label for="device-IPAddress">Device IP Address</label> <span type="text" id="device-IPAddress"></span> <label for="device-name">Device Name</label> <input type="text" id="device-name" name="device-name" spellcheck="false"> <button id="update-WIFISettings" class="submitButton" onclick="applyEffect(this); updateWifiSettings();">Change Settings</button>
 				</div>
 				<div id="c2-Settings" class="c2">
 					<h3>C2 Settings</h3>
-					<p>C2 is currently in beta. Click <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Elite-Early-Access#c2">https://github.com/O-MG/O.MG-Firmware/wiki/Elite-Early-Access#c2</a> to learn more.</p><label for="c2config">C2 Config - <span id="c2configApplied"></span></label> <input type="text" id="c2config" name="c2config" spellcheck="false"> <button id="update-C2Settings" class="submitButton" onclick="applyEffect(this); updateC2Settings()">Change Settings</button>
+					<p>C2 is currently in beta. Click <a href="https://github.com/O-MG/O.MG-Firmware/wiki/C2">https://github.com/O-MG/O.MG-Firmware/wiki/C2</a> to learn more.</p><label for="c2config">C2 Config - <span id="c2configApplied"></span></label> <input type="text" id="c2config" name="c2config" spellcheck="false"> <button id="update-C2Settings" class="submitButton" onclick="applyEffect(this); updateC2Settings()">Change Settings</button>
 					<div class="button-container"><label for="c2status">C2</label>
 						<div id="c2status" class="toggle-button" onclick="document.getElementById(`c2status`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`C2Start`) } else { sendMessage(`C2Stop`); };">
 							<div class="inner-circle"></div>
@@ -1542,8 +1553,16 @@
 						<option value="1">1000%</option>
 					</select> <button class="submitButton" id="experimentalSpeed" onclick="applyEffect(this); sendMessage(`CR1`)">Apply + Reboot</button>
 				</div>
+				<div id="keylog-Settings" class="keylog">
+					<h3>Keylog Settings</h3><input class="keylyg" type="text" placeholder="US" data-keylogger-map-region id="keylogKeymapSelect" list="keymap-list"> <button id="update-keylogLocale" class="updateButton" onclick="applyEffect(this); generateKeymap(document.getElementById('keylogKeymapSelect').value)">Update</button>
+					<div class="button-container hidden"><label for="keylogDisplayUnmappedValues">Display Unmapped Values</label>
+						<div id="keylogDisplayUnmappedValues" class="toggle-button" onclick="document.getElementById(`keylogDisplayUnmappedValues`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CTSet\tkeylogall\t1`) } else { sendMessage(`CTSet\tkeylogall\t0`); };">
+							<div class="inner-circle"></div>
+						</div>
+					</div>
+				</div>
 				<div id="hidx-Settings" class="hidx">
-					<h3>HIDX Settings</h3>
+					<h3>HIDX StealthLink Settings</h3>
 					<div class="button-container"><label for="hidxstatusfile">HIDX File</label>
 						<div id="hidxstatusfile" class="toggle-button" onclick="document.getElementById(`hidxstatusfile`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CHStart\tF\thidxfile`) } else { sendMessage(`CHStop`); };">
 							<div class="inner-circle"></div>
@@ -1553,7 +1572,7 @@
 						<div id="hidxstatustcp" class="toggle-button" onclick="document.getElementById(`hidxstatustcp`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CHStart\tT`) } else { sendMessage(`CHStop`); };">
 							<div class="inner-circle"></div>
 						</div>
-					</div><label for="hidxhost">HIDX Server Address</label> <input type="text" id="hidxhost" name="hidxhost" spellcheck="false"> <label for="hidxport">HIDX Server Port</label> <input type="text" id="hidxport" name="hidxport" spellcheck="false"> <label for="hidxboot">HIDX AutoStart on Boot</label>
+					</div><label for="hidxhost">Listener Address</label> <input type="text" id="hidxhost" name="hidxhost" spellcheck="false"> <label for="hidxport">Listener Port</label> <input type="text" id="hidxport" name="hidxport" spellcheck="false"> <label for="hidxboot">AutoStart on Boot</label>
 					<div class="button-container">
 						<div id="hidxboot" class="toggle-button" onclick="document.getElementById(`hidxboot`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CTSet\thidxboot\t1`) } else { sendMessage(`CTSet\thidxboot\t0`); };">
 							<div class="inner-circle"></div>
@@ -1600,12 +1619,17 @@
 					</select> <label for="uiAccentColor">Custom Color</label>
 					<div id="color-container"><span><input type="range" id="color-slider" min="0" max="360" value="0">
 							<div id="color-box"></div>
-						</span><span><button id="apply-color" onclick="applyEffect(this);">Save</button></span></div><label for="sidebar_settings_debug_feLog">Download Frontend Log</label> <button class="submitButton" id="sidebar_settings_debug_feLog" onclick="applyEffect(this); downloadFrontendlog();">Download Frontend Log</button><br><label for="sidebar_settings_config_reboot">Reboot</label> <button class="submitButton" id="sidebar_settings_config_reboot" onclick="applyEffect(this); sendMessage(`CR1`)">Reboot</button>
+						</span><span><button id="apply-color" onclick="applyEffect(this);">Save</button></span></div>
+					<h3>Download Frontend Log</h3>
+					<p>This log contains info processed during this browser session, including payloads edited or ran & keylogs viewed. We recommend reloading your browser session and limiting your activity to only what you are comfortable sharing.</p><button class="submitButton" id="sidebar_settings_debug_feLog" onclick="applyEffect(this); downloadFrontendlog();">Download Frontend Log</button><br><label for="sidebar_settings_config_reboot">Reboot</label> <button class="submitButton" id="sidebar_settings_config_reboot" onclick="applyEffect(this); sendMessage(`CR1`)">Reboot</button>
 					<div class="selfDestruct">
 						<h3>Self Destruct</h3><button class="submitButton" id="sidebar_settings_config_selfDestructFull" onclick="applyEffect(this); sendMessage(`CD1`)">Self Destruct (Full)</button>
 						<aside>Completely erase all data and disconnect data lines to make device behave "broken". You will need to reflash the firmware to recover.</aside><br><button class="submitButton" id="sidebar_settings_config_selfDestructPartial" onclick="applyEffect(this); sendMessage(`CD2`)">Self Destruct (Partial)</button>
 						<aside>Erase all data, but leave data lines connected, so it behaves like a normal device. You will need to reflash the firmware to recover.</aside>
-					</div><label for="sidebar_settings_debug_cldelete" class="keylog">Erase Keylog</label> <button class="submitButton" id="sidebar_settings_debug_cldelete" onclick="applyEffect(this); sendMessage(`CLDelete`);">Erase Keylog</button><br>
+					</div>
+					<div class="keylog">
+						<h3>Erase Keylog</h3><button class="submitButton" id="sidebar_settings_debug_cldelete" onclick="applyEffect(this); sendMessage(`CLDelete`);">Erase Keylog</button><br>
+					</div>
 					<h2>Custom Command</h2><label for="customCommandInput">Input</label> <input type="text" id="customCommandInput" name="customCommandInput" spellcheck="false"> <button id="customCommandRun" class="updateButton" onclick="applyEffect(this); issueCustomCommand();">Run</button> <label for="customCommandOutput">Output</label> <textarea id="customCommandOutput" spellcheck="false"></textarea> <button id="enableDebugMenu" class="" onclick="applyEffect(this); document.getElementById(`contentSubNav_debug`).classList.remove(`hidden`);document.getElementById(`debug-info`).classList.remove(`hidden`);document.getElementById(`footerNavPayloadEvalByLine`).classList.remove(`hidden`);document.getElementById(`footerNavPayloadRunByLine`).classList.remove(`hidden`);">Enable Debug Menu</button>
 				</div>
 			</div>
@@ -1625,7 +1649,7 @@
 			<h2 class="visible">Regulatory</h2><button class="visible" id="sidebar_settings_about_regulatoryButton" onclick="applyEffect(this); createRegulatory();">Regulatory Info</button>
 		</div>
 		<div id="sidebar_help" class="hidden"><button class="close" type="button" onclick="sidebarAreaToggle('close')"><span>&times;</span></button>
-			<h1>Help</h1><input type="text" id="search" placeholder="Search Help...">
+			<h1>Help</h1>See <a href="https://github.com/O-MG/O.MG-Firmware/wiki">Product Wiki</a> for additional info about specs, feature use, & support.<h3>Search</h3><input type="text" id="search" placeholder="Search Help...">
 			<h3>Keymap Viewer</h3><button class="submitButton helpHeader" id="sidebar_settings_help_keymapViewer" onclick="viewDialog('keymapViewer', 'open'); sidebarAreaToggle('close');">Show Keymap Viewer</button>
 			<h3>O.MG DuckyScript Syntax Guide</h3>
 			<div id="helpExamples"><button id="btn_helppayloadGithub" class="helpHeader" onclick="document.getElementById('helppayloadGithub').classList.toggle('hidden');">Hak5 Community Payloads</button>
@@ -1651,7 +1675,7 @@
 					<div id="keylogStorageUsedBar" class="progressFilled" style="width:0.2%">&nbsp;</div>
 				</div>
 			</div>
-			<div id="footerKeylog" class="subnav footer"><button id="footerNavKeylogDownload" onclick="applyEffect(this); downloadKeylog('1')"><svg id="ico_keylogDownload" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Show All</span></button> <button id="footerNavKeylogSave" onclick="applyEffect(this); saveKeylog()"><svg id="ico_keylogSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Download</span></button> <button id="footerNavKeylogLiveStatus" onclick="liveLog();"><svg id="ico_keylogLiveLog" xml:space="preserve" class="iconColor navIcon" viewBox="0 0 40 40"></svg> <span>LiveView</span></button> <button id="footerNavKeylogStatus" onclick="keylogStartStop();"><svg id="ico_keylogRun" xml:space="preserve" class="iconColor navIcon" viewBox="0 0 40 40"></svg> <span id="keylogStartButton">Start</span></button></div>
+			<div id="footerKeylog" class="subnav footer"><button id="footerNavKeylogDownload" onclick="applyEffect(this); downloadKeylog('1');"><svg id="ico_keylogDownload" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Refresh Log</span></button> <button id="footerNavKeylogSave" onclick="applyEffect(this); saveKeylog();"><svg id="ico_keylogSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Export View</span></button> <button id="footerNavKeylogLiveStatus" onclick="liveLog();"><svg id="ico_keylogLiveLog" xml:space="preserve" class="iconColor navIcon" viewBox="0 0 40 40"></svg> <span>LiveView</span></button> <button id="footerNavKeylogStatus" onclick="keylogStartStop();"><svg id="ico_keylogRun" xml:space="preserve" class="iconColor navIcon" viewBox="0 0 40 40"></svg> <span id="keylogStartButton">Start</span></button></div>
 		</content>
 		<content id="contentArea_payload" class="visible">
 			<div class="editor-wrapper">
@@ -1677,13 +1701,13 @@ DELAY 2000
 			<div id="payloadFileMenu" class="hidden footerFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadFileMenu', 'close');">&times;</button>
 				<h2>File Menu</h2><label>Select Payload</label>
 				<div id="fileMenuFlex">
-					<div id="columnLeft"><input class="payloadList" type="text" id="payloadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltipPayloadSelect', 'payload-list')"><datalist id="payload-list"></datalist><span class="tooltiptext arrowTop" id="tooltipPayloadSelect"></span></div>
+					<div id="columnLeft"><input class="payloadList" type="text" id="payloadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltipPayloadSelect', 'payload-list')" placeholder="payload1"><datalist id="payload-list"></datalist><span class="tooltiptext arrowTop" id="tooltipPayloadSelect"></span></div>
 					<div id="columnRight"><button id="payload-loadButton" class="updateButtonLarge buttonMergeLeft" onclick="applyEffect(this); payloadSlotLoad(document.getElementById('payloadSelect').value)">Load</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button></div>
-				</div><span class="bigLabel">Run this payload at boot:</span> <span class="button-container" style="display: inline-block;">
-					<div id="payload-bootableToggle" class="toggle-button" onclick="if(this.classList.contains('active')) { payloadSetBootSlot('off'); this.classList.remove('active'); payloadSlotPair('');} else { payloadSetBootSlot('on'); this.classList.add('active'); payloadSlotPair(document.getElementById('payloadSelect').value); };">
+				</div><button id="payload-saveBootscriptButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); payloadSlotSave('bootscript')">Save Bootscript</button> <span>Run on Boot:</span> <span class="button-container" style="display: inline-block;">
+					<div id="toggle-BootScriptFileMenu" class="toggle-button" onclick="if(this.classList.contains('active')) { payloadSetBootSlot('off') } else { payloadSetBootSlot('on'); };">
 						<div class="inner-circle"></div>
 					</div>
-				</span>
+				</span><br><button id="payload-saveBootscriptButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); sendMessage(`CERun\tbootscript`)">Run Bootscript</button>
 			</div>
 		</content>
 		<content id="contentArea_syslog" class="hidden"><label for="syslog" class="hidden">Syslog Area</label> <textarea id="syslog" spellcheck="false" class="editorSyslog" readonly="readonly"></textarea> <textarea id="debuglog" class="hidden"></textarea></content>
@@ -1743,7 +1767,6 @@ DELAY 2000
 					<option value="64">256 KB</option>
 				</select></div>
 			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Payload Cache</span> <select id="plcacheSlotSize" onchange="generatePartitionEditor();">
-					<option value="0">none</option>
 					<option value="10">40 KB</option>
 					<option value="20">80 KB</option>
 					<option value="40">160 KB</option>
@@ -1751,7 +1774,6 @@ DELAY 2000
 					<option value="120">480 KB</option>
 				</select></div>
 			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Bootscript</span> <select id="bootscriptSlotSize" onchange="generatePartitionEditor();">
-					<option value="0">none</option>
 					<option value="1">4 KB</option>
 					<option value="2">8 KB</option>
 					<option value="4" selected="selected">16 KB</option>
@@ -1763,7 +1785,6 @@ DELAY 2000
 		</div><br>
 		<h2>Exfiltration</h2>
 		<div id="partitonHidxConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">HIDX Exfil to File</span> <select id="hidxfileSize" onchange="generatePartitionEditor();">
-				<option value="0" selected="selected">none</option>
 				<option value="1">4 KB</option>
 				<option value="2">8 KB</option>
 				<option value="4">16 KB</option>
@@ -1775,27 +1796,51 @@ DELAY 2000
 			</select></div>
 		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Keylog</span> <span id="keylogSize"></span><span>&nbsp;keys</span></div><br><br><button id="partitionEditorDefault" class="submitButton" onclick="applyEffect(this); partitionEditorApply();">Apply Layout</button>
 	</dialog>
-	<dialog id="partitionApplied"><button class="closeModal" type="button" onclick="viewDialog('partitonApplied', 'close')">&times;</button>
+	<dialog id="partitionApplied"><button class="closeModal" type="button" onclick="viewDialog('partitionApplied', 'close')">&times;</button>
 		<h2>Partition Applied</h2>
 		<h4>Your device will now reboot.</h4>
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-230914";
+		frontendVersionNumber = "3.0-240530";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
 		let slotmode = "1";
-
 		// Global Variables - Connection Info
 		var enabledFeatures = [];
 		const defaultFeatures = ['global', 'syslog', 'debug'];
 		let featureFlags = [];
 		let lastMessage = 0;
 		var connectionAttempts = 0;
+		let webSocketErrorCount = 0;
 		let previousUptime = Infinity;
 		let previousMAC = null;
-		let hostname = window.location.hostname;
+		let uicolor;
+
+		function getAddressParameter() {
+			const queryString = window.location.search;
+			const urlParams = new URLSearchParams(queryString);
+			return urlParams.has('backend') ? urlParams.get('backend') : null;
+		}
+
+		const backendParam = getAddressParameter();
+		const hostnameMap = {
+			//  "localhost": connectCustomBackend(),
+		};
+		let hostname = backendParam || hostnameMap[window.location.hostname] || window.location.hostname;
+		if (hostname == "localhost") {
+			hostname = "192.168.5.140";
+		}
+
+		function connectCustomBackend() {
+			createDialog({
+				id: 'ipAddress',
+				title: 'O.MG Backend IP Address',
+				description: `Please enter the IP Address of your O.MG Backend Device. <br \><br \><input id="labipaddress"></input><button id="applylabipaddress" onClick="hostname = document.getElementById('labipaddress').value; console.log(hostname);">Connect</button>`,
+				closeEnabled: false,
+			});
+		}
 
 		// Global Variables - Defaults
 		const readSize = 1024;
@@ -1817,6 +1862,7 @@ DELAY 2000
 		var fccID = "Unknown";
 		var crc16 = "";
 		var previousLocale = "";
+		var activeEndLabel = "O.MG Device";
 
 		// Feature Flags
 		const features = {
@@ -1891,7 +1937,7 @@ DELAY 2000
 			'd': ['USB-C Directional Cable', 'red'],
 			'p': ['Plug', 'blue'],
 			't': ['A to C Adapter', 'red'],
-			'default': ['Unknown Device', 'grey'],
+			'default': ['O.MG Device', 'grey'],
 		};
 
 		const modelMap = {
@@ -1899,7 +1945,7 @@ DELAY 2000
 			'k': ['Plus', 'PLUS'],
 			'd': ['Elite', 'ELITE'],
 			'e': ['Elite', 'ELITE'],
-			'default': ['Unknown Device', 'UNKNOWN'],
+			'default': ['O.MG Device', 'ERROR'],
 		};
 
 		const featureFlagMap = {
@@ -1912,86 +1958,35 @@ DELAY 2000
 			'e': ['global', 'syslog', 'debug', 'payload', 'keylog', 'c2', 'hidx', 'stealth'],
 		};
 
-		const modifiers = {
-			'CTRL': 0x01,
-			'LCTRL': 0x01,
-			'LEFTCTRL': 0x01,
-			'LEFT-CTRL': 0x01,
-			'CONTROL': 0x01,
-			'LCONTROL': 0x01,
-			'LEFTCONTROL': 0x01,
-			'LEFT-CONTROL': 0x01,
-			'SHIFT': 0x02,
-			'LSHIFT': 0x02,
-			'LEFTSHIFT': 0x02,
-			'LEFT-SHIFT': 0x02,
-			'ALT': 0x04,
-			'LALT': 0x04,
-			'LEFTALT': 0x04,
-			'LEFT-ALT': 0x04,
-			'OPT': 0x04,
-			'LOPT': 0x04,
-			'LEFTOPT': 0x04,
-			'LEFT-OPT': 0x04,
-			'OPTION': 0x04,
-			'LOPTION': 0x04,
-			'LEFTOPTION': 0x04,
-			'LEFT-OPTION': 0x04,
-			'CMD': 0x08,
-			'LCMD': 0x08,
-			'LEFTCMD': 0x08,
-			'LEFT-CMD': 0x08,
-			'COMMAND': 0x08,
-			'LCOMMAND': 0x08,
-			'LEFTCOMMAND': 0x08,
-			'LEFT-COMMAND': 0x08,
-			'GUI': 0x08,
-			'LGUI': 0x08,
-			'LEFTGUI': 0x08,
-			'LEFT-GUI': 0x08,
-			'WIN': 0x08,
-			'LWIN': 0x08,
-			'LEFTWIN': 0x08,
-			'LEFT-WIN': 0x08,
-			'WINDOWS': 0x08,
-			'LWINDOWS': 0x08,
-			'LEFTWINDOWS': 0x08,
-			'LEFT-WINDOWS': 0x08,
-			'META': 0x08,
-			'LMETA': 0x08,
-			'LEFTMETA': 0x08,
-			'LEFT-META': 0x08,
-			'SUPER': 0x08,
-			'LSUPER': 0x08,
-			'LEFTSUPER': 0x08,
-			'LEFT-SUPER': 0x08,
-			'RCTRL': 0x10,
-			'RIGHT-CTRL': 0x10,
-			'RCONTROL': 0x10,
-			'RIGHT-CONTROL': 0x10,
-			'RSHIFT': 0x20,
-			'RIGHT-SHIFT': 0x20,
-			'RALT': 0x40,
-			'RIGHT-ALT': 0x40,
-			'ROPT': 0x40,
-			'RIGHT-OPT': 0x40,
-			'ROPTION': 0x40,
-			'RIGHT-OPTION': 0x40,
-			'RCMD': 0x80,
-			'RIGHT-CMD': 0x80,
-			'RCOMMAND': 0x80,
-			'RIGHT-COMMAND': 0x80,
-			'RGUI': 0x80,
-			'RIGHT-GUI': 0x80,
-			'RWIN': 0x80,
-			'RIGHT-WIN': 0x80,
-			'RWINDOWS': 0x80,
-			'RIGHT-WINDOWS': 0x80,
-			'RMETA': 0x80,
-			'RIGHT-META': 0x80,
-			'RSUPER': 0x80,
-			'RIGHT-SUPER': 0x80,
-		};
+		function generateModifiers() {
+			const groups = {
+				0x01: ['CONTROL', 'CTRL'],
+				0x02: ['SHIFT'],
+				0x04: ['ALT', 'OPT', 'OPTION'],
+				0x08: ['CMD', 'COMMAND', 'GUI', 'META', 'SUPER', 'WIN', 'WINDOWS']
+			};
+			const leftPrefixes = ['', 'L', 'LEFT', 'LEFT-'];
+			const rightPrefixes = ['', 'R', 'RIGHT', 'RIGHT-'];
+			const modifiers = {};
+
+			Object.entries(groups).forEach(([value, names]) => {
+				const leftValue = '0x0' + parseInt(value, 16).toString(16).toUpperCase();
+				const rightValue = '0x' + (parseInt(value, 16) << 4).toString(16).toUpperCase();
+
+				names.forEach(name => {
+					leftPrefixes.forEach(prefix => {
+						modifiers[prefix + name] = leftValue;
+					});
+
+					rightPrefixes.forEach(prefix => {
+						modifiers[prefix + name] = rightValue;
+					});
+				});
+			});
+
+			return modifiers;
+		}
+		const modifiers = generateModifiers();
 
 		var modifiersInverted = {
 			0x01: 'LEFT-CTRL',
@@ -2079,6 +2074,7 @@ DELAY 2000
 				logMessage(`INFO`, `Browser Went to Sleep.`);
 			} else if (document.visibilityState === 'visible') {
 				logMessage(`INFO`, `Browser Resumed from Sleep.`);
+				checkWebSocketStatus();
 			}
 		};
 
@@ -2121,18 +2117,9 @@ DELAY 2000
 			return num.toString(16).padStart(2, '0');
 		}
 
-		//function padHex(value, digits) {
-		//	var hex = parseInt(value).toString(16);
-		//	while (hex.length < digits) {
-		//		hex = "0" + hex;
-		//	}
-		//	return hex;
-		//}
-
 		function padInput(value, length) {
 			value = String(value);
 			let len = parseInt(length);
-			// console.log(`padInput: [value]:[${value}][${value.length}] [length]:[${length}]`);
 
 			if (isNaN(len) || len <= value.length) {
 				return value;
@@ -2180,7 +2167,6 @@ DELAY 2000
 			}
 
 			crc &= 0xffff;
-			//	console.log(`CRC: [${crc.toString(16).toUpperCase()}]`);
 			return crc.toString(16).toUpperCase();
 		}
 
@@ -2364,24 +2350,19 @@ DELAY 2000
 		}
 
 		function contentAreaToggle(moduleName) {
-			document.getElementById(`contentArea_keylog`).classList.remove(`visible`);
-			document.getElementById(`contentArea_payload`).classList.remove(`visible`);
-			document.getElementById(`contentArea_syslog`).classList.remove(`visible`);
-			document.getElementById(`contentArea_c2log`).classList.remove(`visible`);
-			document.getElementById(`contentArea_debug`).classList.remove(`visible`);
-			document.getElementById(`contentArea_keylog`).classList.add(`hidden`);
-			document.getElementById(`contentArea_payload`).classList.add(`hidden`);
-			document.getElementById(`contentArea_syslog`).classList.add(`hidden`);
-			document.getElementById(`contentArea_c2log`).classList.add(`hidden`);
-			document.getElementById(`contentArea_debug`).classList.add(`hidden`);
-			document.getElementById(`contentSubNav_keylog`).classList.remove(`buttonSelected`);
-			document.getElementById(`contentSubNav_payload`).classList.remove(`buttonSelected`);
-			document.getElementById(`contentSubNav_syslog`).classList.remove(`buttonSelected`);
-			document.getElementById(`contentSubNav_c2log`).classList.remove(`buttonSelected`);
-			document.getElementById(`contentSubNav_debug`).classList.remove(`buttonSelected`);
-			document.getElementById(`contentArea_${moduleName}`).classList.remove(`hidden`);
-			document.getElementById(`contentArea_${moduleName}`).classList.add(`visible`);
-			document.getElementById(`contentSubNav_${moduleName}`).classList.remove(`buttonSelected`);
+			const modules = ["keylog", "payload", "syslog", "c2log", "debug"];
+
+			if (moduleName === "keylog") {
+				downloadKeylog('1');
+			}
+
+			modules.forEach(module => {
+				document.getElementById(`contentArea_${module}`).classList.remove(`visible`);
+				document.getElementById(`contentArea_${module}`).classList.add(`hidden`);
+				document.getElementById(`contentSubNav_${module}`).classList.remove(`buttonSelected`);
+			});
+
+			document.getElementById(`contentArea_${moduleName}`).classList.replace(`hidden`, `visible`);
 			document.getElementById(`contentSubNav_${moduleName}`).classList.add(`buttonSelected`);
 		}
 
@@ -2497,7 +2478,7 @@ DELAY 2000
 					}
 				}
 			}
-			logMessage(`CRIT`, `Enabled Features: ${enabledFeatures}`);
+			logMessage(`CRIT`, `Supported Features: ${enabledFeatures}`);
 			await generateDebugMenu();
 		}
 
@@ -2608,15 +2589,17 @@ DELAY 2000
 			var dialog = document.getElementById(id);
 
 			if (!dialog) {
-				console.error("No dialog found with id:", id);
+				if (action !== "remove") {
+					console.error("No dialog found with id:", id);
+				}
 				return;
 			}
 
 			if (action === "open") {
 				dialog.setAttribute("open", "");
-				dialog.removeAttribute("close", "");
+				dialog.removeAttribute("close");
 			} else if (action === "close") {
-				dialog.removeAttribute("open", "");
+				dialog.removeAttribute("open");
 				dialog.setAttribute("close", "");
 			} else if (action === "remove") {
 				dialog.remove();
@@ -2679,7 +2662,7 @@ DELAY 2000
 		}
 
 		// Process Message Responses
-		function processOnMessage(responseText) {
+		function processOnMessage(responseText, responseHex) {
 			lastMessage = Date.now();
 			responseTextParams = responseText.split("\t");
 
@@ -2741,6 +2724,9 @@ DELAY 2000
 				case "CEStatus":
 					apiResponseCEStatus(responseText);
 					break;
+				case responseTextParams[0].match(/CEStore/)?.input:
+					apiResponseCEStore(responseText);
+					break;
 				case responseTextParams[0].match(/CE/)?.input:
 				case responseTextParams[0].match(/ce/)?.input:
 					apiResponseCE(responseText);
@@ -2755,7 +2741,7 @@ DELAY 2000
 					apiResponseCJ(responseText);
 					break;
 				case responseTextParams[0].match(/\[dKAll\]/)?.input:
-					downloadKeylog(responseTextParams);
+					downloadKeylog(responseText, responseHex);
 					break;
 				case responseTextParams[0].match(/CLRead/)?.input:
 					apiRequestCLRead(responseText);
@@ -2816,6 +2802,9 @@ DELAY 2000
 				case "SFRead":
 					apiResponseSFRead(responseText);
 					break;
+				case "SVStatus":
+					apiResponseSVStatus(responseText);
+					break;
 				case responseTextParams[0].match(/\[.*\]/)?.input:
 					logMessage(`CRIT`, `WebSocket MessageID: Unknown ID Handler. [response]:[${responseText}]`)
 					break;
@@ -2845,8 +2834,25 @@ DELAY 2000
 		let prevDataCTList = null;
 		const apiResponseCTList = (data) => {
 			if (data === prevDataCTList) {
+				let uicolorExists = false;
+				let splitData = data.split('\t');
+				let listName = splitData[0];
+				let jsonData = splitData[1];
+				let jsonObject = JSON.parse(jsonData);
+				for (let key in jsonObject) {
+					if (key == "uicolor") {
+						customColor = document.getElementById('uicolorCustom');
+						customColor.value = jsonObject[key];
+						customColorSlider = document.getElementById('color-slider');
+						customColorSlider.value = jsonObject[key];
+						uicolor = jsonObject[key];
+						setAccentColors(jsonObject[key]);
+						uicolorExists = true;
+					}
+				}
 				return;
 			}
+
 			prevDataCTList = data;
 			let uicolorExists = false;
 			let splitData = data.split('\t');
@@ -2862,17 +2868,22 @@ DELAY 2000
 
 				if (key == "bootscript" && jsonObject[key] !== '0') {
 					document.getElementById(`toggle-BootScript`).classList.add(`active`);
-					document.getElementById(`payload-bootableToggle`).classList.add(`active`);
+					document.getElementById(`toggle-BootScriptFileMenu`).classList.add(`active`);
 				}
 
 				if (key == "bootscript" && jsonObject[key] == '0') {
 					document.getElementById(`toggle-BootScript`).classList.remove(`active`);
-					document.getElementById(`payload-bootableToggle`).classList.remove(`active`);
+					document.getElementById(`toggle-BootScriptFileMenu`).classList.remove(`active`);
 				}
 
 				if (key == "wifimac") {
-					hidxport = document.getElementById('device-CustomMACAddress');
-					hidxport.value = jsonObject[key];
+					wifimac = document.getElementById('device-CustomMACAddress');
+					wifimac.value = jsonObject[key];
+				}
+
+				if (key == "devicename") {
+					devicename = document.getElementById('device-name');
+					devicename.value = jsonObject[key];
 				}
 
 				if (key == "hidxhost") {
@@ -2887,7 +2898,6 @@ DELAY 2000
 
 				if (key == "hidxboot") {
 					document.getElementById(`hidxboot`).classList.add(`active`);
-					// activeClassElements.push(key);
 				}
 
 				if (key == "showmsgtime") {
@@ -2922,6 +2932,12 @@ DELAY 2000
 					usbinterval = document.getElementById('experimentalSpeed');
 					usbinterval.value = jsonObject[key];
 				}
+
+				if (key == "keylogall") {
+					if (jsonObject[key] == "1") {
+						document.getElementById(`keylogDisplayUnmappedValues`).classList.add(`active`);
+					}
+				}
 			}
 
 			if (!uicolorExists) {
@@ -2929,8 +2945,10 @@ DELAY 2000
 				const deviceType = document.getElementById('device-Type').innerHTML;
 
 				if (deviceModel == "c" && deviceType == "p") {
+					sendMessage(`CTSet\tuicolor\tblue`);
 					setAccentColors("blue");
 				} else {
+					sendMessage(`CTSet\tuicolor\tred`);
 					setAccentColors("red");
 				}
 			}
@@ -2993,7 +3011,6 @@ DELAY 2000
 					payloadSlotAvailable += parseInt(globalJson[key][1]);
 				}
 			}
-			//	console.log(`[payloadSlotAvailable]:[${payloadSlotAvailable}]`);
 			const elementIds = {
 				'partitionEditorAvailable': {
 					value: payloadSlotAvailable,
@@ -3002,7 +3019,6 @@ DELAY 2000
 			};
 			setElementValues(elementIds);
 
-			//	updateElement('partitionEditorAvailable', payloadSlotAvailable);
 			updateElement('response-CFList', JSON.stringify(globalJson));
 			globalJson = {};
 		}
@@ -3021,6 +3037,7 @@ DELAY 2000
 			} = parseData(data);
 
 			if (parseFloat(parameters[6]) < previousUptime || parameters[1] !== previousMAC) {
+				viewDialog('ipAddress', 'remove');
 				if (parameters[1] !== previousMAC && previousMAC != null) {
 					toggleModalVisibility(true);
 
@@ -3237,6 +3254,20 @@ DELAY 2000
 					const typeData = processType(type);
 					const modelData = processModel(model);
 
+					if (type == "a") {
+						activeEndLabel = "the USB-A side of your O.MG Cable";
+					} else if (type == "b") {
+						activeEndLabel = "the USB-A Plug of your O.MG UnBlocker";
+					} else if (type == "d") {
+						activeEndLabel = "your O.MG Plug";
+					} else if (type == "c" || type == "d") {
+						activeEndLabel = "the USB-C side of your O.MG Cable";
+					} else if (type == "t") {
+						activeEndLabel = "the USB-C side of your O.MG Adapter";
+					} else {
+						activeEndLabel = "O.MG Device";
+					}
+
 					applyFeatureFlags(type, model);
 
 					if (['c', 'k', 'd', 'e'].includes(model)) {
@@ -3247,20 +3278,28 @@ DELAY 2000
 						toggleClass('contentSubNav_keylog', 'hidden', 'visible');
 					}
 
-					if (calibrationStatus === '?' || calibrationStatus === '-' || calibrationStatus === '') {
+					if (calibrationStatus === '?' || calibrationStatus === '-' || calibrationStatus === 'l' || calibrationStatus === '') {
 						updateElementValue('modelText', 'ERROR', 'innerHTML');
-						updateElementValue('device-CalibrationStatusDecoded', 'Calibration Error, Contact Support', 'innerHTML');
 						contentAreaToggle('syslog');
 						toggleClass('contentSubNav_payload', 'visible', 'hidden');
-						logMessage(`CRIT`, '! ALERT: Device calibration not compatible with v2 firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware.');
 						updateElementValue('navbarAlerts', '<button onclick="viewDialog(`calibrationerror`, `open`);">Calibration Error</button>', 'innerHTML');
-						updateElementValue('device-TypeDecoded', 'Unknown Device', 'innerHTML');
+						updateElementValue('device-TypeDecoded', 'O.MG Device', 'innerHTML');
+
+						if (calibrationStatus === 'l') {
+							updateElementValue('device-CalibrationStatusDecoded', 'Legacy Calibration', 'innerHTML');
+							logMessage(`CRIT`, '! ALERT: Device calibration incompatible with new firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware.');
+							calibrationDescriptionText = 'Device calibration incompatible with new firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Calibration-Upgrade">Calibration-Upgrade Instructions</a>';
+						} else {
+							updateElementValue('device-CalibrationStatusDecoded', 'Calibration Error, Contact Support', 'innerHTML');
+							logMessage(`CRIT`, '! ALERT: Device calibration failure. Please contact support.');
+							calibrationDescriptionText = 'Device calibration failure. Please contact support. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki#support">O.MG Support</a>';
+						}
 
 						createDialog({
 							id: 'calibrationerror',
 							title: 'Calibration Error',
-							description: `Device calibration not compatible with v2 or later firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Calibration-Upgrade">Calibration-Upgrade Instructions</a><br /><br />
-							<h2>Generate Hardware Profile</h2>
+							description: `${calibrationDescriptionText}<br /><br />
+							<h2>Tools</h2>
 							<button class="submitButton" id="sidebar_settings_debug_CPStart" onclick="sendMessage('CPStart'); sendMessage('CPGet'); this.remove();">Generate Hardware Profile</button>
 							<div id="calibrationStatusViewer"><br /><button class="submitButton" id="calibrationErrorDownloadButton" onclick="downloadFrontendlog();">Download Frontend Log</button></div>
 							<form>
@@ -3372,6 +3411,90 @@ DELAY 2000
 			}
 		}
 
+		let prevDataSVStatus = null;
+
+		function apiResponseSVStatus(data) {
+			if (data === prevDataSVStatus) {
+				return;
+			}
+			prevDataSVStatus = data;
+			const {
+				response,
+				parameters
+			} = parseData(data);
+
+			logMessage(`CRIT`, `apiResponseSVStatus: [data]:[${response}]`);
+
+			const jsonChunk = JSON.parse(parameters[1]);
+
+			if (jsonChunk.hasOwnProperty('usb')) {
+				const usbStatus = jsonChunk.usb.state;
+				switch (usbStatus) {
+					case 'Detached':
+						document.getElementById(`toggle-CU`).classList.remove(`active`);
+						document.getElementById(`toggle-CJ`).classList.remove(`active`);
+						break
+					case 'NoHost':
+						document.getElementById(`toggle-CU`).classList.add(`active`);
+						createDialog({
+							id: 'usbenumeration',
+							title: 'Host not detected',
+							description: `Check that ${activeEndLabel} is connected to the USB Host device you are targeting. <br \><br \><a href="https://github.com/O-MG/O.MG-Firmware/wiki#active-end-vs-passthrough-end">Learn More</a>`,
+							closeEnabled: true,
+						});
+						break
+					case 'Enumerated':
+						document.getElementById(`toggle-CU`).classList.add(`active`);
+						break
+					case 'Err-Default':
+						document.getElementById(`toggle-CU`).classList.add(`active`);
+						break
+					case 'Err-Address':
+						document.getElementById(`toggle-CU`).classList.add(`active`);
+						break
+					case 'Suspended':
+						document.getElementById(`toggle-CU`).classList.add(`active`);
+						break
+					default:
+						logMessage(`INFO`, `! ERROR: USB Enumeration Status Unexpected.`);
+						break
+				}
+			}
+			if (jsonChunk.hasOwnProperty('jiggler')) {
+				const jigglerStatus = jsonChunk.jiggler.state;
+				switch (jigglerStatus) {
+					case 'disabled':
+						document.getElementById(`toggle-CJ`).classList.remove(`active`);
+						break
+					case 'enabled':
+						document.getElementById(`toggle-CJ`).classList.add(`active`);
+						break
+					default:
+						logMessage(`INFO`, `! ERROR: Jiggler Status Unexpected.`);
+						break
+				}
+			}
+			if (jsonChunk.hasOwnProperty('kl')) {
+				const klStatus = jsonChunk.kl.state;
+				const footerNavKeylogStatus = document.getElementById('footerNavKeylogStatus');
+				const klButtonText = document.getElementById('keylogStartButton');
+
+				switch (klStatus) {
+					case 'active':
+						footerNavKeylogStatus.classList.add('buttonSelected');
+						klButtonText.innerHTML = 'Stop';
+						break
+					case 'disabled':
+						footerNavKeylogStatus.classList.remove('buttonSelected');
+						klButtonText.innerHTML = 'Start';
+						break
+					default:
+						logMessage(`INFO`, `! ERROR: Keylog Status Unexpected.`);
+						break
+				}
+			}
+		}
+
 		let prevDataCWStatus = null;
 
 		function apiResponseCWStatus(data) {
@@ -3426,6 +3549,7 @@ DELAY 2000
 				`CTSet\twifissid\t${document.getElementById("device-WIFISSID").value}`,
 				`CTSet\twifikey\t${document.getElementById("device-WIFIPassword").value}`,
 				`CTSet\twifimac\t${document.getElementById("device-CustomMACAddress").value}`,
+				`CTSet\tdevicename\t${document.getElementById("device-name").value}`,
 				`CR1`
 			];
 
@@ -3454,7 +3578,8 @@ DELAY 2000
 		}
 
 		async function generateDebugMenu() {
-			const keylogCmdHandlerList = ['LiveLogStatus', 'Status', 'CaptureMode', 'SpaceUsed', 'SpaceFree', 'DataWaiting', 'OverflowCount', 'LastReportID', 'NextReportID'];
+			const keylogCmdHandlerList = ['LiveLogStatus', 'Status', 'CaptureMode', 'SpaceUsed', 'SpaceFree', 'DataWaiting', 'DataLost', 'LastReportID', 'NextReportID', 'USBPkts', 'USBLost', 'USBHolds', 'USBBursts'];
+
 			const defaultCmdHandlerList = enabledFeatures;
 
 			const mandatoryFields = ['CI', 'CV', 'CWInfo', 'CNGet', 'CWStatus', 'C2Config', 'C2Info', 'C2Status', 'C2Wipe'];
@@ -3491,7 +3616,6 @@ DELAY 2000
 
 			if (level !== "DEBUG" || level !== "NONE") {
 				document.getElementById("debuglog").innerHTML += `LOG ${level} (${datetime}): ${msg}\n`;
-				// console.log(msg);
 			}
 
 			if (debugLevels[level] <= debugLevels[debugLevel] && level !== "NONE") {
@@ -3545,9 +3669,9 @@ DELAY 2000
 			let payloadLines = payload.split('\n');
 			try {
 				payload = sortLines(payload);
+				payload = replaceBlocksWithLines(payload);
 				payload = replaceFunctions(payload);
 				payload = removeComments(payload);
-				payload = replaceBlocksWithLines(payload);
 				payload = replaceRepeat(payload);
 				payload = replaceDefines(payload);
 				payload = applyDelays(payload);
@@ -3581,7 +3705,6 @@ DELAY 2000
 
 		function runDuckyScriptByLine() {
 			payloadCompiled = compileDuckyScriptByLine();
-			//	console.log(payloadCompiled);
 		}
 
 		function compileDuckyScriptByLine() {
@@ -3611,7 +3734,8 @@ DELAY 2000
 			payloadCompiled = payloadCompiled.toUpperCase();
 
 			let payload1Size = document.getElementById("payload1") ? document.getElementById("payload1").value : '1';
-			let payloadStoragePercent = (((payloadCompiled.length / 2) / (payload1Size * 4096)) * 100).toFixed(0) + '%';
+			let calculatedPercent = (((payloadCompiled.length / 6) / (payload1Size * 4096)) * 100).toFixed(0);
+			let payloadStoragePercent = Math.min(calculatedPercent, 100) + '%';
 			document.getElementById('payloadStorageUsedBar').style.width = payloadStoragePercent;
 			document.getElementById('payloadStoragePercent').innerHTML = payloadStoragePercent;
 			payloadCompiled = split_process(payloadCompiled);
@@ -3653,7 +3777,6 @@ DELAY 2000
 					}
 				}).join('\n');
 			} catch (error) {
-				// Handle or re-throw the error as needed
 				throw error;
 			}
 
@@ -3662,7 +3785,8 @@ DELAY 2000
 			crc16 = crc16augccitt(payloadCompiled);
 
 			let payload1Size = document.getElementById("payload1") ? document.getElementById("payload1").value : '1';
-			let payloadStoragePercent = (((payloadCompiled.length / 6) / (payload1Size * 4096)) * 100).toFixed(0) + '%';
+			let calculatedPercent = (((payloadCompiled.length / 6) / (payload1Size * 4096)) * 100).toFixed(0);
+			let payloadStoragePercent = Math.min(calculatedPercent, 100) + '%';
 			document.getElementById('payloadStorageUsedBar').style.width = payloadStoragePercent;
 			document.getElementById('payloadStoragePercent').innerHTML = payloadStoragePercent;
 			payloadCompiled = split_process(payloadCompiled);
@@ -3692,7 +3816,9 @@ DELAY 2000
 		}
 
 		function removeComments(payload) {
-			payload = payload.replace(/^(?:REM).*$/gm, "");
+			payload = payload.replace(/REM_BLOCK[\s\S]*?END_REM\n?/g, "");
+			payload = payload.replace(/^REM .*/gm, "");
+
 			return payload.trim();
 		}
 
@@ -3997,6 +4123,12 @@ DELAY 2000
 			};
 		})();
 
+		// CEStore
+		function apiResponseCEStore(data) {
+			viewDialog('payloadsaving', 'remove');
+		}
+
+
 		// Mode Toggles
 		function apiResponseCJ(data) {
 			const {
@@ -4172,32 +4304,39 @@ DELAY 2000
 				return;
 			}
 
-			for (let i = 0; i < payloadSlotSectors; i++) {
-				sendMessage(`FE${String(parseInt(payloadSlotBlocks) + i)}`);
+			if (slotValue !== "bootscript") {
+				for (let i = 0; i < payloadSlotSectors; i++) {
+					sendMessage(`FE${String(parseInt(payloadSlotBlocks) + i)}`);
+				}
+			}
+			if (slotValue == "bootscript") {
+				for (let i = 0; i < payloadSlotSectors; i++) {
+					sendMessage(`FE${String(parseInt(payloadSlotBlocks) + i)}`);
+				}
 			}
 
 			iterations = Math.ceil(totalLength / writeSize);
-
-			//	console.log(`[slotValue]:[${slotValue}] [writeSize]:[${writeSize}] [payloadSlotBlocks]:[${payloadSlotBlocks}] [payloadSlotSectors]:[${payloadSlotSectors}] [payloadSlotSize]:[${payloadSlotSize}] [payloadSlotAddress]:[${payloadSlotAddress}] [totalLength]:[${totalLength}] [iterations]:[${iterations}] [scriptcode]:[${scriptcode}]`);
-
-			scriptcode.forEach(payload => {
-				for (let i = 0; i < iterations; i++) {
-					parsement = payload.substr(i * writeSize, writeSize);
-					//			console.log(`[iterations]:[${iterations}] [parsement]:[${parsement}]`);
-					const alignment = Math.ceil(parsement.length / 4) * 4;
-					const slotAddress = parseInt(payloadSlotAddress) + i * writeSize;
-					cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
-					if (slotValue == "bootscript" && parsement !== "") {
-						cmd = `[pS-${i}.${iterations}]CEStore\tbootscript\t${parsement}`;
-						//cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
-					}
-					logMessage(`CRIT`, `SAVING DATA TO ${slotValue}: [${cmd}]`)
+			if (slotValue == "bootscript") {
+				scriptcode.forEach(payload => {
+					cmd = `[pS-bootscript]CEStore\tbootscript\t${payload}`;
 					sendMessage(cmd);
-				}
-			});
+				});
+			} else {
+				scriptcode.forEach(payload => {
+					for (let i = 0; i < iterations; i++) {
+						parsement = payload.substr(i * writeSize, writeSize);
+						const alignment = Math.ceil(parsement.length / 4) * 4;
+						const slotAddress = parseInt(payloadSlotAddress) + i * writeSize;
+						cmd = `[pS-${i}.${iterations}]FW${slotAddress}\t${alignment}\t${parsement}`;
+						if (slotValue == "bootscript" && parsement !== "") {
+							cmd = `[pS-${i}.${iterations}]CEStore\tbootscript\t${parsement}`;
+						}
+						sendMessage(cmd);
+					}
+				});
+			}
 
 			logMessage(`INFO`, `! SAVED USER PAYLOAD TO SLOT ${slotValue}`, `Payload Saved to ${slotValue}.`);
-
 			payloadEditorFilename = document.getElementById(`payloadEditorFilename`);
 			payloadEditorFilename.innerHTML = slotValue;
 			payloadEditorBootable = document.getElementById('payloadEditorBootable');
@@ -4236,14 +4375,11 @@ DELAY 2000
 		// Payload Run
 		function payloadRun() {
 			const footerNavPayloadRun = document.getElementById("footerNavPayloadRun");
+			scriptcode = ``;
 			scriptcode = compileDuckyScript();
 
 			let counter = 0;
 			scriptcode.forEach(payload => {
-				//		var trimmedPayload = payload.slice(6, payload.length - 6);
-				//		console.log(trimmedPayload);
-				//		crc16segment = crc16augccitt(trimmedPayload);
-
 				let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE[${crc16}]${payload}`;
 				counter++;
 
@@ -4467,7 +4603,7 @@ DELAY 2000
 					}
 					const prefixX = direction[Math.sign(stepX).toString()];
 					const prefixY = direction[Math.sign(stepY).toString()];
-					payloadIntermediate += `${prefixX} ${toHex(Math.abs(stepX))}00`;
+					payloadIntermediate += `${prefixX}${toHex(Math.abs(stepX))}00`;
 					payloadIntermediate += `${prefixY}00${toHex(Math.abs(stepY))}`;
 				}
 				const prefixX = direction[Math.sign(x).toString()];
@@ -4485,7 +4621,7 @@ DELAY 2000
 			} else if (command === 'CLICK') {
 				const mouseButtonID = parseInt(args[1]);
 				if (!Number.isNaN(mouseButtonID)) {
-					payloadIntermediate += `05000${toHex(mouseButtonID)}`;
+					payloadIntermediate += `0500${toHex(mouseButtonID)}`;
 				}
 			}
 			return payloadIntermediate;
@@ -4539,7 +4675,7 @@ DELAY 2000
 				generateKeymap(lang.toUpperCase());
 				sleep(100);
 			} else {
-				logMessage(`INFO`, `WARNING: DUCKY_LANG is not one of ${keymapListPretty}. Defaulting to US`);
+				logMessage(`INFO`, `WARNING: DUCKY_LANG ${args} is not one of ${keymapListPretty}. Defaulting to US`);
 			}
 		}
 
@@ -4644,11 +4780,15 @@ DELAY 2000
 			KEYLOGGER_SPACE_USED: 'keylogger-SpaceUsed',
 			KEYLOGGER_SPACE_FREE: 'keylogger-SpaceFree',
 			KEYLOGGER_DATA_WAITING: 'keylogger-DataWaiting',
-			KEYLOGGER_OVERFLOW_COUNT: 'keylogger-OverflowCount',
+			KEYLOGGER_DATA_LOST: 'keylogger-DataLost',
 			KEYLOGGER_STATUS: 'keylogger-Status',
 			KEYLOGGER_CAPTURE_MODE: 'keylogger-CaptureMode',
 			KEYLOGGER_LAST_REPORT_ID: 'keylogger-LastReportID',
 			KEYLOGGER_NEXT_REPORT_ID: 'keylogger-NextReportID',
+			KEYLOGGER_USB_PKTS: 'keylogger-USBPkts',
+			KEYLOGGER_USB_LOST: 'keylogger-USBLost',
+			KEYLOGGER_USB_HOLDS: 'keylogger-USBHolds',
+			KEYLOGGER_USB_BURSTS: 'keylogger-USBBursts',
 			FOOTER_NAV_KEYLOG_STATUS: 'footerNavKeylogStatus',
 			KEYLOG_START_BUTTON: 'keylogStartButton',
 			TOGGLE_KEYLOGGING_MODE: 'toggle-keyloggingMode',
@@ -4676,26 +4816,6 @@ DELAY 2000
 			return response.split("\t");
 		}
 
-		function handleapiResponse(data, elementId, buttonClass) {
-			let response = convertUint8ArrayToString(data);
-			let parameters = splitResponseIntoParameters(response);
-			logMessage(`CRIT`, `apiResponse: [data]:[${response}]`);
-			setElementValue(elementId, response);
-
-			const keylogValues = {
-				'keylogger-SpaceUsed': data.slice(44, 52),
-				'keylogger-SpaceFree': data.slice(36, 44),
-				'keylogger-DataWaiting': data.slice(28, 36),
-				'keylogger-OverflowCount': data.slice(20, 28),
-				'keylogger-Status': data.slice(18, 20),
-				'keylogger-CaptureMode': data.slice(16, 18),
-				'keylogger-LastReportID': data.slice(8, 16),
-				'keylogger-NextReportID': data.slice(0, 8),
-			};
-
-			toggleClassBasedOnStatus('footerNavKeylogStatus', 'buttonSelected', keylogValues['keylogger-Status'], "01");
-		}
-
 		function setElementValue(id, value) {
 			if (elements[id]) {
 				if (elements[id].tagName.toLowerCase() === 'input') {
@@ -4713,9 +4833,6 @@ DELAY 2000
 			if (keylogStoragePercent == "0%") {
 				keylogStoragePercent = "0.2%";
 			}
-
-			toggleClassBasedOnStatus('footerNavKeylogStatus', 'buttonSelected', keylogValues['keylogger-Status'], "01");
-			document.getElementById('keylogStartButton').innerHTML = keylogValues['keylogger-Status'] === '01' ? 'Stop' : 'Start';
 			document.getElementById('keylogStorageUsedBar').style.width = keylogStoragePercent;
 			document.getElementById('keylogStoragePercent').innerHTML = keylogStoragePercent;
 		}
@@ -4728,23 +4845,60 @@ DELAY 2000
 			}
 			prevDataCLStatus = data;
 
-			let responseHexParams = data.split('09');
+			let splitData = data.split('\t');
+			let listName = splitData[0];
+			let jsonData = splitData[1];
+			let jsonObject = JSON.parse(jsonData);
+			let keylogValues = {};
 
-			if (data === previousData) {
-				return;
+			for (let key in jsonObject) {
+				if (key === "status") {
+					keylogValues['keylogger-Status'] = jsonObject[key];
+				}
+				if (key === "mode") {
+					keylogValues['keylogger-CaptureMode'] = jsonObject[key];
+				}
+				if (key === "file") {
+					let fileObject = jsonObject[key];
+					for (let fileKey in fileObject) {
+						if (fileKey === "used") {
+							keylogValues['keylogger-SpaceUsed'] = fileObject[fileKey];
+						}
+						if (fileKey === "free") {
+							keylogValues['keylogger-SpaceFree'] = fileObject[fileKey];
+						}
+						if (fileKey === "waiting") {
+							keylogValues['keylogger-DataWaiting'] = fileObject[fileKey];
+						}
+						if (fileKey === "lost") {
+							keylogValues['keylogger-DataLost'] = fileObject[fileKey];
+						}
+						if (fileKey === "lastid") {
+							keylogValues['keylogger-LastReportID'] = fileObject[fileKey];
+						}
+						if (fileKey === "nextid") {
+							keylogValues['keylogger-NextReportID'] = fileObject[fileKey];
+						}
+					}
+				}
+				if (key === "usb") {
+					let usbObject = jsonObject[key];
+					for (let usbKey in usbObject) {
+						if (usbKey === "pkts") {
+							keylogValues['keylogger-USBPkts'] = usbObject[usbKey];
+						}
+						if (usbKey === "lost") {
+							keylogValues['keylogger-USBLost'] = usbObject[usbKey];
+						}
+						if (usbKey === "holds") {
+							keylogValues['keylogger-USBHolds'] = usbObject[usbKey];
+						}
+						if (usbKey === "bursts") {
+							keylogValues['keylogger-USBBursts'] = usbObject[usbKey];
+						}
+					}
+				}
 			}
-			previousData = data;
-
-			const keylogValues = {
-				'keylogger-SpaceUsed': data.slice(44, 52),
-				'keylogger-SpaceFree': data.slice(36, 44),
-				'keylogger-DataWaiting': data.slice(28, 36),
-				'keylogger-OverflowCount': data.slice(20, 28),
-				'keylogger-Status': data.slice(18, 20),
-				'keylogger-CaptureMode': data.slice(16, 18),
-				'keylogger-LastReportID': data.slice(8, 16),
-				'keylogger-NextReportID': data.slice(0, 8),
-			};
 
 			for (const [elementId, value] of Object.entries(keylogValues)) {
 				const element = document.getElementById(elementId);
@@ -4754,25 +4908,22 @@ DELAY 2000
 			const spaceUsedDecimal = parseInt(keylogValues['keylogger-SpaceUsed'], 16);
 			const spaceFreeDecimal = parseInt(keylogValues['keylogger-SpaceFree'], 16);
 			const keylogStoragePercent = ((spaceUsedDecimal / spaceFreeDecimal) * 100).toFixed(0) + '%';
-
-			toggleClassBasedOnStatus('footerNavKeylogStatus', 'buttonSelected', keylogValues['keylogger-Status'], "01");
-			document.getElementById('keylogStartButton').innerHTML = keylogValues['keylogger-Status'] === '01' ? 'Stop' : 'Start';
 			toggleClassBasedOnStatus('keylogStatusLight', 'statusLightActive', keylogValues['keylogger-Status'], "01");
 			document.getElementById('keylogStorageUsedBar').style.width = keylogStoragePercent;
 			document.getElementById('keylogStoragePercent').innerHTML = keylogStoragePercent;
 
-			logMessage('CRIT', `apiResponseCLStatus: [status]:[${keylogValues['keylogger-Status']}] [captureMode]:[${keylogValues['keylogger-CaptureMode']}] [spaceUsed]:[${keylogValues['keylogger-SpaceUsed']}] [spaceFree]:[${keylogValues['keylogger-SpaceFree']}] [dataWaiting]:[${keylogValues['keylogger-DataWaiting']}] [overflowCount]:[${keylogValues['keylogger-OverflowCount']}] [lastReportID]:[${keylogValues['keylogger-LastReportID']}] [nextReportID]:[${keylogValues['keylogger-NextReportID']}]`);
+			logMessage('CRIT', `apiResponseCLStatus: [status]:[${keylogValues['keylogger-Status']}] [captureMode]:[${keylogValues['keylogger-CaptureMode']}] [spaceUsed]:[${keylogValues['keylogger-SpaceUsed']}] [spaceFree]:[${keylogValues['keylogger-SpaceFree']}] [dataWaiting]:[${keylogValues['keylogger-DataWaiting']}] [dataLost]:[${keylogValues['keylogger-DataLost']}] [lastReportID]:[${keylogValues['keylogger-LastReportID']}] [nextReportID]:[${keylogValues['keylogger-NextReportID']}] [usbPkts]:[${keylogValues['keylogger-USBPkts']}] [usbLost]:[${keylogValues['keylogger-USBLost']}] [usbHolds]:[${keylogValues['keylogger-USBHolds']}] [usbBursts]:[${keylogValues['keylogger-USBBursts']}]`);
 
 			updateKeylogStatus(keylogValues);
 		}
 
 		function apiResponseCLStop(data) {
-			handleapiResponse(data, ELEMENT_IDS.RESPONSE_CL_STOP, 'buttonSelected');
+			setElementValue(ELEMENT_IDS.RESPONSE_CL_STOP, 'buttonSelected');
 			sendMessage("CLStatus");
 		}
 
 		function apiResponseCLStart(data) {
-			handleapiResponse(data, ELEMENT_IDS.RESPONSE_CL_START, 'buttonSelected');
+			setElementValue(ELEMENT_IDS.RESPONSE_CL_START, 'buttonSelected');
 			sendMessage("CLStatus");
 		}
 
@@ -4792,15 +4943,18 @@ DELAY 2000
 			}
 			for (let i = 0; i < clReadTemp.length; i += 4) {
 				let hex = clReadTemp.substr(i, 4);
-				logMessage(`INFO`, `!!! CLReadSplitter: [hex]:[${hex}]`);
+				if (hex.length < 4) {
+					hex = hex.padEnd(4, '0');
+				}
+				logMessage(`DEBUG`, `!!! CLReadSplitter: [hex]:[${hex}]`);
 				if (responseTextParams[1] == "K") {
 					keylogDecoder(hex);
 				} else if (responseTextParams[1] == "H") {
 					document.getElementById("keylog").append(`${hex}`);
 				}
 			}
-			logMessage(`INFO`, `CLRead Handler: [${evt.data}] [${responseTextParams[5]}] [${clReadTemp}]`)
-			apiResponseCLRead(evt.data);
+			logMessage(`CRIT`, `CLRead Handler: [${data}] [${responseTextParams[5]}] [${clReadTemp}]`)
+			apiResponseCLRead(data);
 		}
 
 		function apiResponseCLRead(data) {
@@ -4811,7 +4965,7 @@ DELAY 2000
 			let response = String.fromCharCode.apply(null, new Uint8Array(data));
 			let output = document.getElementById('response-CLRead');
 			output.value = `${parameter2}`;
-			logMessage(`INFO`, `apiResponseCLRead: [data]:[${response}] [data]:[${parameter2}]`);
+			logMessage(`DEBUG`, `apiResponseCLRead: [data]:[${response}] [data]:[${parameter2}]`);
 		}
 
 		function keylogStartStop(mode) {
@@ -4851,7 +5005,7 @@ DELAY 2000
 				footerNavKeylogLiveStatus.classList.add('buttonSelected');
 
 				intervalId = setInterval(function() {
-					sendMessage('CLRead\t500');
+					sendMessage('CLRead\t300');
 				}, 2000);
 
 			} else if (mode == "off") {
@@ -4880,7 +5034,7 @@ DELAY 2000
 					replaceWith: '$4'
 				},
 				{
-					pattern: /\[(F[0-9]*|MEDIA*|KPAD*|INT*|LANG*|VOLUME*|AGAIN|ALTERASE|BACKSPACE|CANCEL|CAPSLOCK|CLEAR|COMPOSE|COPY|CRSEL|CUT|DELETE|DOWNARROW|END|ENTER|ESC|EXSEL|FIND|FRONT|HANGEUL|HANJA|HELP|HENKAN|HIRAGANA|HOME|INSERT|KATAKANA|KATAKANAHIRAGANA|KPAD_COMMA|KPAD_EQUAL|KPEQUAL|KPJPCOMMA|LEFTARROW|LOCKING_CAPSLOCK|LOCKING_NUMLOCK|LOCKING_SCROLLLOCK|MUHENKAN|MUTE|NUMLOCK|OPEN|OPER|OUT|PAGEDOWN|PAGEUP|PASTE|PAUSE|POWER|PRINTSCREEN|PRIOR|PROPS|RETURN|RIGHTARROW|RO|SCROLLLOCK|SEPARATOR|STOP|SYSREQ|TAB|UNDO|UPARROW|VOLUMEDOWN|VOLUMEUP|YEN|ZENKAKUHANKAKU)\]/g,
+					pattern: /\[(F[0-9]*|MEDIA*|KPAD*|INT*|LANG*|VOLUME*|AGAIN|ALTERASE|BACKSPACE|CANCEL|CAPSLOCK|CLEAR|COPILOT|COMPOSE|COPY|CRSEL|CUT|DELETE|DOWNARROW|END|ENTER|ESC|EXSEL|FIND|FRONT|HANGEUL|HANJA|HELP|HENKAN|HIRAGANA|HOME|INSERT|KATAKANA|KATAKANAHIRAGANA|KPAD_COMMA|KPAD_EQUAL|KPEQUAL|KPJPCOMMA|LEFTARROW|LOCKING_CAPSLOCK|LOCKING_NUMLOCK|LOCKING_SCROLLLOCK|MUHENKAN|MUTE|NUMLOCK|OPEN|OPER|OUT|PAGEDOWN|PAGEUP|PASTE|PAUSE|POWER|PRINTSCREEN|PRIOR|PROPS|RETURN|RIGHTARROW|RO|SCROLLLOCK|SEPARATOR|STOP|SYSREQ|TAB|UNDO|UPARROW|VOLUMEDOWN|VOLUMEUP|YEN|ZENKAKUHANKAKU)\]/g,
 					replaceWith: '\r\n$1\r\n'
 				}
 			];
@@ -4898,70 +5052,123 @@ DELAY 2000
 			contentAreaToggle('payload');
 		}
 
-
-		function decodeKeylog(hexData) {
-			const pairs = hexData.match(/../g);
-
-			let output = "";
-			for (let i = 0; i < pairs.length; i += 2) {
-				const mod = parseInt(pairs[i], 16);
-				const key = pairs[i + 1];
-
-				let binaryMod = parseInt(mod, 16);
-				let layer = 0;
-				if ((binaryMod & 0x02) !== 0 || (binaryMod & 0x20) !== 0) layer = 1;
-				if ((binaryMod & 0x40) !== 0 && (binaryMod & 0x02) === 0 && (binaryMod & 0x20) === 0) layer = 2;
-				if ((binaryMod & 0x40) !== 0 && ((binaryMod & 0x02) !== 0 || (binaryMod & 0x20) !== 0)) layer = 3;
-
-				let modText = "";
-				for (let m in modifiersInverted) {
-					if (mod & m) modText += (modText ? '+' : '') + modifiersInverted[m];
-				}
-
-				let keyVal = positionalIds.includes(key) ? keymapData[key][layer] : keymapData[key];
-				if (keyVal == "SPACE") {
-					keyVal = " ";
-				} else if (keyVal === undefined) {
-					keyVal = `[UNDEFINED:${mod}:${key}]`;
-				}
-
-				if (keyVal != "NOKEY") {
-					output += modText ? `[${modText}]${keyVal}[/${modText}]` : keyVal;
-				}
-			}
-
-			document.getElementById("keylog").append(`${output}`);
-		}
-
 		const keylogDecoderCache = {};
+		const keylogDecoder = (() => {
+			let cache = {};
+			const memoizedFunction = (data) => {
+				if (cache.hasOwnProperty(data)) {
+					appendAndLogKey(cache[data], data);
+					return cache[data];
+				}
 
-		function keylogDecoder(data) {
-			if (keylogDecoderCache[data]) {
-				return keylogDecoderCache[data];
+				const mod = data.substr(0, 2);
+				const hid = data.substr(2, 2);
+				if (hid === "00") {
+					return;
+				}
+
+				const binaryMod = parseInt(mod, 16);
+				const {
+					layer,
+					hasOtherModifiers
+				} = determineLayer(binaryMod);
+				const modifierText = buildModifierText(mod);
+				const key = getKeyFromHID(hid, layer);
+
+				if (key === "NOKEY") {
+					return;
+				}
+
+				let finalKey = key;
+				if (modifierText !== "" && hasOtherModifiers) {
+					console.log(`I have other modifiers! [${mod}]:[${modifierText}]`);
+					finalKey = `[${modifierText}]${key}[/${modifierText}]`;
+				}
+				const hidValue = parseInt(hid, 16);
+				if (hidValue >= 0x28 && hidValue !== 0x2C) {
+					if (finalKey && finalKey.length > 2) {
+						finalKey = `[${finalKey}]`;
+					}
+				}
+
+				cache[data] = finalKey;
+				appendAndLogKey(finalKey, data);
+
+				memoizedFunction.invalidateCache = () => {
+					cache = {};
+				};
+
+				return finalKey;
+			};
+
+			const determineLayer = (binaryMod) => {
+				const hasShiftModifiers = (binaryMod & 0x02) !== 0 || (binaryMod & 0x20) !== 0;
+				const hasAltGrModifiers = (binaryMod & 0x40) !== 0 || (binaryMod & 0x04) !== 0;
+				const hasOtherModifiers = binaryMod & ~(0x02 | 0x20 | 0x40 | 0x04);
+
+				let layer = 0;
+				if (hasAltGrModifiers && hasShiftModifiers) {
+					layer = 3;
+				} else if (hasAltGrModifiers && !hasShiftModifiers) {
+					layer = 2;
+				} else if (hasShiftModifiers) {
+					layer = 1;
+				}
+
+				return {
+					layer,
+					hasOtherModifiers: !!hasOtherModifiers
+				};
+			};
+
+			memoizedFunction.invalidateCache = () => {
+				cache = {};
+			};
+
+			return memoizedFunction;
+		})();
+
+		function appendAndLogKey(finalKey, data) {
+			if (finalKey) {
+				document.getElementById("keylog").append(finalKey);
+				logMessage('DEBUG', `keylogDecoder: [data]:[${data}] [finalKey]:[${finalKey}]`);
 			}
-			const mod = data.substr(0, 2);
-			const hid = data.substr(2, 2);
-			const modifierText = buildModifierText(mod);
-			const key = getKeyFromHID(hid, modifierText.includes("SHIFT"));
-			const finalKey = (modifierText !== "" && hid !== "00") ? `[${modifierText}]${key}[/${modifierText}]` : key;
-			keylogDecoderCache[data] = finalKey;
-			document.getElementById("keylog").append(finalKey);
-			logMessage('DEBUG', `keylogDecoder: [data]:[${data}] [modifier]:[${mod}]:[${modifierText}] [hid]:[${hid}]:[${finalKey}]`);
-			return finalKey;
 		}
 
 		function keylogOptionsMenu() {
 			toggleModule('keylogOptionsMenu');
 		}
 
-		function downloadKeylog(data) {
+		var responseHexData;
+
+		function downloadKeylog(responseText, responseHex) {
+			let data = responseText.split("\t")
+			let keylogData = null;
 			if (data == "1") {
 				next = "1";
+				logMessage(`CRIT`, `downloadKeylog Started`);
+			} else if (!Array.isArray(data)) {
+				logMessage(`CRIT`, `downloadKeylog Failed to Get valid Data`);
 			} else {
 				next = data[3];
-				keylogData = data.join('09').split(':hexData:');
-				keylogData = keylogData[1];
-				decodeKeylog(keylogData);
+				let hexParts = responseHex.split('09');
+				if (hexParts.length > 4) {
+					responseHexData = hexParts.slice(4).join('09');
+				}
+				clReadTemp = responseHexData;
+				for (let i = 0; i < clReadTemp.length; i += 4) {
+					let hex = clReadTemp.substr(i, 4);
+					let rhex = clReadTemp.substr(i, 4);
+					if (hex.length < 4) {
+						hex = hex.padEnd(4, '0');
+					}
+					logMessage(`DEBUG`, `!!! CLReadSplitter: [hex]:[${hex}]`);
+					if (responseTextParams[1] == "K") {
+						let ld = keylogDecoder(hex);
+					} else if (responseTextParams[1] == "H") {
+						document.getElementById("keylog").append(`${hex}`);
+					}
+				}
 			}
 			next = padInput(next, "6");
 			if (next == "000001") {
@@ -4978,10 +5185,10 @@ DELAY 2000
 				}, 1000);
 			} else {
 				if ((parseInt(spaceUsed) > parseInt(next)) && data[2] != "0000") {
-					logMessage(`INFO`, `downloadKeylog: [spaceUsed]:[${spaceUsed}] [readNext]:[${next}]`);
+					logMessage(`CRIT`, `downloadKeylog: [spaceUsed]:[${spaceUsed}] [readNext]:[${next}]`);
 					sendMessage(`[dKAll]CLRead\t300\t${String(next)}`);
 				} else {
-					logMessage(`INFO`, `downloadKeylog else: [spaceUsed]:[${spaceUsed}] [readNext]:[${next}]`);
+					logMessage(`CRIT`, `downloadKeylog else: [spaceUsed]:[${spaceUsed}] [readNext]:[${next}]`);
 				}
 			}
 		}
@@ -5728,14 +5935,16 @@ DELAY 2000
 		}, {
 			"feat": "selfDestruct",
 			"name": "SELF-DESTRUCT 1",
-			"desc": "Completely erase all data and disconnect data lines to make cable behave 'broken'. You will need to reflash the firmware to recover. You will need to reflash the firmware to recover.', warn: 'ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
+			"desc": "Completely erase all data and disconnect data lines to make cable behave 'broken'. You will need to reflash the firmware to recover. You will need to reflash the firmware to recover.\n\nWARNING: ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
+			"warn": "ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
 			"code": [{
 				"example": "SELF-DESTRUCT 1"
 			}]
 		}, {
 			"feat": "selfDestruct",
 			"name": "SELF-DESTRUCT 2",
-			"desc": "Erase all data, but leave data lines connected so it behaves like a normal cable. You will need to reflash the firmware to recover.', warn: 'ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
+			"desc": "Erase all data, but leave data lines connected so it behaves like a normal cable. You will need to reflash the firmware to recover.\n\nWARNING: ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
+			"warn": "ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
 			"code": [{
 				"example": "SELF-DESTRUCT 2"
 			}]
@@ -5893,7 +6102,6 @@ DELAY 2000
 			let cfplcacheSize = document.getElementById("plcache") ? document.getElementById("plcache").value : '80';
 			let payloadList = document.getElementById("payload-list");
 			let cfpayloadSlots = payloadList ? payloadList.querySelectorAll("option").length : 0;
-			//	console.log(`[cfpayloadSlots]:[${cfpayloadSlots}] [payloadList]:[${payloadList}]`);
 
 			let cfpayloadSlotType = document.getElementById("payloadSlotType") ? document.getElementById("payloadSlotType").value : '1';
 
@@ -5917,13 +6125,12 @@ DELAY 2000
 			let existingUsed = parseInt(bootslotSize) + parseInt(hidxfileSize) + parseInt(plcacheSize);
 
 			document.getElementById("payloadSlotCount").innerHTML = "";
-
 			let payloadList = document.getElementById("payload-list");
-
-			//	console.log(`[availableSpace]:[${availableSpace}] [slotSize]:[${slotSize}] [payloadSlotType]:[${payloadSlotType}] [existingUsed]:[${existingUsed}]`);
 			listValues = generatePartitionSlotList(availableSpace, slotSize, payloadSlotType, existingUsed);
 			if (slotCount == "") {
 				slotCount = payloadList ? payloadList.querySelectorAll("option").length : 7;
+			} else if (slotCount > 200) {
+				slotCount = 200;
 			} else if (slotCount > listValues.length) {
 				slotCount = listValues.length - 1;
 			}
@@ -5949,9 +6156,10 @@ DELAY 2000
 
 		function generatePartitionSlotList(sectors, slotSize, slotType, existing) {
 			if (slotType === "3") {
-				slotSize = slotSize * 2;
+				slotSize *= 2;
 			}
 			let maxCount = Math.floor((sectors - existing) / slotSize);
+			maxCount = Math.min(maxCount, 200);
 			let listValues = [];
 			for (let i = 0; i <= maxCount; i++) {
 				listValues.push(i);
@@ -6068,6 +6276,7 @@ DELAY 2000
 			[0x62, "KPAD_0"],
 			[0x63, "KPAD_DOT"],
 			[0x64, "102ND"],
+			[0x65, "COPILOT"],
 			[0x65, "COMPOSE"],
 			[0x66, "POWER"],
 			[0x67, "KPEQUAL"],
@@ -6211,10 +6420,10 @@ DELAY 2000
 			"AR_101": ['ش ؤيثبلاهتنمةىخحضقسفعرصءغئ1234567890-=جد\\كطذوزظ ', '  }] [ أ÷ـ،/’آ×؛    ‘{  إ~!@#$%^&*)(_+<>|:" ,.؟ '],
 			"AR_102": ['ش ؤيثبلاهتنمةىخحضقسفعرصءغئ1234567890-=جدذكط>وزظـ', '\\  ] [ أ÷ـ،/’آ×؛    ‘   إ~!@#$%^&*)(_+}{ :"<,.؟|', '                             ¤                 ²'],
 			"AR_FR": ['ش ؤيثبلاهتنمةىخحضقسفعرصءغئ&é"\'(-è_çà)=جدذكط>وزظ\\', '\\  ] [ أ÷ـ،/’آ×؛    ‘   إ~1234567890°+}{ :"<,.؟|', '                             ¤                 ²'],
-			"AR_SY_P": ['ܐܒܤܕܖܔܓܗܥܛܟܠܡܢܧܦܩܪܣܬܜܫܘܨܝܙ1234567890-=][܆ܚܞ܏܀.܇܆', 'ܑܱܸܷܻܾܿܶ̈ـ̤̱݂ܹܴܼ̄̇ܰܺܽ݁ܳܵ݀ܲ!̥̊݉♰♱܊»)(«+̃݊:̣̰̮،؛؟:', 'ِ   ُءٰٕ݈݄݆݃  ٌٍَ̭݅ٓ݇ ًْٔ ܁܂܃܄܅܈܉܋܌܍┌┐     ّ   ²'],
-			"AR_SY_S": ['ܫܧܤܝܖܒܠܐܗܬܢܡ.܀ܞܚܔܩܣܦܥܪܨ[ܜ]1234567890-=ܓܕ܆ܟܛ܏ܘܙ܇܆', 'ܑܱܸܷܻܾܿܶ̈ـ̤̱݂ܹܴܼ̄̇ܰܺܽ݁ܳܵ݀ܲ!̥̊݉♰♱܊»)(«+̃݊:̣̰̮،؛؟:', 'ِ   ُءٰٕ݈݄݆݃  ٌٍَ̭݅ٓ݇ ًْٔ ܁܂܃܄܅܈܉܋܌܍┌┐     ّ   ²'],
+			"AR_SY_P": ['ܐܒܤܕܖܔܓܗܥܛܟܠܡܢܧܦܩܪܣܬܜܫܘܨܝܙ1234567890-=][܆ܚܞ܏܀.܇܆', 'ܑܱܸܷܻܾܿܶ̈ـ̤̱݂ܹܴܼ̄̇ܰܺܽ݁ܳܵ݀ܲ!̥̊݉♰♱܊»)(«+̃݊:̣̰̮،؛؟:', 'ِ   ُءٰٕ݈݄݆݃  ٌٍَ̭݅ٓ݇ ًْٔ ܁܂܃܄܅܈܉܋܌܍┌┐     ّ   ²'],
+			"AR_SY_S": ['ܫܧܤܝܖܒܠܐܗܬܢܡ.܀ܞܚܔܩܣܦܥܪܨ[ܜ]1234567890-=ܓܕ܆ܟܛ܏ܘܙ܇܆', 'ܑܱܸܷܻܾܿܶ̈ـ̤̱݂ܹܴܼ̄̇ܰܺܽ݁ܳܵ݀ܲ!̥̊݉♰♱܊»)(«+̃݊:̣̰̮،؛؟:', 'ِ   ُءٰٕ݈݄݆݃  ٌٍَ̭݅ٓ݇ ًْٔ ܁܂܃܄܅܈܉܋܌܍┌┐     ّ   ²'],
 			"AR_US": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]`;\'<,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}~:">,.? '],
-			"AS": ['োৱম্ািুপগৰকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট॥,.য় ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ !@ ₹    ()ঃঋঢঞ ছঠ ষ।য '],
+			"AS": ['োৱম্ািুপগৰকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট॥,.য় ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ !@ ₹    ()ঃঋঢঞ ছঠ ষ।য '],
 			"AZ": ['gkvsşarnyəliqeohpuıdmtüfbç1234567890-=xj cğ#zö. ', 'GKVSŞARNYƏLİQEOHPUIDMTÜFBÇ!"№;%:?*()_+XJ CĞ~ZÖ, '],
 			"AZ_C": ['фисвуапршолдғтһзјкыегмүчнә1234567890-=хҹ\\жҝ`бө.\\', 'ФИСВУАПРШОЛДҒТҺЗЈКЫЕГМҮЧНӘ!"№;%:?*()_+ХҸ/ЖҜ~БӨ,|', '                           @ ₼                 ²'],
 			"AZ_L": ['abcdefghijklmnopqrstuvüxyz1234567890-=öğ\\ıə`çş. ', 'ABCDEFGHİJKLMNOPQRSTUVÜXYZ!"Ⅶ;%:?*()_+ÖĞ/IƏ~ÇŞ, '],
@@ -6224,18 +6433,18 @@ DELAY 2000
 			"BG_P": ['абцдефгхийклмнопчрстувшжъз1234567890-=ящь;\'ю,./ѝ', 'АБЦДЕФГХИЙКЛМНОПЧРСТУВШЖЪЗ!@№$%€§*()–+ЯЩѝ:"Ю„“?Ѝ'],
 			"BG_PT": ['абцдефгхийклмнопярстужвьъз1234567890-=шщю;\'ч,./ ', 'АБЦДЕФГХИЙКЛМНОПЯРСТУЖВѝЪЗ!@№$%€§*()_+ШЩЮ:"Ч<>? ', '                                      ЫЭ        '],
 			"BG_T": ['ьфъаеожгстнвпхдз,ияшкэуйщю1234567890-.ц;(мч`рлб\\', 'ЬФЪАЕОЖГСТНВПХДЗыИЯШКЭУЙЩЮ!?+"%=:/_№ІVЦ§)МЧ~РЛБ|'],
-			"BN": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব 1234567890-ৃড় চট ,.য ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ         ()ঃঋঢঞ ছঠ ষ{য় ', '৴  ৸ ৢ   ৰ      ৗৣ৶    ৺  ১২৩৪৫৬৭৮৯০ ৢড়         ', '৵  ৹ ঌ   ৱ       ৡ৷                  ৠঢ়         '],
-			"BN_I": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট॥,.য় ', 'ও ণঅআইউফঘৎখথশ ধঝঔঈএঊঙ ঐঁভ !@ ₹    ()ঃঋঢঞ ছঠ ষ।য '],
-			"BN_IL": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট ,.য় ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ !@      ()ঃঋঢঞ ছঠ ষ য '],
-			"BO": ['འཔཀདེབངམི་གལmནོཕཅརསཏུཁཆཤཡཟ༡༢༣༤༥༦༧༨༩༠ཧཝཙཚཛཞ།ཨཐཇཉ ', 'ཱ྆ཀྵཌ༗༾༿࿏༙༂༃༆Mཎ༚༛༕ྼ༟ཊ༘྇༖ཥྻ༴༪༫༬༭༮༯༰༱༲༳༼༽༜༝༞༇༸༁ཋ༺༻ ', '࿄ྂྐྵྜ྾བྷ࿆࿇ཱི࿈གྷ࿉དྷྞ࿀࿁ྉཪ࿅ྚཱུ༶ྈྵ྿࿌ྲྀཷླྀཹཱི༉༊༏༐༒༌༓࿂࿃ཛྷ࿊࿋ༀྛྋྊ '],
-			"BO_U": ['འཔཀདེབངམི་གལmནོཕཅརསཏུཁཆཤཡཟ༡༢༣༤༥༦༧༨༩༠ཧཝཙཚཛཞ།ཨཐཇཉ ', 'ཱ྆ཀྵཌ༗༾༿࿏༙༂༃༆Mཎ༚༛༕ྼ༟ཊ༘྇༖ཥྻ༴༪༫༬༭༮༯༰༱༲༳༼༽༜༝༞༇༸༁ཋ༺༻ ', '࿄ྂྐྵྜ྾བྷ࿆࿇ ࿈གྷ࿉དྷྞ࿀࿁ྉཪ࿅ྚ ༶ྈྵ྿࿌ྲྀ ླྀ  ༉༊༏༐༒༌༓࿂࿃ཛྷ࿊࿋ༀྛྋྊ '],
+			"BN": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব 1234567890-ৃড় চট ,.য ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ         ()ঃঋঢঞ ছঠ ষ{য় ', '৴  ৸ ৢ   ৰ      ৗৣ৶    ৺  ১২৩৪৫৬৭৮৯০ ৢড়         ', '৵  ৹ ঌ   ৱ       ৡ৷                  ৠঢ়         '],
+			"BN_I": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট॥,.য় ', 'ও ণঅআইউফঘৎখথশ ধঝঔঈএঊঙ ঐঁভ !@ ₹    ()ঃঋঢঞ ছঠ ষ।য '],
+			"BN_IL": ['োবম্ািুপগরকতসলদজৌীেূহনৈংব ১২৩৪৫৬৭৮৯০-ৃড় চট ,.য় ', 'ও ণঅআইউফঘ খথশ ধঝঔঈএঊঙ ঐঁভ !@      ()ঃঋঢঞ ছঠ ষ য '],
+			"BO": ['འཔཀདེབངམི་གལmནོཕཅརསཏུཁཆཤཡཟ༡༢༣༤༥༦༧༨༩༠ཧཝཙཚཛཞ།ཨཐཇཉ ', 'ཱ྆ཀྵཌ༗༾༿࿏༙༂༃༆Mཎ༚༛༕ྼ༟ཊ༘྇༖ཥྻ༴༪༫༬༭༮༯༰༱༲༳༼༽༜༝༞༇༸༁ཋ༺༻ ', '࿄ྂྐྵྜ྾བྷ࿆࿇ཱི࿈གྷ࿉དྷྞ࿀࿁ྉཪ࿅ྚཱུ༶ྈྵ྿࿌ྲྀཷླྀཹཱི༉༊༏༐༒༌༓࿂࿃ཛྷ࿊࿋ༀྛྋྊ '],
+			"BO_U": ['འཔཀདེབངམི་གལmནོཕཅརསཏུཁཆཤཡཟ༡༢༣༤༥༦༧༨༩༠ཧཝཙཚཛཞ།ཨཐཇཉ ', 'ཱ྆ཀྵཌ༗༾༿࿏༙༂༃༆Mཎ༚༛༕ྼ༟ཊ༘྇༖ཥྻ༴༪༫༬༭༮༯༰༱༲༳༼༽༜༝༞༇༸༁ཋ༺༻ ', '࿄ྂྐྵྜ྾བྷ࿆࿇ ࿈གྷ࿉དྷྞ࿀࿁ྉཪ࿅ྚ ༶ྈྵ྿࿌ྲྀ ླྀ  ༉༊༏༐༒༌༓࿂࿃ཛྷ࿊࿋ༀྛྋྊ '],
 			"BR": ['abcdefghijklmnopqrstuvwxyz1234567890-=´[]ç~\',.;/', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%¨&*()_+`{}Ç^"<>:?', '  ₢ °           /     ?   ¹²³£¢¬     § ªº      °'],
 			"BS": ['абцдефгхијклмнопљрстувњџзѕ1234567890\'+шђжчћ`,.- ', 'АБЦДЕФГХИЈКЛМНОПЉРСТУВЊЏЗЅ!"#$%&/()=?*ШЂЖЧЋ~;:_ ', ' {  €[]     §}  \\    @|     ^ °             <>  '],
 			"BUG": ['ᨕᨅᨌᨉᨙᨃᨁᨖᨗᨍᨀᨒᨆᨊᨚᨄᨛᨑᨔᨈᨘᨓᨏᨂᨐᨎ1234567890-=[]\\;\'ꧏ᨞᨟/ ', '            ᨇᨋ            !@#$%^&*()_+{}|:"~,.? '],
 			"BY": ['фисвуапршолдьтізйкыегмцчня1234567890-=хў\\жэёбю. ', 'ФИСВУАПРШОЛДЬТІЗЙКЫЕГМЦЧНЯ!"№;%:?*()_+ХЎ/ЖЭЁБЮ, '],
 			"CA": ['abcdefghijklmnopqrstuvwxyz1234567890-=^¸<;`#,.é«', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"/$%?&*()_+^¨>:`|\'.É»', '            µ §¶          ±@£¢¤¬¦²³¼½¾[]}~{\\¯ ´°'],
 			"CA_FR": ['abcdefghijklmnopqrstuvwxyz1234567890-=^çà;è°,.éù', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%?&*()_+^ÇÀ:È°\'.ÉÙ', 'æ ¢ð ª      µ øþ ¶ß    »¥«¹@³¼½¾{[]}|¸°~`´ ¬<>/\\', 'Æ ©Ð        º ØÞ ®§       ¡²£¤    ± ¿  ¨`´     |'],
-			"CA_N": ['abcdefghijklmnopqrstuvwxyz1234567890-=^çà;è/,.éù', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%?&*()_+¨ÇÀ:È\\\'"ÉÙ', 'æ”¢ðœ ŋħ→ĳĸŀµŉøþ ¶ßŧ↓“ł»←«¹²³¼½¾   ] ¸ ~ ´ |―·  ', 'Æ’©ÐŒªŊĦıĲ Ŀº♪ØÞΩ®§Ŧ↑‘Ł ¥ ¡ £€⅜⅝⅞™± ¿˛˚¯˘˝ˇ ×÷·¦'],
+			"CA_N": ['abcdefghijklmnopqrstuvwxyz1234567890-=^çà;è/,.éù', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%?&*()_+¨ÇÀ:È\\\'"ÉÙ', 'æ”¢ðœ ŋħ→ĳĸŀµŉøþ ¶ßŧ↓“ł»←«¹²³¼½¾   ] ¸ ~ ´ |―·  ', 'Æ’©ÐŒªŊĦıĲ Ŀº♪ØÞΩ®§Ŧ↑‘Ł ¥ ¡ £€⅜⅝⅞™± ¿˛˚¯˘˝ˇ ×÷·¦'],
 			"CHR": ['ᎠᎨᏓᏗᎡᎩᎦᎯᎢᏚᎸᎵᏅᎾᎣᏁᎪᏛᏍᏔᎤᎥᎳᏴᏯᎬ   ᏙᏦᏜᏋᏖᏒᏄᎿᏳᏕᎶᏩᏨ\'`,.Ꮒ ', 'ᏌᏰᏟᏐᏣᏈᏥᎲᏱᎫᎧᎮᎷᎻᏬᏪᏆᏏᏎᏘᎭᏞᏫᏭᏲᏃᎱᏇᏧᎰᎹᏝᏡᎺ()ᎼᎽᏑᏤᏮᏠ"ᏊᏢᎴᏉ ', 'abcdefghijklmnopqrstuvwxyz1234567890-=[]\\; Ꮐ<>/ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|: ~  ? '],
 			"CS": ['abcdefghijklmnopqrstuvwxzy+ĕščřžýáíé=´ú)¨ů§;,.-&', 'ABCDEFGHIJKLMNOPQRSTUVWXZY1234567890%ˇ/(\'"!°?:_*', ' {&Đ []   łŁ }  \\ đ  @|# >~ˇ^˘°˛`·´˝¨¸÷×¤$ß <>*<'],
 			"CS_101": ['abcdefghijklmnopqrstuvwxyz+ěščřžýáíé=´ú)¨ů§;,.-\\', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890%ˇ/(\'"!°?:_|', '    €                     !@#$%^&*()-=[]\\;¤`<>/ß', '                                    _+{}|:^~×÷?˝'],
@@ -6250,17 +6459,17 @@ DELAY 2000
 			"DVORAK_R": ['7ixzqaehutdcwnyb5.8os,60r91234jlmfp/[];=\\k-`vg\' ', '&IXZQAEHUTDCWNYB%>*OS<^)R(!@#$JLMFP?{}:+|K_~VG" '],
 			"DZ": ['ཏརའདགནཔཕོབམཙཤལཅཆཀངཐིེཡཁཟུཞ༡༢༣༤༥༦༧༨༩༠༔།ཇཉཝཚཛ༉སཧཨ ', 'ྟྲཱྡྒྣྤྥཽྦྨྩྴླྕྖྐྔྠྀཻྱྑྯ྄ྮ༄༅༆ ༎༈༸༴༼༽ཿ༑ྗྙྭྪྫ༊ྶྷྸ ', 'ཊཪ༃ཌྌཎ  ༝༷ཾ༹ཥ༒༞༟ྈྃཋ༚༜༏ྉ྾༛༓1234567890-=()\\;\'࿑,./ ', 'ྚྼྰྜྏྞ  ༗༵྇྆ྵ ༘༙ྍྂྛ  ྻྎ྿ ༶࿓࿔༺༻྅༁ྊ*  ࿒+༿༾ྺ:"࿐࿙࿚? '],
 			"EL": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890-=[]\\΄\'`,./ ', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ΅ΧΥΖ!@#$%^&*()_+{}|¨"~<>? ', '  © €            ®      ¥  ²³£§¶ ¤¦°±½«»¬΅      '],
-			"EL_220": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890\']+}#΄¨½,.-<', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ~ΧΥΖ!"£$%&/()=?[*{@¨΅±;:_>', '  © €            ®      ¥  ²³£§¶ ¤¦°±½«»¬΅΅     '],
+			"EL_220": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890\']+}#΄¨½,.-<', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ~ΧΥΖ!"£$%&/()=?[*{@¨΅±;:_>', '  © €            ®      ¥  ²³£§¶ ¤¦°±½«»¬΅΅     '],
 			"EL_220L": ['abcdefghijklmnopqrstuvwxyz1234567890\']+}#΄¨\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&/()=?[*{@¨΅|;:_>', '    €                      ²³£§¶ ¤¦°±½«»¬΅΅     '],
 			"EL_319": ['αβψδεφγηιξκλμνοπ·ρστθωςχυζ1234567890\'+[]²΄’½,.-§', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ―ΡΣΤΘΩ¦ΧΥΖ!"£$%¬/()=°*«»³¨‘±;:_©', '                                         ΅      '],
 			"EL_319L": ['abcdefghijklmnopqrstuvwxyz1234567890\'+[]`´^\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&/()=?*{}@¨~|;:_>', '    €                                           '],
 			"EL_L": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'á ©ðé   í  øµñóöä®ßþú å üæ¡²³¤€¼½¾‘’¥×«»¬¶´ ç ¿ ', 'Á ¢ÐÉ   Í  Ø ÑÓÖÄ §ÞÚ Å ÜÆ¹  £       ÷  ¦°¨ Ç   '],
-			"EL_P": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890-=[]\\΄\'~,./ ', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ΅ΧΥΖ!@#$%^&*()_+{}|¨"`<>? ', '  © €           ´®      ¥ ϚϞϠ£§¶ ¤¦°±½«»¬΅᾿῁  ι ', '                           ²³        ῟ ·῝ ῾   ῞ '],
+			"EL_P": ['αβψδεφγηιξκλμνοπ;ρστθωςχυζ1234567890-=[]\\΄\'~,./ ', 'ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ:ΡΣΤΘΩ΅ΧΥΖ!@#$%^&*()_+{}|¨"`<>? ', '  © €           ´®      ¥ ϚϞϠ£§¶ ¤¦°±½«»¬΅᾿῁  ι ', '                           ²³        ῟ ·῝ ῾   ῞ '],
 			"ES": ['abcdefghijklmnopqrstuvwxyz1234567890\'¡`+çñ´º,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"·$%&/()=?¿^*ÇÑ¨ª;:_>', '                          |@#  ¬      []} {\\   ²'],
 			"ES_A": ['abcdefghijklmnopqrstuvwxyz1234567890-¨÷`´ñç\',.=<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZª"/()¡!¿?₧+¨×`´ÑÇ·;:%>', '$  @€[]| £±       &       |@#¼½¬_#§\\*~[]}~{\\ ^ ²'],
 			"ET": ['abcdefghijklmnopqrstuvwxyz1234567890+´üõ\'öäˇ,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#¤%&/()=?`ÜÕ*ÖÄ~;:_>', '    €             š      ž @£$€ {[]}\\  §½ ^    |', '                  Š      Ž                      '],
-			"FA": ['شذزیثبلاهتنمئدخحضقسفعرصطغظ1234567890-=جچپکگ÷و./پ', 'َإژٍِّۀآ]ـ«»ءأ[\\ً ُ،,ؤٌي؛ة!@#$%^&*)(_+}{|:"×<>؟|', '                                   ہ            '],
-			"FA_S": ['شذزیثبلاهتنمپدخحضقسفعرصطغظ۱۲۳۴۵۶۷۸۹۰-=جچ\\کگ و./ ', 'ؤ ژيٍإأآّة»«ءٔ][ًْئٌَُٰطِك!٬٫ ٪×،*)(ـ+}{|:؛ ><؟ '],
+			"FA": ['شذزیثبلاهتنمئدخحضقسفعرصطغظ1234567890-=جچپکگ÷و./پ', 'َإژٍِّۀآ]ـ«»ءأ[\\ً ُ،,ؤٌي؛ة!@#$%^&*)(_+}{|:"×<>؟|', '                                   ہ            '],
+			"FA_S": ['شذزیثبلاهتنمپدخحضقسفعرصطغظ۱۲۳۴۵۶۷۸۹۰-=جچ\\کگ و./ ', 'ؤ ژيٍإأآّة»«ءٔ][ًْئٌَُٰطِك!٬٫ ٪×،*)(ـ+}{|:؛ ><؟ '],
 			"FI": ['abcdefghijklmnopqrstuvwxyz1234567890+´å¨\'öä§,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#¤%&/()=?`Å^*ÖÄ½;:_>', '    €       µ              @£$€ {[]}\\  ~       |'],
 			"FI_S": ['abcdefghijklmnopqrstuvwxyz1234567890+´å¨\'öä§,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#¤%&/()=?`Å^*ÖÄ½;:_>', 'áʒčđ€ǥǧȟï ǩ µŋõ â šŧ ǯ   ž @£$€ {[]}\\  ~ øæ    |', 'ÁƷČĐ ǤǦȞÏ Ǩ  ŊÕ Â ŠŦ Ǯ   Ž               ØÆ     '],
 			"FO": ['abcdefghijklmnopqrstuvwxyz1234567890+´åð\'æø½,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#¤%&/()=?`ÅÐ*ÆØ§;:_>', '    €       µ              @£$€ {[]} |¨~  ^    \\'],
@@ -6275,8 +6484,8 @@ DELAY 2000
 			"HA": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', ' ɓ ɗ      ƙ             ƴ     €   ‘’     ¶’     ', ' Ɓ Ɗ      Ƙ             Ƴ               ¦       '],
 			"HAWAII": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;ʻ`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ā   ē   ī     ō     ū                     \'     ', 'Ā   Ē   Ī     Ō     Ū                     "     '],
 			"HE": ['שנבגקכעיןחלךצמםפ/רדאוה\'סטז1234567890-=][\\ף,;תץ. ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*)(_+}{|:"~><? ', '    €  ײ ױ          װ        ₪      ֿ           '],
-			"HE_S": ['שנבגקכעיןחלךצמםפ/רדאוה\'סטז1234567890-=][\\ף,;תץ. ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*)(_+}{|:"~><? ', 'ְ ֱ ָ ױײ ִ ”ֵ  ֳַּׂ ֹ ֶׁװ   €₪°ֽ֫×  ־–ֲֻֿ„״׳’‚÷ ', ' ׆͏        “        ֺ                    ”  ‘’  '],
-			"HI": ['ोवम्ािुपगरकतसलदजौीेूहनैंब 1234567890-ृड़ॉचट ,.यॉ', 'ओ णअआइउफघऱखथशळधझऔईएऊङ ऐँभ ऍॅ ₹    ()ःऋढञऑछठ ष।य़ऑ', '                          १२३४५६७८९०-=[]\\;\'`,./²', '                       ॐ  !@#$%^&*()_+{}|:"~<>? '],
+			"HE_S": ['שנבגקכעיןחלךצמםפ/רדאוה\'סטז1234567890-=][\\ף,;תץ. ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*)(_+}{|:"~><? ', 'ְ ֱ ָ ױײ ִ ”ֵ  ֳַּׂ ֹ ֶׁװ   €₪°ֽ֫×  ־–ֲֻֿ„״׳’‚÷ ', ' ׆͏        “        ֺ                    ”  ‘’  '],
+			"HI": ['ोवम्ािुपगरकतसलदजौीेूहनैंब 1234567890-ृड़ॉचट ,.यॉ', 'ओ णअआइउफघऱखथशळधझऔईएऊङ ऐँभ ऍॅ ₹    ()ःऋढञऑछठ ष।य़ऑ', '                          १२३४५६७८९०-=[]\\;\'`,./²', '                       ॐ  !@#$%^&*()_+{}|:"~<>? '],
 			"HR": ['abcdefghijklmnopqrstuvwxzy1234567890\'+šđžčć¸,.- ', 'ABCDEFGHIJKLMNOPQRSTUVWXZY!"#$%&/()=?*ŠĐŽČĆ¨;:_ ', ' {  €[]   łŁ§}  \\    @|   ~ˇ^˘°˛`˙´˝¨¸÷×¤ ß <>  '],
 			"HU": ['abcdefghijklmnopqrstuvwxzy123456789öüóőúűéá0,.-í', 'ABCDEFGHIJKLMNOPQRSTUVWXZY\'"+!%/=()ÖÜÓŐÚŰÉÁ§?:_Í', 'ä{&ĐÄ[] ÍíłŁ<}  \\ đ €@|# >~ˇ^˘°˛`˙´˝¨¸÷×¤$ß ;>*<'],
 			"HU_101": ['abcdefghijklmnopqrstuvwxyz123456789öüóőúűéáí,.-í', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ\'"+!%/=()ÖÜÓŐÚŰÉÁÍ?:;Í', 'ä{&ĐÄ[] ÍíłŁ<}  \\ đ  @|# >~ ^   ` ´   ÷×\\$ß0;>_<'],
@@ -6287,10 +6496,11 @@ DELAY 2000
 			"IE": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]#;\'`,./\\', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"£$%^&*()_+{}~:@¬<>?|', 'á   é   í     ó     ú        €            ´¦   ²', 'Á   É   Í     Ó     Ú                     `¦    '],
 			"IG": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', '        ị    ṅọ     ụ         €   ‘’    ¦¶´     ', '        Ị    ṄỌ     Ụ                           '],
 			"IN_EN": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ā  ḍē ṅḥī   ṁṇō æ śṭū  ṣñ    ₹      -           ', 'Ā  ḌĒ ṄḤĪ   ṀṆŌ Æ ŚṬŪ  ṢÑ    ₹ ˆ  ˘ ˍ           '],
-			"IN_SD": ['ोवम्ािुपगरकतसलदजौीेूहनैंबॆ1234567890-ृड़ॉचटॊ,.यॉ', 'ओऴणअआइउफघऱखथशळधझऔईएऊङऩऐँभऎऍॅ      ()ःऋढञऑछठऒष।य़ऑ', '  ॔  ॢ  ग़ क़    ज़ ॣ       ॓१२३४५६७८९० ॄड़  ॒  ॰॥ ²', '     ऌ फ़  ख़      ॡ     ॐ             ॠढ़   ॑  ऽ  '],
+			"IN_SD": ['ोवम्ािुपगरकतसलदजौीेूहनैंबॆ1234567890-ृड़ॉचटॊ,.यॉ', 'ओऴणअआइउफघऱखथशळधझऔईएऊङऩऐँभऎऍॅ      ()ःऋढञऑछठऒष।य़ऑ', '  ॔  ॢ  ग़ क़    ज़ ॣ       ॓१२३४५६७८९० ॄड़  ॒  ॰॥ ²', '     ऌ फ़  ख़      ॡ     ॐ             ॠढ़   ॑  ऽ  '],
 			"IS": ['abcdefghijklmnopqrstuvwxyz1234567890ö-ð\'+æ´°,.þ<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&/()=Ö_Ð?*Æ\'¨;:Þ>', '            µ   @               {[]}\\  ~` ^°   |'],
 			"IT": ['abcdefghijklmnopqrstuvwxyz1234567890\'ìè+ùòà\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"£$%&/()=?^é*§ç°|;:_>', '                                      [] @#    ²', '                                      {}        '],
 			"IT_142": ['abcdefghijklmnopqrstuvwxyz1234567890\'ìè+ùòà\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"£$%&/()=?^é*§ç°|;:_>', '    €           @           # € {[]}   ~`      ²'],
+			"IT_APPLE": ['abcdefghijklmnopqrstuvwxyz1234567890\'ìè+ùòà<,.-\\', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"£$%&/()=?^é*§ç°>;:_|', '                                      [] @#    ²', '                                      {}        '],
 			"JP": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./\\', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>?|', 'ﾁｺｿｼｲﾊｷｸﾆﾏﾉﾘﾓﾐﾗｾﾀｽﾄｶﾅﾋﾃｻﾝﾂﾇﾌｱｳｴｵﾔﾕﾖﾜﾎﾍﾞﾟﾑﾚｹﾛﾈﾙﾒﾑ', 'ﾁｺｿｼｨﾊｷｸﾆﾏﾉﾘﾓﾐﾗｾﾀｽﾄｶﾅﾋﾃｻﾝｯﾇﾌｧｩｪｫｬｭｮｦｰﾍ｢｣ﾑﾚｹﾛ､｡･ﾑ'],
 			"JP_101": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ﾁｺｿｼｲﾊｷｸﾆﾏﾉﾘﾓﾐﾗｾﾀｽﾄｶﾅﾋﾃｻﾝﾂﾇﾌｱｳｴｵﾔﾕﾖﾜﾎﾍﾞﾟﾑﾚｹﾛﾈﾙﾒ ', 'ﾁｺｿｼｨﾊｷｸﾆﾏﾉﾘﾓﾐﾗｾﾀｽﾄｶﾅﾋﾃｻﾝｯﾇﾌｧｩｪｫｬｭｮｦｰﾍ｢｣ﾑﾚｹﾛ､｡･ '],
 			"JP_102": ['abcdefghijklmnopqrstuvwxyz1234567890-^[]\\;:@,./\\', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&\'() =~{}|+*`<>?_', 'ﾁｺｿｼｲﾊｷｸﾆﾏﾉﾘﾓﾐﾗｾﾀｽﾄｶﾅﾋﾃｻﾝﾂﾇﾌｱｳｴｵﾔﾕﾖﾜﾎﾍﾟﾑｰﾚｹﾞﾈﾙﾒﾛ', 'ﾁｺｿｼｨﾊｷｸﾆﾏﾉﾘﾓﾐﾗｾﾀｽﾄｶﾅﾋﾃｻﾝｯﾇﾌｧｩｪｫｬｭｮｦﾎﾍ｢｣ｰﾚｹﾞ､｡･ﾛ'],
@@ -6330,7 +6540,7 @@ DELAY 2000
 			"MN": ['ймёбуөахшролтиүзфжыэгсцчня№-"₮:._,%?ещкъ\\дп=ьвю ', 'ЙМЁБУӨАХШРОЛТИҮЗФЖЫЭГСЦЧНЯ1234567890ЕЩКЪ|ДП+ЬВЮ '],
 			"MN_S": ['ᠠᠪᠼᠳᠡᠹᠭᠬᠢᠵᠺᠯᠮᠨᠥᠫᠴᠷᠰᠲᠦᠤᠣᠱᠶᠽ1234567890 =〔〕᠁;᠋᠍᠂᠃. ', '  ᡂ ᠧ  ᠾ  ᠻᡀ ᠩ   ᠿ    ᠸ  ᡁ!⁈⁉—% ᠊ ()᠎+〈〉|᠄᠌~《》? '],
 			"MN_T": ['ᠠᠪᠴᠳᠡᠹᠭᠬᠢᠵᠺᠯᠮᠨᠥᠫᠣᠷᠰᠲᠦᠤᠸᠱᠶᠽ1234567890 =[]᠁ ᠋᠍᠂᠃· ', '  ᠼ ᠧ  ᠾ  ᠻᡀ ᠩ  ᡂᠿ       ᡁ ⁈⁉ % ᠊ ()᠎+〈〉 ᠄᠌~《》  '],
-			"MR": ['ोवम्ािुपगरकतसलदजौीेूहनैंब १२३४५६७८९०-ृड़ॉचट ,.यॉ', 'ओ णअआइउफघऱखथशळधझऔईएऊङ ऐँभ ऍॅ      ()ःऋढञऑछठ ष।य़ऑ', '                         ऽ1234567890-=[]\\;\'`,./²', '                       ॐ  !@#$%^&*()_+{}|:"~<>? '],
+			"MR": ['ोवम्ािुपगरकतसलदजौीेूहनैंब १२३४५६७८९०-ृड़ॉचट ,.यॉ', 'ओ णअआइउफघऱखथशळधझऔईएऊङ ऐँभ ऍॅ      ()ःऋढञऑछठ ष।य़ऑ', '                         ऽ1234567890-=[]\\;\'`,./²', '                       ॐ  !@#$%^&*()_+{}|:"~<>? '],
 			"MT_47": ['abcdefghijklmnopqrstuvwxyz1234567890-=ġħż;\'ċ,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@€$%^&*()_+ĠĦŻ:"Ċ<>? ', 'à   è   ì     ò     ù       £         []\\  `    ', 'À   È   Ì     Ò     Ù                 {}|  ~    '],
 			"MT_48": ['abcdefghijklmnopqrstuvwxyz1234567890-=ġħ#;\'ċ,./ż', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"€$%^&*()_+ĠĦ~:@Ċ<>?Ż', 'à   è   ì     ò     ù       £         []   `   \\', 'À   È   Ì     Ò     Ù                 {}   ¬   |'],
 			"NE": ['बदअमभानजषवपिफलयउ चकतगखधहथश घङझछटठडढण(.ृे सुञ,।र ', '  ऋ  ँ     ीः इएो         १२३४५६७८९०)ं ै् ू ?   ', '              ईऐौ         !@#$%^&*\'"-= ओ        ', '  आ            ऊ          1234567890 + औ        '],
@@ -6343,12 +6553,12 @@ DELAY 2000
 			"NTL": ['ᦰᦢᦈᦡᦵᦚᦄᦠᦲᦕᦂᦜᦖᦐᦷᦔᦀᦏᦉᦎᦳᦛᧈᦃᦊ᧞！＠＃＄％…＆*（）—+[]、； ～，。/ ', 'ᦱᦥᦋᦤᦶᦝᦇᦣᧀᦘᦅᦟᦙᦓᦸᦗᦁᦒᦌᦑᦴᦞᧉᦆᦍ᧟᧑᧒᧓᧔᧕᧖᧗᧘᧙᧐-={}|： ᧚《》？ ', 'ᦫᧇᦩᧆᦹ ᧂᦦᦿᦨᧅᦺᧄᧃᦽ  ᦾᦪ ᦼᧁ ᦧᦻ                       '],
 			"OGHAM": ['ᚐᚁᚉᚇᚓᚃᚌᚆᚔᚗᚖᚂᚋᚅᚑᚚᚊᚏᚄᚈᚒᚍᚕᚙᚘᚎ              ᚛       ', '                                        ᚜       '],
 			"OLCHIKI": ['ᱳᱣᱢᱚᱟᱤᱩᱯᱜᱨᱠᱛᱥᱞᱫᱡ  ᱮ ᱦᱱ ᱸᱵᱷ᱑᱒᱓᱔᱕᱖᱗᱘᱙᱐  ᱰᱹ ᱪᱴ ,.ᱭ ', ' ᱶᱬ                 ᱝ    ᱽ   ₹      ᱼ ᱲᱧ ᱺ ᱻ᱿᱾  '],
-			"OR": ['ୋୱମ୍ାିୁପଗରକତସଲଦଜୌୀେୂହନୈଂବୟ1234567890-ୃଡ଼ ଚଟ ,.ୟ ', 'ଓ ଣଅଆଇଉଫଘ ଖଥଶଳଧଝଔଈଏଊଙ ଐଁଭୱ   ₹    ()ଃଋଢଞ ଛଠ ଷ।ଯ ', ' ଵ   ୢ           ୣ     ୰  ୧୨୩୪୫୬୭୮୯୦ ୄଡ଼      ॥  ', '     ଌ           ୡ                   ୠଢ଼      ଽ  '],
-			"PA": ['ੋਵਮ੍ਾਿੁਪਗਰਕਤਸਲਦਜੌੀੇੂਹਨੈੰਬ 1234567890- ਡ਼ ਚਟ ,.ਯ ', 'ਓੲਣਅਆਇਉਫਘੜਖਥਸ਼ਲ਼ਧਝਔਈਏਊਙ ਐਂਭ    ੱ    ()  ਢਞ ਛਠ  ।  ', ' ੳ   ੲੳਫ਼ਗ਼ ਖ਼    ਜ਼       ੴ  ੧੨੩੪੫੬੭੮੯੦  ੜ      ॥  ', '                             ₹                  '],
+			"OR": ['ୋୱମ୍ାିୁପଗରକତସଲଦଜୌୀେୂହନୈଂବୟ1234567890-ୃଡ଼ ଚଟ ,.ୟ ', 'ଓ ଣଅଆଇଉଫଘ ଖଥଶଳଧଝଔଈଏଊଙ ଐଁଭୱ   ₹    ()ଃଋଢଞ ଛଠ ଷ।ଯ ', ' ଵ   ୢ           ୣ     ୰  ୧୨୩୪୫୬୭୮୯୦ ୄଡ଼      ॥  ', '     ଌ           ୡ                   ୠଢ଼      ଽ  '],
+			"PA": ['ੋਵਮ੍ਾਿੁਪਗਰਕਤਸਲਦਜੌੀੇੂਹਨੈੰਬ 1234567890- ਡ਼ ਚਟ ,.ਯ ', 'ਓੲਣਅਆਇਉਫਘੜਖਥਸ਼ਲ਼ਧਝਔਈਏਊਙ ਐਂਭ    ੱ    ()  ਢਞ ਛਠ  ।  ', ' ੳ   ੲੳਫ਼ਗ਼ ਖ਼    ਜ਼       ੴ  ੧੨੩੪੫੬੭੮੯੦  ੜ      ॥  ', '                             ₹                  '],
 			"PHAGS": ['ꡖꡎꡄꡊꡠꡤꡂꡜꡞꡆꡀꡙꡏꡋꡡꡌꡢꡘꡛꡈꡟꡧꡓꡣꡗꡕ1234567890 =〔〕᠁ꡃ꡶꡴᠂᠃᠅ ', 'ꡝ ꡅ ꡦꡰꡥꡯ  ꡁ ꡳ  ꡍ ꡲꡚꡉ  ꡧ ꡨꡔ!⁈⁉—% & () +〈〉fe00ꡇ꡷꡵、。? ', '  ꡐ      ꡒ   ꡬ   ꡱꡮꡩ    ꡭ             《》     ᠄  ', '  ꡑꡫ               ꡪ                            '],
 			"PL": ['abcdefghijklmnopqrstuvwxzy1234567890+\'żśółą˛,.- ', 'ABCDEFGHIJKLMNOPQRSTUVWXZY!"#¤%&/()=?*ńćźŁę·;:_ ', ' { Đ        §}  \\ đ €@¦   ~ˇ^˘°˛`·´˝¨¸÷× $ß <>  '],
 			"PL_P": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ą ć ę      ł ńó   ś €  ź ż                      ', 'Ą Ć Ę      Ł ŃÓ   Ś    Ź Ż                      '],
-			"PS": ['شذزیثبلاهتنمړدخحضقسفعرصطغظ۱۲۳۴۵۶۷۸۹۰-=جچ\\کګ وږ/ ', 'ښ ژيٍپأآّټڼةؤډځڅًْۍَُءٌېِئ!٬٫؋٪×»«)(ـ+][*:؛ٔ،.؟ ', '   ےىںڷإٰٹ><ڑڈ\'"€   ٙ ٱ;ٓ?~@#$%^&٭•°_÷}{|كگ`,ۇۉ '],
+			"PS": ['شذزیثبلاهتنمړدخحضقسفعرصطغظ۱۲۳۴۵۶۷۸۹۰-=جچ\\کګ وږ/ ', 'ښ ژيٍپأآّټڼةؤډځڅًْۍَُءٌېِئ!٬٫؋٪×»«)(ـ+][*:؛ٔ،.؟ ', '   ےىںڷإٰٹ><ڑڈ\'"€   ٙ ٱ;ٓ?~@#$%^&٭•°_÷}{|كگ`,ۇۉ '],
 			"PT": ['abcdefghijklmnopqrstuvwxyz1234567890\'«+´~çº\\,.-<', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&/()=?»*`^Çª|;:_>', '    €                      @£§€ {[]}  ¨]       ²'],
 			"RO": ['abcdefghijklmnopqrstuvwxzy1234567890+\'ăîâşţ],.- ', 'ABCDEFGHIJKLMNOPQRSTUVWXZY!"#¤%&/()=?*ĂÎÂŞŢ[;:_ ', ' { Đ      łŁ§}  \\ đ  @|   ~ˇ^˘°˛`·´˝¨¸÷× $ß <>  '],
 			"RO_P": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', 'ă ©đ€   î  ł   §â șț  ß   ~ˇ^˘°˛`˙´˝¨¸„”    «»  ', 'Ă  Đ    Î  Ł    Â ȘȚ                –±          '],
@@ -6426,32 +6636,40 @@ DELAY 2000
 		const buildModifierTextCache = {};
 
 		function buildModifierText(modifier) {
-			if (buildModifierTextCache[modifier]) {
-				return buildModifierTextCache[modifier];
+			console.log(`BuildModifierText: [${modifier}]`);
+			const numericModifier = parseInt(modifier, 16);
+			if (buildModifierTextCache[numericModifier]) {
+				return buildModifierTextCache[numericModifier];
 			}
 			let modifierText = "";
 			for (const scancode in modifiersInverted) {
-				if (modifier & modifiersInverted[scancode]) {
+				const numericScancode = parseInt(scancode);
+				if (numericModifier & numericScancode) {
 					modifierText += modifiersInverted[scancode] + "+";
 				}
 			}
-			buildModifierTextCache[modifier] = modifierText.slice(0, -1);
-			return buildModifierTextCache[modifier];
+			modifierText = modifierText.slice(0, -1);
+			buildModifierTextCache[numericModifier] = modifierText;
+			return modifierText;
 		}
 
 		const getKeyFromHIDCache = {};
 
-		function getKeyFromHID(hid, useShiftedKey) {
-			const cacheKey = `${hid}_${useShiftedKey}`;
+		function getKeyFromHID(hid, layer) {
+			const cacheKey = `${hid}_${layer}`;
 			if (getKeyFromHIDCache[cacheKey]) {
 				return getKeyFromHIDCache[cacheKey];
 			}
-			if (hid == "00") {
-				hid = "0";
+
+			if (typeof keymapData[hid] === 'undefined') {
+				return "NOKEY";
 			}
-			const key = useShiftedKey ? keymapData[hid][1] : keymapData[hid][0];
-			getKeyFromHIDCache[cacheKey] = key === "SPACE" ? " " : key;
-			return getKeyFromHIDCache[cacheKey];
+
+			const keyVal = layer > 0 ? keymapData[hid][layer] : keymapData[hid][0];
+			const finalKey = keyVal === "SPACE" ? " " : keyVal;
+
+			getKeyFromHIDCache[cacheKey] = finalKey;
+			return finalKey;
 		}
 
 		function sortedKeymapGlobalArray() {
@@ -6505,7 +6723,7 @@ DELAY 2000
 				updateKeymapViewer(keymapData, keymapViewerKeys);
 				memoizedKeyToHidMapping.invalidateCache();
 				memoizedHidToKeyMapping.invalidateCache();
-				//	memoizedHexMapping.invalidateCache();
+				keylogDecoder.invalidateCache();
 			} else {
 				logMessage("CRIT", `Locale Unchanged from ${localeName}`);
 			}
@@ -6573,6 +6791,9 @@ DELAY 2000
 		function keyToHidMapping(key) {
 			if (key === " " || key === " ") {
 				key = "SPACE";
+			}
+			if (key === "COPILOT" || key === "COMPOSE") {
+				key = "COMPOSE";
 			}
 			if (key === "DOWN" || key === "DOWNARROW" || key === "DOWN_ARROW") {
 				key = "DOWNARROW";
@@ -6828,14 +7049,6 @@ DELAY 2000
 			}, 1000);
 		}
 
-		if (hostname == "localhost") {
-			hostname = "192.168.1.251";
-		}
-
-		function downloadFrontendlog() {
-			downloadFile('debuglog', 'frontend-log', true);
-		}
-
 		const editor = document.getElementById('payload');
 		const lineNumbers = document.getElementById('lineNumbers');
 
@@ -6860,12 +7073,10 @@ DELAY 2000
 			const lines = lineNumbers.childNodes;
 			if (lineNumber > 0 && lineNumber <= lines.length) {
 				const lineElement = lines[lineNumber - 1];
-				// remove any class starting with 'line-'
 				lineElement.className = lineElement.className
 					.split(' ')
 					.filter(c => !c.startsWith('line-'))
 					.join(' ');
-				// add new color class if color is not 'none'
 				if (color !== 'none') {
 					lineElement.classList.add(`line-${color}`);
 				}
@@ -6875,11 +7086,8 @@ DELAY 2000
 		updateLineNumbers();
 
 
-
-
-
 		if (hostname == "localhost") {
-			hostname = "192.168.1.231"
+			hostname = "192.168.5.140"
 		}
 
 		function downloadFrontendlog() {
