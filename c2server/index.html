@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<title>O.MG</title>
 	<meta charset="utf-8">
@@ -29,7 +28,7 @@
 			--accentGradient1: hsl(0, 0%, 30%);
 			--accentGradient2: hsl(0, 0%, 50%)
 		}
-
+		
 		body,
 		input[type=text],
 		textarea {
@@ -37,7 +36,7 @@
 			background-color: var(--bgColor2);
 			color: var(--fontColor);
 		}
-
+		
 		body {
 			-webkit-margin-before: 0;
 			-webkit-margin-end: 0;
@@ -52,7 +51,7 @@
 			margin: 0;
 			padding: 0;
 		}
-
+		
 		body {
 			flex-direction: column;
 			font-family: Arial, Verdana, Tahoma, serif;
@@ -61,21 +60,21 @@
 			row-gap: 1px;
 			scrollbar-width: none;
 		}
-
-		body::-webkit-scrollbar {
+		
+		body::-webkit-scrollbar{
 			display: none;
 		}
-
+		
 		button,
 		button:hover {
 			background: var(--inactiveColor);
 		}
-
+		
 		body,
 		button {
 			text-align: left;
 		}
-
+		
 		button {
 			display: flex;
 			flex-grow: 1;
@@ -91,13 +90,103 @@
 			border-radius: 5px;
 			-webkit-appearance: none;
 		}
-
+		
 		button:hover,
 		.buttonSelectedGrey {
 			background-image: linear-gradient(to bottom, var(--inactiveGradient2), var(--inactiveGradient1));
 			text-decoration: none;
 		}
-
+		
+		.buttonActivationDelay {
+			position: relative;
+			filter: grayscale(100%);
+			cursor: not-allowed;
+			overflow: hidden;
+		}
+		
+		.buttonActivationDelay .buttonText {
+			opacity: 0;
+			animation: showButtonText 5s forwards;
+		}
+		
+		@keyframes showButtonText {
+			0% {
+				opacity: 0;
+			}
+			99% {
+				opacity: 0;
+			}
+			100% {
+				opacity: 1;
+			}
+		}
+		
+		.buttonActivationDelay::before {
+			content: 'Please wait...';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: inherit;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			animation: hidePlaceholder 5s forwards;
+		}
+		
+		@keyframes hidePlaceholder {
+			0% {
+				opacity: 1;
+			}
+			99% {
+				opacity: 1;
+			}
+			100% {
+				opacity: 0;
+				display: none;
+			}
+		}
+		
+		.buttonActivationDelay {
+			animation: activateButton 5s forwards;
+		}
+		
+		@keyframes activateButton {
+			0% {
+				filter: grayscale(100%);
+				cursor: not-allowed;
+			}
+			99% {
+				filter: grayscale(100%);
+				cursor: not-allowed;
+			}
+			100% {
+				filter: none;
+				cursor: pointer;
+			}
+		}
+		
+		.buttonActivationDelay::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 4px;
+			background-color: #00ff00;
+			width: 0%;
+			animation: progressBar 5s linear forwards;
+		}
+		
+		@keyframes progressBar {
+			from {
+				width: 0%;
+			}
+			to {
+				width: 100%;
+			}
+		}
+		
 		#contentArea_debug input,
 		code {
 			background-color: black;
@@ -110,7 +199,7 @@
 			padding-left: 16px;
 			padding-right: 36px;
 		}
-
+		
 		code {
 			font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 			font-size: 77.5%;
@@ -121,18 +210,18 @@
 			margin-top: 10px;
 			white-space: pre-wrap;
 		}
-
+		
 		code::after {
 			content: "\a";
 			white-space: pre;
 		}
-
+		
 		button,
 		h1,
 		h2 {
 			font-weight: 700;
 		}
-
+		
 		h1 {
 			margin-block-start: 0;
 			margin-block-end: 0;
@@ -141,7 +230,7 @@
 			font-size: 2rem;
 			line-height: 1.3;
 		}
-
+		
 		h2 {
 			text-transform: uppercase;
 			align-items: center;
@@ -149,7 +238,7 @@
 			font-size: 1em;
 			padding-left: 10px;
 		}
-
+		
 		.bigLabel {
 			text-transform: uppercase;
 			align-items: center;
@@ -161,11 +250,11 @@
 			position: relative;
 			vertical-align: middle;
 		}
-
+		
 		input {
 			color: var(--fontColor);
 		}
-
+		
 		input[type=text],
 		textarea {
 			position: relative;
@@ -173,13 +262,13 @@
 			font-size: medium;
 			width: 200px;
 		}
-
+		
 		input[type=radio] {
 			position: relative;
 			display: inline-block;
 			top: -3px;
 		}
-
+		
 		#keylogStorage label,
 		#payloadStorage label,
 		#payloadRun label,
@@ -187,8 +276,17 @@
 			position: relative;
 			display: block;
 			font-size: small;
+			font-weight: bold;
+			font-size: 1rem;
 		}
-
+		
+		#payloadStorage label,
+		#keylogStorage label, 
+		#payloadRun label {
+			font-size: 13px;
+			font-weight: normal;
+		}
+		
 		a:active,
 		a:hover,
 		a:link,
@@ -198,7 +296,7 @@
 		nav a {
 			color: var(--navColor);
 		}
-
+		
 		nav {
 			display: flex;
 			flex-flow: row;
@@ -211,7 +309,7 @@
 			padding-right: 10px;
 			width: calc(100vw - 20px);
 		}
-
+		
 		nav a {
 			text-decoration: none;
 			padding-top: 2em;
@@ -220,7 +318,7 @@
 			margin-bottom: -2em;
 			padding-right: 5px;
 		}
-
+		
 		#navbar-wifiIcon,
 		nav,
 		nav a,
@@ -228,27 +326,27 @@
 		svg {
 			vertical-align: middle;
 		}
-
+		
 		nav span {
 			height: 50px;
 			vertical-align: top;
 		}
-
+		
 		.left-side,
 		.right-side,
 		body {
 			display: flex;
 			justify-content: flex-start;
 		}
-
+		
 		.left-side>div {
 			margin-right: 0;
 		}
-
+		
 		.right-side>div {
 			margin-left: auto;
 		}
-
+		
 		.statusLightActive {
 			margin-left: 10px;
 			width: 10px;
@@ -259,7 +357,7 @@
 			transform: scale(1);
 			animation: pulse 2s infinite;
 		}
-
+		
 		#navbar-wifiIcon {
 			position: relative;
 			left: 10px;
@@ -269,7 +367,7 @@
 			width: 40px;
 			padding-top: 0;
 		}
-
+		
 		#wifiDetails {
 			display: flex;
 			flex-direction: column;
@@ -281,47 +379,45 @@
 			left: -33px;
 			top: 34px;
 		}
-
+		
 		.networkIn {
 			fill: grey;
 		}
-
+		
 		.networkOut {
 			fill: grey;
 		}
-
+		
 		@keyframes networkpulse {
 			0% {
 				fill: grey;
 			}
-
 			50% {
 				fill: lightgrey;
 			}
-
 			100% {
 				fill: grey;
 			}
 		}
-
+		
 		.networkActive {
-			animation: networkpulse 0.5s;
+			animation: networkpulse 0.5s;	
 		}
-
+		
 		#wifiRTT {
 			height: 1em;
 		}
-
+		
 		svg {
 			fill: var(--navColor);
 		}
-
+		
 		content textarea {
 			border-top: 0;
 			border-bottom: 0;
 			border-right: 0;
 		}
-
+		
 		#payloadEditorFile {
 			position: absolute;
 			top: 0;
@@ -329,46 +425,46 @@
 			margin-right: 14px;
 			background-color: rgba(0, 0, 0, .0);
 			color: #fff;
-			z-index: 10;
+			z-index: 0;
 		}
-
+		
 		#contentArea_debug {
 			color: var(--navColor);
 		}
-
+		
 		#contentArea_debug input {
 			color: var(--fontColor);
 		}
-
+		
 		#footerKeylog,
 		#footerPayload {
 			padding-top: 0;
 			position: relative;
 			top: -5px;
 		}
-
+		
 		#payloadLoadSelect,
 		#payloadSelect {
 			background-color: #000;
 		}
-
+		
 		#helpExamples {
 			width: calc(100% - 10px);
 		}
-
+		
 		#helpExamples h3 {
 			padding-bottom: 0;
 			line-height: 20px;
 			margin-block-end: 0;
 			margin-bottom: 5px;
 		}
-
+		
 		#helpExamples pre {
 			color: var(--bgColor1);
 			font-family: Arial, Verdana, Tahoma, serif;
 			white-space: pre-wrap;
 		}
-
+		
 		#keylogStorage,
 		#payloadStorage,
 		#payloadRun {
@@ -379,7 +475,7 @@
 			border-left-width: 4px;
 			border-left-color: var(--accentGradient1);
 		}
-
+		
 		#keylogStorage label,
 		#payloadStorage label,
 		#payloadRun label {
@@ -387,15 +483,15 @@
 			height: 2px;
 			text-align: center;
 		}
-
+		
 		#payloadStorage {
 			padding-top: 7px;
 		}
-
+		
 		#payloadRun {
 			padding-top: 7px;
 		}
-
+		
 		#keymap_row1,
 		#keymap_row2,
 		#keymap_row3,
@@ -408,25 +504,25 @@
 			gap: 5px;
 			padding: 5px;
 		}
-
+		
 		#keymap_row1,
 		#keymap_row4 {
 			grid-template-columns: repeat(13, 1fr);
 		}
-
+		
 		#keymap_row2,
 		#keymap_row3 {
 			grid-template-columns: repeat(14, 1fr);
 		}
-
+		
 		#keymap_row5 {
 			grid-template-columns: repeat(12, 1fr);
 		}
-
+		
 		#keymap_row6 {
 			grid-template-columns: repeat(7, 1fr);
 		}
-
+		
 		#keymapViewer {
 			position: absolute;
 			vertical-align: middle;
@@ -440,18 +536,18 @@
 			box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
 			color: var(--fontColor);
 		}
-
+		
 		#keymapViewerLabel {
 			text-align: left;
 			color: var(--navColor);
 			padding-left: 5px;
 			padding-top: 5px;
 		}
-
+		
 		#keymapViewerSelect {
 			width: 120px;
 		}
-
+		
 		#partitionEditor,
 		#partitionApplied {
 			position: absolute;
@@ -468,7 +564,7 @@
 			padding-left: 5px;
 			padding-top: 5px;
 		}
-
+		
 		#loadingScreen {
 			position: absolute;
 			vertical-align: middle;
@@ -485,7 +581,7 @@
 			padding-left: 5px;
 			padding-top: 5px;
 		}
-
+		
 		.loader {
 			position: relative;
 			align-content: center;
@@ -498,64 +594,86 @@
 			top: 10px;
 			animation: spin 2s linear infinite;
 		}
-
+		
 		#logo {
 			height: 50px;
 			padding-top: 0;
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' xml:space='preserve' fill='white' viewBox='110 25 82 50'><path d='M139.29 61.07a3 3 0 0 1 2.76 4.14c-.15.36-.37.68-.64.94s-.59.47-.96.64a2.87 2.87 0 0 1-2.32 0 2.96 2.96 0 0 1 0-5.49 3 3 0 0 1 1.16-.23zm8.11-13.77h4.92l3.9 10.28 4.13-10.28h4.97l2.91 19.23h-5l-1.4-11.07h-.05l-4.61 11.07h-1.99l-4.41-11.07h-.05l-1.61 11.07h-4.97l3.26-19.23zm42.13 8.49c-.02.7-.05 1.37-.09 2.03-.04.65-.13 1.3-.27 1.93a10.2 10.2 0 0 1-1.61 3.65 8.3 8.3 0 0 1-3.47 2.88c-1.36.6-2.85.89-4.46.89-1.51 0-2.9-.25-4.16-.74a9.26 9.26 0 0 1-5.34-5.28c-.5-1.24-.75-2.62-.75-4.13 0-1.57.25-2.98.75-4.26a9.27 9.27 0 0 1 5.43-5.36c1.28-.49 2.7-.74 4.25-.74 1.99 0 3.72.45 5.2 1.34s2.64 2.24 3.47 4.04l-4.75 1.99c-.34-.92-.86-1.66-1.57-2.22s-1.57-.85-2.59-.85c-.82 0-1.54.18-2.17.54s-1.15.83-1.57 1.4a6.3 6.3 0 0 0-.94 1.95 7.77 7.77 0 0 0 .01 4.39c.22.72.54 1.36.97 1.93.43.56.96 1.01 1.6 1.37.64.35 1.36.52 2.18.52 1.09 0 2-.28 2.75-.83s1.17-1.39 1.28-2.51h-4.08v-3.93h9.93zm-53.52-16.11c-.62-.72-1.52-1.77-1.51-2.75.01-1.1.7-2.08 1.55-2.7.86-.61 2.26-.77 3.25-1.07l-.03-.07c-1.18-.26-2.41-.36-3.6-.12s-2.33.83-3.12 1.8-1.19 2.32-.9 3.57c.2.88.72 1.65 1.26 2.35.55.7 1.13 1.38 1.52 2.2.39.81.55 1.8.2 2.63-.42.99-1.47 1.54-2.5 1.6-.85.06-1.7-.16-2.52-.42a10.82 10.82 0 0 0-8.54.11c-.71.21-1.44.37-2.18.32-1.02-.07-2.08-.61-2.49-1.6-.35-.83-.19-1.82.2-2.63s.97-1.49 1.52-2.2a6.23 6.23 0 0 0 1.26-2.35c.29-1.24-.11-2.6-.9-3.57s-1.94-1.56-3.12-1.8a8.92 8.92 0 0 0-3.6.12l-.02.07c1 .3 2.39.45 3.25 1.07.86.61 1.54 1.6 1.55 2.7.01.98-.89 2.03-1.51 2.75-.62.73-1.36 1.34-1.94 2.1a6.88 6.88 0 0 0-.56 7.15 6.26 6.26 0 0 0 3.27 2.86 10.87 10.87 0 1 0 19.36.03 6.2 6.2 0 0 0 3.35-2.89 6.86 6.86 0 0 0-.56-7.15c-.58-.77-1.31-1.38-1.94-2.11zm-10.57 23.33a6.36 6.36 0 1 1 0-12.73 6.36 6.36 0 0 1 0 12.73z'/></svg>");
 		}
-
+		
 		#ico_settings {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 39.22 40'><path style='fill: white;' d='m34.49,22.11c.1-.67.19-1.34.19-2.11s-.1-1.44-.19-2.11l4.31-3.06c.38-.29.57-.86.29-1.34l-4.21-7.08c-.29-.48-.77-.67-1.24-.38l-4.78,2.2c-1.15-.86-2.3-1.53-3.64-2.11l-.48-5.26c-.1-.48-.48-.86-.96-.86h-8.23c-.48,0-.96.38-.96.86l-.48,5.26c-1.34.57-2.58,1.24-3.64,2.11l-4.78-2.2c-.48-.19-1.05,0-1.24.38L.33,13.49c-.29.48-.1,1.05.29,1.34l4.31,3.06c-.1.67-.19,1.34-.19,2.11s.1,1.44.19,2.11L.43,25.17c-.38.29-.57.86-.29,1.34l4.11,7.08c.29.48.77.67,1.24.38l4.78-2.2c1.15.86,2.3,1.53,3.64,2.11l.48,5.26c.1.48.48.86.96.86h8.23c.48,0,.96-.38.96-.86l.48-5.26c1.34-.57,2.58-1.24,3.64-2.11l4.78,2.2c.48.19,1.05,0,1.24-.38l4.11-7.08c.29-.48.1-1.05-.29-1.34l-4.02-3.06Zm-14.93,7.46c-5.26,0-9.57-4.31-9.57-9.57s4.31-9.57,9.57-9.57,9.57,4.31,9.57,9.57-4.31,9.57-9.57,9.57Z'/><path style='fill: grey;' d='m19.56,8.52c-6.32,0-11.48,5.17-11.48,11.48s5.17,11.48,11.48,11.48,11.48-5.17,11.48-11.48-5.17-11.48-11.48-11.48Zm0,16.27c-2.68,0-4.78-2.11-4.78-4.78s2.11-4.78,4.78-4.78,4.78,2.11,4.78,4.78-2.11,4.78-4.78,4.78Z'/></svg>");
 		}
-
+		
 		#ico_about {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 38 40'><path style='fill: white' d='m32,0H6C2.7,0,0,2.7,0,6v34l6-6h26c3.3,0,6-2.7,6-6V6c0-3.3-2.7-6-6-6Zm-11,25h-4v-11h4v11Zm-2-14c-1.1,0-2-.9-2-2s.9-2,2-2,2,.9,2,2-.9,2-2,2Z'/></svg>");
 		}
-
+		
 		#ico_help {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 39.99 40'><g><rect style='fill: white' x='30.57' y='24.07' width='4' height='16.98' transform='translate(-13.48 32.57) rotate(-45)'/><circle style='fill: white' cx='15.99' cy='15.99' r='15.99'/></g><rect style='fill: grey' x='32.18' y='28.1' width='4' height='12.29' transform='translate(-14.2 34.2) rotate(-45)'/><circle style='fill: dimgrey' cx='15.99' cy='15.99' r='12.99'/><path style='fill: white' d='m22.88,10.19c-1.7-2-4.2-3.2-6.89-3.2s-5.2,1.2-6.89,3.2c-.4.4-.3,1.1.1,1.4.4.4,1.1.3,1.4-.1,1.4-1.6,3.3-2.5,5.4-2.5s4,.9,5.4,2.5c.2.2.5.4.8.4.2,0,.5-.1.6-.2.4-.4.4-1.1.1-1.5Z'/></svg>");
 		}
-
+		
 		#ico_syslog {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 38.39 40' fill='white'><path d='m31.17,0H7.23C3.24,0,0,3.24,0,7.23v19.94c0,3.99,3.24,7.23,7.23,7.24h5.73v2.35h-6.67v3.24h25.82v-3.24h-6.67v-2.35h5.72c3.99,0,7.23-3.24,7.23-7.23V7.23h0c.02-3.99-3.21-7.23-7.21-7.23h-.01Zm3.41,27.19h0c0,1.33-1.08,3.42-2.41,3.42H7.23c-1.33,0-3.41-2.08-3.41-3.41h0v-8.3h12.43l1.04-3.38,4.8,10.9,2.17-7.57h10.32v8.36h0v-.02Zm0-10.76h-12.12l-.84,2.96-4.72-10.72-2.41,7.82H3.82V7.24c0-1.33,2.08-3.41,3.41-3.42h23.94c1.33,0,3.41,2.08,3.41,3.41h0v9.2Z'/></svg>");
 		}
-
+		
 		#ico_payload {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' xml:space='preserve' fill='white' viewBox='0 0 512 512'><path d='M432 448H189c-5-14-15-24-29-29V80c0-4-2-8-5-11L91 5a16 16 0 00-22 22l59 60v332a48 48 0 1061 61h243a16 16 0 000-32zm-288 32a16 16 0 110-32 16 16 0 010 32z'/><path d='M400 256h-64v64h-64v-64h-64c-9 0-16 7-16 16v128l16 16h192c9 0 16-7 16-16V272c0-9-7-16-16-16zM336 128h-48v32h-32v-32h-48c-9 0-16 7-16 16v80h160v-80c0-9-7-16-16-16z'/></svg>");
 		}
-
+		
 		#ico_keylog {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 39.99 32.52'><path fill='white' d='m37.56,0H2.43C1.09,0,0,1.09,0,2.43v16.64c0,2.09,1.69,3.78,3.78,3.78h32.43c2.09,0,3.78-1.69,3.78-3.78V2.43c0-1.34-1.09-2.43-2.43-2.43Zm-11.85,3.81h3.81v3.81h-3.81v-3.81Zm0,5.71h3.81v3.81h-3.81v-3.81Zm-5.71-5.71h3.81v3.81h-3.81v-3.81h0Zm0,5.71h3.81v3.81h-3.81v-3.81h0Zm-5.71-5.71h3.81v3.81h-3.81v-3.81Zm0,5.71h3.81v3.81h-3.81v-3.81Zm-5.71-5.71h3.81v3.81h-3.81v-3.81Zm0,5.71h3.81v3.81h-3.81v-3.81Zm-1.9,9.52h-3.81v-3.81h3.81v3.81Zm0-5.71h-3.81v-3.81h3.81v3.81Zm0-5.71h-3.81v-3.81h3.81v3.81Zm24.76,11.43H8.57v-3.81h22.85v3.81Zm5.71,0h-3.81v-3.81h3.81v3.81Zm0-5.71h-5.71V3.81h5.71v9.52Z'/><g><rect style='fill: grey' x='20.92' y='23.2' width='2.34' height='9.93' transform='translate(-13.45 23.87) rotate(-45)'/><circle style='fill: grey' cx='12.39' cy='18.47' r='9.35'/></g><rect style='fill: grey' x='21.87' y='25.56' width='2.34' height='7.19' transform='translate(-13.87 24.83) rotate(-45)'/><circle style='fill: white' cx='12.39' cy='18.47' r='7.6'/><path style='fill: grey' d='m16.42,15.08c-.99-1.17-2.46-1.87-4.03-1.87s-3.04.7-4.03,1.87c-.23.23-.18.64.06.82.23.23.64.18.82-.06.82-.94,1.93-1.46,3.16-1.46s2.34.53,3.16,1.46c.12.12.29.23.47.23.12,0,.29-.06.35-.12.23-.23.23-.64.06-.88h-.01Z'/></svg>");
 		}
-
+		
 		#ico_keylogDownload {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 39.98 40'><path id='update' fill='white' d='m34.11,34.15l4.72,4.72c.12.12.2.29.2.47,0,.37-.3.67-.67.67h-13.05c-.74,0-1.33-.6-1.33-1.33v-13.05c0-.18.07-.35.2-.47.26-.26.68-.26.94,0l5.21,5.21c2.11-2.11,3.53-4.82,4.06-7.75,1.45-7.97-3.84-15.61-11.81-17.06-7.97-1.45-15.61,3.84-17.06,11.81s3.84,15.61,11.81,17.06v5.39C7.39,38.46-.01,29.98,0,19.97.01,8.93,8.97-.01,20.01,0c11.04.01,19.98,8.97,19.97,20.01,0,5.31-2.11,10.4-5.87,14.14Z'/></svg>");
 		}
-
+		
 		#ico_payloadLoad {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30.48 39.88'><polygon fill='white' points='30.48 39.88 0 39.88 0 9.88 20.95 9.88 30.48 19.4 30.48 39.88'/><polygon fill='white' points='29.05 20.35 20 20.35 20 11.3 29.05 20.35'/><polygon fill='grey' points='22.87 9.09 7.61 9.09 15.24 0 22.87 9.09'/><rect fill='grey' x='12.46' y='24.19' width='5.55' height='2.78'/><rect fill='grey' x='12.46' y='20.03' width='5.55' height='2.78'/><rect fill='grey' x='12.46' y='7.01' width='5.55' height='7.63'/><rect fill='grey' x='2.75' y='34.3' width='24.98' height='2.78'/><rect fill='grey' x='2.75' y='29.22' width='24.98' height='2.78'/><rect fill='grey' x='12.46' y='15.95' width='5.55' height='2.78'/></svg>");
 		}
-
+		
 		#ico_keylogLiveLog {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 38 40'><path style='fill: white;' d='m32,0H6C2.7,0,0,2.7,0,6v34l6-6h26c3.3,0,6-2.7,6-6V6c0-3.3-2.7-6-6-6ZM9,20c-1.66,0-3-1.34-3-3s1.34-3,3-3,3,1.34,3,3-1.34,3-3,3Zm10,0c-1.66,0-3-1.34-3-3s1.34-3,3-3,3,1.34,3,3-1.34,3-3,3Zm10,0c-1.66,0-3-1.34-3-3s1.34-3,3-3,3,1.34,3,3-1.34,3-3,3Z'/></svg>");
 		}
-
+		
 		#ico_keylogSave,
 		#ico_payloadSave {
 			margin-right: 8px;
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30.48 39.88'><polygon fill='white' points='30.48 39.88 0 39.88 0 9.88 20.95 9.88 30.48 19.4 30.48 39.88'/><polygon fill='white' points='29.05 20.35 20 20.35 20 11.3 29.05 20.35'/><polygon fill='grey' points='15.24 26.97 7.61 17.88 22.87 17.88 15.24 26.97'/><rect fill='grey' x='12.46' width='5.55' height='2.78'/><rect fill='grey' x='12.46' y='4.16' width='5.55' height='2.78'/><rect fill='grey' x='12.46' y='12.33' width='5.55' height='7.63'/><rect fill='grey' x='2.75' y='34.3' width='24.98' height='2.78'/><rect fill='grey' x='2.75' y='29.22' width='24.98' height='2.78'/><rect fill='grey' x='12.46' y='8.24' width='5.55' height='2.78'/></svg>");
 		}
-
+		
 		#ico_payloadBuild {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 39.99 39.99'><path fill='white' d='m35.55,0H4.44C2,0,0,2,0,4.44v31.11c0,2.44,2,4.44,4.44,4.44h31.11c2.44,0,4.44-2,4.44-4.44V4.44c0-2.44-2-4.44-4.44-4.44ZM11.44,30.94c-1.16,1.22-3.21,2.98-4.75,1.08-1.86-2.28.14-3.37,1.4-4.72l9.69-8.82h0s3.33,3.49,3.33,3.49l-9.66,8.97Zm16.48-6.43l-2.59-2.62,2.12-2.03-2.67-2.33-2.17,1.96-3.33-3.18,2.65-2.57c-1.97-3.43-4.67-4.99-7.5-4.86,6.29-3.94,11.32.06,11.32.06l2.59,3.24-1.06,2.6,2.3,2.38,2.75-2.36,2.53,2.97-6.96,6.75Z'/></svg>");
 		}
-
+		
 		#ico_keylogRun,
 		#ico_payloadRun {
 			background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><path style='fill: white;' d='m35.56,0H4.44C2,0,0,2,0,4.44v31.11c0,2.44,2,4.44,4.44,4.44h31.11c2.44,0,4.44-2,4.44-4.44V4.44c0-2.44-2-4.44-4.44-4.44ZM15.56,28.89V11.11l12.22,8.89-12.22,8.89Z'/></svg>");
 		}
-
+		
+		#ico_fsnobrick,
+		#ico_fsnoeat,
+		#ico_fsnofire,
+		#ico_fsnowater {
+			width: 80px;
+			background-repeat: no-repeat;
+		}
+		
+		#fsIcons {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 250px));
+			grid-template-rows: repeat(2, minmax(0, 150px));
+			grid-gap: 40px;
+			justify-content: center;
+			text-align: center;
+		}
+		
+		#fsIcons svg {
+			width: 100%;
+			height: 100%;
+		}
+		
 		#ico_settings,
 		#ico_about,
 		#ico_help {
@@ -564,7 +682,7 @@
 			height: 34px;
 			background-repeat: no-repeat;
 		}
-
+		
 		#ico_keylog,
 		#ico_payload,
 		#ico_syslog {
@@ -572,15 +690,15 @@
 			height: 34px;
 			background-repeat: no-repeat;
 		}
-
+		
 		#ico_keylog {
 			height: 28px;
 		}
-
+		
 		#ico_syslog {
 			height: 30px;
 		}
-
+		
 		#ico_keylogDownload,
 		#ico_keylogLiveLog,
 		#ico_keylogRun,
@@ -594,38 +712,38 @@
 			height: 32px;
 			background-repeat: no-repeat;
 		}
-
+		
 		#ico_wifi {
 			width: 35px;
 			height: 35px;
 		}
-
+		
 		#modelText {
 			position: absolute;
 			left: 45px;
 			top: 2px;
 			text-transform: uppercase;
 		}
-
+		
 		#modal {
 			top: calc((var(--app-height) - 320px)/2);
 			height: 320px;
 		}
-
+		
 		#modalLabel {
 			text-align: left;
 			color: var(--navColor);
 			padding-left: 5px;
 			padding-top: 5px;
 		}
-
+		
 		#modalMessage {
 			color: var(--fontColor);
 			padding-left: 5px;
 			padding-right: 5px;
 			width: 100%;
 		}
-
+		
 		#modalButtons {
 			display: flex;
 			flex-grow: auto;
@@ -634,7 +752,7 @@
 			right: 5px;
 			width: calc(100% - 10px);
 		}
-
+		
 		#navbarAlerts {
 			margin-top: 8px;
 			top: 0px;
@@ -645,11 +763,11 @@
 			min-width: 10px;
 			line-height: normal;
 		}
-
+		
 		#navbar-Links svg {
 			padding-top: 7px;
 		}
-
+		
 		#payloadLoadMenu,
 		#payloadSaveMenu,
 		#payloadFileMenu {
@@ -666,14 +784,14 @@
 			background-image: -ms-linear-gradient(top, var(--inactiveGradient1), var(--inactiveGradient2));
 			background-image: -o-linear-gradient(top, var(--inactiveGradient1), var(--inactiveGradient2));
 			background-image: linear-gradient(to bottom, var(--inactiveGradient1), var(--inactiveGradient2));
-
+		
 		}
-
+		
 		#fileMenuFlex {
 			display: flex;
 			justify-content: left;
 		}
-
+		
 		#columnLeft,
 		#columnRight {
 			display: flex;
@@ -681,17 +799,17 @@
 			gap: 10px;
 			/* adjust as needed */
 		}
-
+		
 		#columnLeft,
 		#columnLeft input {
 			width: 246px;
 		}
-
+		
 		#columnRight {
 			padding-left: 5px;
 			width: 100px;
 		}
-
+		
 		.payloadList {
 			padding: 10px;
 			font-size: 16px;
@@ -700,13 +818,13 @@
 			box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
 			width: 100%;
 		}
-
+		
 		.payloadList:focus {
 			outline: 0;
 			border-color: #66afe9;
 			box-shadow: 0 0 0 3px rgba(102, 175, 233, .6);
 		}
-
+		
 		select {
 			padding: 8px;
 			font-size: 16px;
@@ -722,18 +840,18 @@
 			-webkit-appearance: none;
 			-moz-appearance: none;
 		}
-
+		
 		select:focus {
 			outline: 0;
 			border-color: #66afe9;
 			box-shadow: 0 0 0 3px rgba(102, 175, 233, .6);
 		}
-
+		
 		#deviceSelect {
 			height: 40px;
 			padding-top: 7px;
 		}
-
+		
 		#sidebar {
 			max-height: calc(var(--app-height) - 50px);
 			position: absolute;
@@ -747,69 +865,69 @@
 			box-shadow: -6px 0 15px 5px var(--sidebarGradient);
 			height: var(--app-height);
 		}
-
+		
 		#sidebar,
 		#sidebar a:active,
 		#sidebar a:link,
 		#sidebar a:visited {
 			color: var(--navColor);
 		}
-
+		
 		#releaseTeam a,
 		#sidebar a:hover,
 		.about-twitter a {
 			color: var(--accentColor);
 		}
-
+		
 		#sidebar input {
 			color: var(--fontColor);
 		}
-
+		
 		#sidebar_about,
 		#sidebar_help,
 		#sidebar_settings {
 			padding-left: 10px;
 		}
-
+		
 		#sidebar_settings_subnav {
 			width: calc(100% - 10px);
 			padding-left: 0;
 		}
-
+		
 		#subnav button {
 			border-bottom-left-radius: 0;
 			border-bottom-right-radius: 0;
 			margin-inline: 1px;
 		}
-
+		
 		.about-role {
 			margin-bottom: 20px;
 		}
-
+		
 		.about-section-credits {
 			margin-bottom: 0;
 			columns: 2;
 		}
-
+		
 		.about-team-name {
 			font-size: 14px;
 			color: var(--bgColor1);
 			margin-right: 10px;
 		}
-
+		
 		.about-role,
 		.about-twitter {
 			font-size: 12px;
 			color: var(--navColor);
 		}
-
+		
 		.button-container {
 			position: relative;
 			left: 0;
 			top: 0;
 			transform: translate(0, 0);
 		}
-
+		
 		.buttonSelected,
 		.buttonSelected:hover,
 		.buttonRunning,
@@ -821,7 +939,7 @@
 			background-image: -o-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
 			background-image: linear-gradient(to bottom, var(--accentGradient1), var(--accentGradient2));
 		}
-
+		
 		.buttonSelected:hover,
 		.buttonRunning:hover {
 			background-image: -webkit-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
@@ -830,7 +948,7 @@
 			background-image: -o-linear-gradient(top, var(--accentGradient1), var(--accentGradient2));
 			background-image: linear-gradient(to bottom, var(--accentGradient1), var(--accentGradient2));
 		}
-
+		
 		.close,
 		.closeModal {
 			color: var(--fontColor);
@@ -845,39 +963,39 @@
 			right: 0;
 			top: 50px;
 		}
-
+		
 		.closeModal {
 			right: 0px;
 			top: 0;
 			position: absolute;
 		}
-
+		
 		.contentFullscreen {
 			width: calc(100%);
 		}
-
+		
 		.contentSidebar {
 			width: calc(100% - 325px);
 		}
-
+		
 		.footerSidebar {
 			width: calc(100% - 365px);
 		}
-
+		
 		.footerFullscreen {
 			width: calc(100% - 40px);
 		}
-
+		
 		.editor-wrapper {
 			display: flex;
 			position: relative;
 		}
-
+		
 		.editor div {
 			position: relative;
 			white-space: pre-wrap;
 		}
-
+		
 		.debug-info {
 			position: absolute;
 			top: 0;
@@ -888,7 +1006,7 @@
 			font-size: 12px;
 			z-index: 10;
 		}
-
+		
 		.editor {
 			background-color: var(--bgColor3);
 			border-color: var(--bgColor2);
@@ -905,18 +1023,18 @@
 			padding-bottom: 0;
 			border-bottom: 0;
 		}
-
+		
 		.editor div {
 			display: block;
 		}
-
+		
 		.editorKeylog {
 			padding-bottom: 0;
 			border-bottom: 0;
 			height: calc(100dvh - 195px);
 			border-left-color: var(--accentGradient1);
 		}
-
+		
 		.editorKeylog,
 		.editorSyslog,
 		.editorc2log,
@@ -933,26 +1051,26 @@
 			font-weight: 400;
 			line-height: 1.3;
 		}
-
+		
 		.editorSyslog,
 		.editorc2log {
 			height: calc(100dvh - 127px);
 			border-left-color: var(--inactiveGradient1);
 		}
-
+		
 		.fccNotice {
 			font-size: 12px;
 		}
-
+		
 		.footer {
 			width: calc(100% - 22px);
 			padding-top: 0;
 		}
-
+		
 		.headingModal {
 			height: 40px;
 		}
-
+		
 		.helpHeader {
 			background: var(--inactiveColor);
 			background-image: -webkit-linear-gradient(top, var(--inactiveGradient1), var(--inactiveGradient2));
@@ -966,36 +1084,36 @@
 			color: var(--navColor);
 			width: 100%;
 		}
-
+		
 		.hidden {
 			display: none;
 		}
-
+		
 		.key {
 			background-color: var(--bgColor3);
 			display: grid;
 			grid-template-columns: 50% 50%;
 			grid-row: auto auto;
 		}
-
+		
 		.navLabel {
 			vertical-align: middle;
 		}
-
+		
 		.partitionEditorFieldWrapper {
 			display: flex;
 		}
-
+		
 		.partitionEditorFieldLabel {
 			width: 140px;
 		}
-
+		
 		.progressBar {
 			color: var(--fontColor);
 			background-color: var(--bgColor3);
 			font-size: 10px;
 		}
-
+		
 		.progressFilled,
 		.progressFilled:after,
 		.progressFilled:before {
@@ -1005,7 +1123,7 @@
 			text-align: center;
 			margin-bottom: 4px;
 		}
-
+		
 		.submitButton {
 			position: relative;
 			display: grid;
@@ -1014,7 +1132,7 @@
 			background-color: inherit;
 			border-color: var(--bgColor2);
 		}
-
+		
 		.subnav {
 			display: flex;
 			flex-grow: auto;
@@ -1023,25 +1141,25 @@
 			margin-bottom: 0;
 			padding-bottom: 0;
 		}
-
+		
 		.footer button {
 			border-top-left-radius: 0;
 			border-top-right-radius: 0;
 			margin-inline: 1px;
 		}
-
+		
 		.subnav svg {
 			padding-right: 10px;
 		}
-
+		
 		.subnav {
 			width: calc(100% - 20px);
 		}
-
+		
 		.subnavSidebar {
 			width: calc(100% - 325px - 20px);
 		}
-
+		
 		.toast {
 			-webkit-animation: slide .5s forwards;
 			-webkit-animation-delay: 4s;
@@ -1065,9 +1183,10 @@
 			text-transform: uppercase;
 			top: 1px;
 			white-space: wrap;
-			width: 320px
+			width: 320px;
+			z-index: 1;
 		}
-
+		
 		.toggle-button {
 			background: var(--bgColor1);
 			width: 80px;
@@ -1077,7 +1196,7 @@
 			cursor: pointer;
 			transition: all 300ms ease-in-out;
 		}
-
+		
 		.toggle-button>.inner-circle {
 			background: var(--navColor);
 			width: 20px;
@@ -1085,15 +1204,15 @@
 			border-radius: 50%;
 			transition: all 300ms ease-in-out;
 		}
-
+		
 		.toggle-button.active {
 			background: var(--toggleOnColor);
 		}
-
+		
 		.toggle-button.active>.inner-circle {
 			margin-left: 60px;
 		}
-
+		
 		.updateButton,
 		.updateButtonLarge {
 			position: relative;
@@ -1106,7 +1225,7 @@
 			left: -6px;
 			padding-top: 3px;
 		}
-
+		
 		.updateButtonLarge {
 			height: 40px;
 			top: -4px;
@@ -1116,25 +1235,25 @@
 			justify-content: center;
 			text-align: center;
 		}
-
+		
 		.buttonMergeLeft {
 			border-top-left-radius: 0;
 			border-bottom-left-radius: 0;
 		}
-
+		
 		.buttonMergeRight {
 			border-top-right-radius: 0;
 			border-bottom-right-radius: 0;
 		}
-
+		
 		.visible {
 			visibility: visible;
 		}
-
+		
 		.wifiSignalOn {
 			fill: var(--navColor);
 		}
-
+		
 		dialog {
 			width: 60%;
 			height: fit-content;
@@ -1143,7 +1262,7 @@
 			border-radius: 10px;
 			border-color: var(--bgColor2);
 		}
-
+		
 		.close-button {
 			position: absolute;
 			top: 10px;
@@ -1153,13 +1272,13 @@
 			font-size: 20px;
 			cursor: pointer;
 		}
-
+		
 		#color-container {
 			position: relative;
 			width: 100%;
 			height: 40px;
 		}
-
+		
 		#color-slider {
 			position: absolute;
 			top: 12px;
@@ -1167,7 +1286,7 @@
 			margin: 0;
 			z-index: 1;
 		}
-
+		
 		#color-box {
 			position: absolute;
 			top: 10px;
@@ -1176,85 +1295,132 @@
 			background: linear-gradient(to right, hsl(0, 70%, 50%), hsl(120, 70%, 50%), hsl(240, 70%, 50%), hsl(359, 70%, 50%));
 			border-radius: 10px;
 		}
-
+		
 		#apply-color {
 			position: absolute;
 			top: 0px;
 			right: 20px;
 		}
-
+		
+		#firstTimeSetupAgree, #firstTimeSetupAgreePage2, #firstTimeSetupAgreePage3 {
+			bottom: 20px;
+			left: 20px;
+			width: calc(100% - 40px);
+		}
+		
+		#firstTimeSetup, ##firstTimeSetupPage2, #firstTimeSetupPage3 {
+			position: fixed;
+			vertical-align: middle;
+			top: 50px;
+			width: 250px;
+			height: 500px;
+			border-radius: 5px;
+			background-color: var(--bgColor2);
+			-webkit-box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
+			box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
+			color: var(--navColor);
+			padding-left: 5px;
+			padding-top: 5px;
+			z-index: 1000;
+			
+			&::backdrop {
+				background-color: rgba(0, 0, 0, 0.5);
+				backdrop-filter: blur(5px);
+				-webkit-backdrop-filter: blur(5px);
+			}
+			
+			h2 {
+				text-align: center;
+			}
+		}
+		
 		@media (max-width:700px) {
 			#navbarAlerts {
 				display: none;
 			}
-
 			.toast {
 				width: 320px;
 				right: 150px;
 			}
 		}
-
+		
 		@media (max-width:550px) {
 			.toast {
 				width: 320px;
 				right: 10px;
 			}
+		
+			#firstTimeSetup, #firstTimeSetupPage2, #firstTimeSetupPage3 {
+				position: absolute;
+				vertical-align: middle;
+				float: left;
+				top: 50px;
+				width: 90%;
+				height: 90dvh;
+				border-radius: 5px;
+				background-color: var(--bgColor2);
+				-webkit-box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
+				box-shadow: 5px 5px 15px 5px var(--inactiveGradient2);
+				color: var(--navColor);
+				padding-left: 5px;
+				padding-top: 5px;
+			}
 		}
-
+		
 		@media (max-width:530px) {
 			body {
 				height: var(--app-height)
 			}
-
+		
 			.navLabel {
 				display: none
 			}
-
+		
 			.navIcon {
 				display: none
 			}
-
+		
 			.contentFullscreen {
 				width: calc(100%);
 			}
-
+		
 			.contentFooter {
 				width: calc(100% - 40px);
 			}
-
+		
 			.contentSidebar {
 				display: none
 			}
-
+		
 			.subnavFullscreen {
 				width: calc(100% - 20px)
 			}
-
+		
 			.subnavSidebar {
 				display: none
 			}
-
+		
 			#sidebar {
 				width: 100%
 			}
-
+		
 			#navbarAlerts {
 				display: none;
 			}
 		}
-
+		
 		@media (max-width:400px) {
 			.toast {
 				width: 100%;
 				right: 0px;
 			}
 		}
-
+		
 		@media (max-width:1px) {
 			nav {
 				display: none
 			}
-
+		
 			#content,
 			#subnav,
 			.editor,
@@ -1263,44 +1429,44 @@
 				margin: 0;
 				width: 100vw;
 			}
-
+		
 			.editor {
 				height: calc(100dvh - 200px);
 			}
 		}
-
+		
 		@keyframes spin {
 			0% {
 				transform: rotate(0deg);
 			}
-
+		
 			to {
 				transform: rotate(360deg);
 			}
 		}
-
+		
 		@keyframes pulse {
 			0% {
 				transform: scale(0.95);
 				box-shadow: 0 0 0 0 var(--inactiveColor);
 			}
-
+		
 			70% {
 				transform: scale(0.80);
 				box-shadow: 0 0 0 3px var(--inactiveGradient2);
 			}
-
+		
 			100% {
 				transform: scale(0.95);
 				box-shadow: 0 0 0 0 var(--inactiveColor);
 			}
 		}
-
+		
 		.tooltip,
 		.input-wrapper {
 			position: relative;
 		}
-
+		
 		.tooltiptext {
 			position: absolute;
 			visibility: hidden;
@@ -1317,7 +1483,7 @@
 			border-style: solid;
 			border-color: transparent transparent red transparent;
 		}
-
+		
 		.tooltiptext::after {
 			content: "";
 			position: absolute;
@@ -1327,16 +1493,16 @@
 			border-style: solid;
 			border-color: transparent transparent red transparent;
 		}
-
+		
 		.arrowTop {
 			top: -10px;
 		}
-
+		
 		.arrowTop::after {
 			top: 100%;
 			border-color: red transparent transparent transparent;
 		}
-
+		
 		.editor-wrapper {
 			background-color: var(--bgColor3);
 			width: calc(100% - 22px);
@@ -1346,16 +1512,14 @@
 			margin-bottom: -8px;
 			padding-bottom: 20px;
 			overflow: scroll;
-			-ms-overflow-style: none;
-			/* IE and Edge */
-			scrollbar-width: none;
-			/* Firefox */
+			-ms-overflow-style: none;  /* IE and Edge */
+			scrollbar-width: none;  /* Firefox */
 		}
-
+		
 		.editor-wrapper::-webkit-scrollbar {
-			display: none;
+		  display: none;
 		}
-
+		
 		#lineNumbers {
 			width: 30px;
 			left: 0px;
@@ -1368,16 +1532,14 @@
 			position: absolute;
 			height: calc(100% - 30px);
 			overflow: scroll;
-			-ms-overflow-style: none;
-			/* IE and Edge */
-			scrollbar-width: none;
-			/* Firefox */
+			-ms-overflow-style: none;  /* IE and Edge */
+			scrollbar-width: none;  /* Firefox */
 		}
-
+		
 		#lineNumbers::-webkit-scrollbar {
-			display: none;
+		  display: none;
 		}
-
+		
 		#payload {
 			padding: 5px;
 			left: 45px;
@@ -1392,123 +1554,181 @@
 			position: relative;
 			width: calc(100% - 63px);
 			overflow: scroll;
-			-ms-overflow-style: none;
-			/* IE and Edge */
-			scrollbar-width: none;
-			/* Firefox */
+			-ms-overflow-style: none;  /* IE and Edge */
+			scrollbar-width: none;  /* Firefox */
 		}
-
+		
 		#payload::-webkit-scrollbar {
-			display: none;
+		  display: none;
 		}
-
+		
 		#labipaddress {
 			color: black;
 		}
-
+		
 		.line-red {
 			background-color: red;
 			width: 30px;
 			padding-right: calc(100vw - 60px);
 		}
-
+		
 		.line-orange {
 			background-color: orange;
 			width: 30px;
 			padding-right: calc(100vw - 55px);
 		}
-
+		
 		.line-yellow {
 			background-color: yellow;
 			width: 30px;
 			padding-right: calc(100vw - 55px);
 		}
-
+		
 		.line-green {
 			background-color: green;
 			width: 30px;
 			padding-right: calc(100vw - 55px);
 		}
-
+		
 		.line-blue {
 			background-color: blue;
 			width: 30px;
 			padding-right: calc(100vw - 55px);
 		}
-
+		
 		.line-purple {
 			background-color: purple;
 			width: 30px;
 			padding-right: calc(100vw - 55px);
 		}
-
-
+		
+		
 		.apply-effect {
 			animation: glowing 1s;
 			-webkit-animation: glowing 1s;
 			box-shadow: 0 0 0px red, 0 0 0px red, 0 0 0px red, 0 0 0px red;
 			-webkit-box-shadow: 0 0 0px red, 0 0 0px red, 0 0 0px red, 0 0 0px red;
 		}
-
+		
 		.glowing-effect {
 			animation: glowing 1s infinite;
 			-webkit-animation: glowing 1s infinite;
 			box-shadow: 0 0 1px red, 0 0 3px red, 0 0 5px red, 0 0 7px red;
 			-webkit-box-shadow: 0 0 1px red, 0 0 3px red, 0 0 5px red, 0 0 7px red;
 		}
-
+		
 		@keyframes glowing {
 			0% {
 				box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
 			}
-
+		
 			50% {
 				box-shadow: 0 0 8px red, 0 0 10px red, 0 0 12px red, 0 0 14px red;
 			}
-
+		
 			100% {
 				box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
 			}
 		}
-
+		
 		@-webkit-keyframes glowing {
 			0% {
 				-webkit-box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
 			}
-
+		
 			50% {
 				-webkit-box-shadow: 0 0 8px red, 0 0 10px red, 0 0 12px red, 0 0 14px red;
 			}
-
+		
 			100% {
 				-webkit-box-shadow: 0 0 4px red, 0 0 6px red, 0 0 8px red, 0 0 10px red;
 			}
 		}
 	</style>
 </head>
-
 <body>
 	<nav>
 		<div class="left-side">
-			<div id="logoBar"><svg id="logo" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" class="iconColor" viewBox="110 25 82 50"></svg> <span id="modelText" class="visible"></span></div>
-			<div id="navbar-wifiIcon"><svg id="ico_wifi" xml:space="preserve" viewBox="0 0 24.38 30">
-					<path id="networkIn" class="networkIn" fill="white" d="m8.44,30s-1.87-1.88-8.44-11.25h3.75v-5.63h1.87v7.5h-2.29c4.16,5.62,5.1,6.39,5.1,6.39,0,0,.94-.76,5.1-6.39h-2.29v-5.62h1.88v3.75h3.75c-6.56,9.38-8.44,11.25-8.44,11.25Z" />
-					<path id="networkOut" class="networkOut" fill="white" d="m15.94,0s1.88,1.88,8.44,11.25h-3.75v5.63h-1.88v-7.5h2.29c-4.16-5.62-5.1-6.39-5.1-6.39,0,0-.94.76-5.1,6.39h2.29v5.63h-1.88v-3.75h-3.75C14.06,1.88,15.94,0,15.94,0Z" />
-				</svg></div>
-			<div id="wifiDetails"><span id="wifiRTT"></span></div>
+			<div id="logoBar">
+				<svg id="logo" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" class="iconColor" viewBox="110 25 82 50"></svg>
+				<span id="modelText" class="visible"></span>
+			</div>
+			<div id="navbar-wifiIcon">
+				<svg id="ico_wifi" xml:space="preserve" viewBox="0 0 24.38 30">
+					<path id="networkIn" class="networkIn" fill="white" d="m8.44,30s-1.87-1.88-8.44-11.25h3.75v-5.63h1.87v7.5h-2.29c4.16,5.62,5.1,6.39,5.1,6.39,0,0,.94-.76,5.1-6.39h-2.29v-5.62h1.88v3.75h3.75c-6.56,9.38-8.44,11.25-8.44,11.25Z"/>
+					<path id="networkOut" class="networkOut" fill="white" d="m15.94,0s1.88,1.88,8.44,11.25h-3.75v5.63h-1.88v-7.5h2.29c-4.16-5.62-5.1-6.39-5.1-6.39,0,0-.94.76-5.1,6.39h2.29v5.63h-1.88v-3.75h-3.75C14.06,1.88,15.94,0,15.94,0Z"/>
+				</svg>
+			</div>
+			<div id="wifiDetails">
+				<span id="wifiRTT"></span>
+			</div>
 			<div id="deviceSelect"></div>
 			<div id="navbarAlerts"></div>
 		</div>
 		<div class="right-side">
-			<div id="navbar-Links"><a id="navbar-Links-settings" data-target="#modal-settings" href="#" onclick="sidebarAreaToggle('settings')"><svg id="ico_settings" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg> <span class="navLabel">SETTINGS</span> </a><a id="navbar-Links-about" data-target="#modal-about" href="#" onclick="sidebarAreaToggle('about')"><svg id="ico_about" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg> <span class="navLabel">ABOUT</span> </a><a id="navbar-Links-help" data-target="#modal-help" href="#" onclick="sidebarAreaToggle('help')"><svg id="ico_help" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg> <span class="navLabel">HELP</span></a></div>
+			<div id="navbar-Links">
+				<a id="navbar-Links-settings" data-target="#modal-settings" href="#" onclick="sidebarAreaToggle('settings')">
+					<svg id="ico_settings" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg>
+					<span class="navLabel">SETTINGS</span>
+				</a>
+				<a id="navbar-Links-about" data-target="#modal-about" href="#" onclick="sidebarAreaToggle('about')">
+					<svg id="ico_about" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg>
+					<span class="navLabel">ABOUT</span>
+				</a>
+				<a id="navbar-Links-help" data-target="#modal-help" href="#" onclick="sidebarAreaToggle('help')">
+					<svg id="ico_help" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"></svg>
+					<span class="navLabel">HELP</span>
+				</a>
+			</div>
 		</div>
 	</nav>
-	<div id="subnav" class="subnav"><button id="contentSubNav_syslog" onclick="contentAreaToggle('syslog')"><svg id="ico_syslog" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>log</span><span id="syslogStatusLight">&nbsp;</span></button> <button id="contentSubNav_c2log" onclick="contentAreaToggle('c2log')" class="hidden"><svg id="ico_syslog" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>c2log</span><span id="c2logStatusLight">&nbsp;</span></button> <button id="contentSubNav_keylog" class="keylog hidden" onclick="contentAreaToggle('keylog')"><svg id="ico_keylog" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Keylog</span><span id="keylogStatusLight">&nbsp;</span></button> <button id="contentSubNav_payload" onclick="contentAreaToggle('payload')" class="buttonSelected hidden"><svg id="ico_payload" xmlns="http://www.w3.org/2000/svg" data-keyloggingOn height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Payload</span><span id="payloadStatusLight">&nbsp;</span></button> <button id="contentSubNav_debug" class="hidden" onclick="contentAreaToggle('debug')">Debug</button></div>
+	<div id="subnav" class="subnav">
+		<button id="contentSubNav_syslog" onclick="contentAreaToggle('syslog')">
+			<svg id="ico_syslog" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			<span>log</span>
+			<span id="syslogStatusLight">&nbsp;</span>
+		</button>
+		<button id="contentSubNav_c2log" onclick="contentAreaToggle('c2log')" class="hidden">
+			<svg id="ico_syslog" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			<span>c2log</span>
+			<span id="c2logStatusLight">&nbsp;</span>
+		</button>
+		<button id="contentSubNav_keylog" class="keylog hidden" onclick="contentAreaToggle('keylog')">
+			<svg id="ico_keylog" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			<span>Keylog</span>
+			<span id="keylogStatusLight">&nbsp;</span>
+		</button>
+		<button id="contentSubNav_payload" onclick="contentAreaToggle('payload')" class="buttonSelected hidden">
+			<svg id="ico_payload" xmlns="http://www.w3.org/2000/svg" data-keyloggingOn height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			<span>Payload</span>
+			<span id="payloadStatusLight">&nbsp;</span>
+		</button>
+		<button id="contentSubNav_debug" class="hidden" onclick="contentAreaToggle('debug')">Debug</button>
+	</div>
 	<div id="sidebar" class="hidden">
-		<div id="sidebar_settings" class="hidden"><button class="close" type="button" onclick="sidebarAreaToggle('close')"><span>&times;</span></button>
+		<div id="sidebar_settings" class="hidden">
+			<button class="close" type="button" onclick="sidebarAreaToggle('close')">
+				<span>&times;</span>
+			</button>
 			<h1>Settings</h1>
-			<div id="sidebar_settings_subnav" class="subnav"><button id="sidebarNav_queue" onclick="sidebarSettingsAreaToggle('queue')" class="hidden">Queue</button> <button id="sidebarNav_net" onclick="sidebarSettingsAreaToggle('net')" class="buttonSelected">Net</button> <button id="sidebarNav_config" onclick="sidebarSettingsAreaToggle('config')">USB</button> <button id="sidebarNav_debug" onclick="sidebarSettingsAreaToggle('debug')">GENERAL</button></div>
-			<div id="sidebar_settings_queue" class="hidden"><label for="data">Add CMD to Queue:</label> <input type="text" id="data" name="data"> <button id="modifyQueueC2" onclick="applyEffect(this);">Submit</button><br><label for="queueContactRate">Contact Rate:</label> <input type="text" id="queueContactRate" name="queueContactRate"> <label for="queuePollRate">Poll Rate:</label> <input type="text" id="queuePollRate" name="queuePollRate"> <label for="queueFastRate">Fast Rate:</label> <input type="text" id="queueFastRate" name="queueFastRate"> <button id="queuePollUpdate" onclick="applyEffect(this); changePollRate();">Update Queue Polling Rates</button>
+			<div id="sidebar_settings_subnav" class="subnav">
+				<button id="sidebarNav_queue" onclick="sidebarSettingsAreaToggle('queue')" class="hidden">Queue</button>
+				<button id="sidebarNav_net" onclick="sidebarSettingsAreaToggle('net')" class="buttonSelected">Net</button>
+				<button id="sidebarNav_config" onclick="sidebarSettingsAreaToggle('config')">USB</button>
+				<button id="sidebarNav_debug" onclick="sidebarSettingsAreaToggle('debug')">GENERAL</button>
+			</div>
+			<div id="sidebar_settings_queue" class="hidden">
+				<label for="data">Add CMD to Queue:</label>
+				<input type="text" id="data" name="data">
+				<button id="modifyQueueC2" onclick="applyEffect(this);">Submit</button>
+				<br>
+				<label for="queueContactRate">Contact Rate:</label>
+				<input type="text" id="queueContactRate" name="queueContactRate">
+				<label for="queuePollRate">Poll Rate:</label>
+				<input type="text" id="queuePollRate" name="queuePollRate">
+				<label for="queueFastRate">Fast Rate:</label>
+				<input type="text" id="queueFastRate" name="queueFastRate">
+				<button id="queuePollUpdate" onclick="applyEffect(this); changePollRate();">Update Queue Polling Rates</button>
 				<table id="cmdQueueTable">
 					<thead>
 						<tr>
@@ -1517,45 +1737,117 @@
 						</tr>
 					</thead>
 					<tbody></tbody>
-				</table><br><button id="deleteAllButton" onclick="applyEffect(this);">Delete All in Queue</button><br><button id="queryDeviceStatus" onclick="applyEffect(this);">Query Device Status</button><br>
-				<div class="button-container"><label for="c2logAlwaysShow">Always Show Last Check-In</label>
+				</table>
+				<br>
+				<button id="deleteAllButton" onclick="applyEffect(this);">Delete All in Queue</button>
+				<br>
+				<button id="queryDeviceStatus" onclick="applyEffect(this);">Query Device Status</button>
+				<br>
+				<div class="button-container">
+					<label for="c2logAlwaysShow">Always Show Last Check-In</label>
 					<div id="c2logAlwaysShow" class="toggle-button" onclick="document.getElementById(`c2logAlwaysShow`).classList.toggle('active'); if(this.classList.contains('active')) { alwaysDisplayLastPoll = '1'; sendMessage(`CTSet\tshowmsgtime\t1`); } else { alwaysDisplayLastPoll = '0'; sendMessage(`CTSet\tshowmsgtime\t0`); };">
 						<div class="inner-circle"></div>
 					</div>
 				</div>
-				<div class="button-container"><label for="c2logAbridge">C2 Log Abridge</label>
+				<div class="button-container">
+					<label for="c2logAbridge">C2 Log Abridge</label>
 					<div id="c2logAbridge" class="toggle-button" onclick="document.getElementById(`c2logAbridge`).classList.toggle('active'); if(this.classList.contains('active')) { c2logAbridge = '1' } else { c2logAbridge = '0' };">
 						<div class="inner-circle"></div>
 					</div>
-				</div><br><button id="clearLogsButton" onclick="applyEffect(this);">Clear &nbsp;<data id="clearLogsAlias"></data>&nbsp; Logs</button> <button id="clearAllLogsButton" onclick="applyEffect(this);">Clear All Logs</button>
+				</div>
+				<br>
+				<button id="clearLogsButton" onclick="applyEffect(this);">
+					Clear &nbsp;
+					<data id="clearLogsAlias"></data>
+					&nbsp; Logs
+				</button>
+				<button id="clearAllLogsButton" onclick="applyEffect(this);">Clear All Logs</button>
 			</div>
 			<div id="sidebar_settings_net">
 				<div id="wifi-Settings">
-					<h3>WiFi Settings</h3><label for="device-WIFIMode">WiFi Mode</label><data id="device-WIFIMode" class="hidden"></data><input type="radio" id="CW0" name="WIFIMode" value="AP"><data>AP (Broadcast a new AP)</data><br><input type="radio" id="CW1" name="WIFIMode" value="Station"><data>Station (Connect to Infrastructure)</data>
-					<div class="input-wrapper"><label for="device-WIFISSID">SSID</label> <input type="text" id="device-WIFISSID" name="device-WIFISSID" spellcheck="false" pattern="^[\x00-\x7F]{1,32}$|^$" title="SSID must be 1-32 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifissid')"> <span class="tooltiptext" id="tooltipwifissid"></span></div>
-					<div class="input-wrapper"><label for="device-WIFIPassword">Password (8-63 Characters, 0 = Open)</label> <input class="tooltip" type="text" id="device-WIFIPassword" name="device-WIFIPassword" spellcheck="false" pattern="^[\x00-\x7F]{8,63}$|^$" title="Password must be 8-63 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifipass')"> <span class="tooltiptext" id="tooltipwifipass"></span></div><label for="device-WIFIChannel">Channel</label> <input type="text" id="device-WIFIChannel" name="device-WIFIChannel" spellcheck="false"> <label for="device-CustomMACAddress">Custom MAC (Default:<data id="device-HardwareMACAddress"></data>)</label> <input type="text" id="device-CustomMACAddress" name="device-CustomMACAddress" spellcheck="false"> <label for="device-IPAddress">Device IP Address</label> <span type="text" id="device-IPAddress"></span> <label for="device-name">Device Name</label> <input type="text" id="device-name" name="device-name" spellcheck="false"> <button id="update-WIFISettings" class="submitButton" onclick="applyEffect(this); updateWifiSettings();">Change Settings</button>
+					<h3>WiFi Settings</h3>
+					<label for="device-WIFIMode">WiFi Mode</label>
+					<data id="device-WIFIMode" class="hidden"></data>
+					<input type="radio" id="CW0" name="WIFIMode" value="AP">
+					<data>AP (Broadcast a new AP)</data>
+					<br>
+					<input type="radio" id="CW1" name="WIFIMode" value="Station">
+					<data>Station (Connect to Infrastructure)</data>
+					<div class="input-wrapper">
+						<label for="device-WIFISSID">SSID</label>
+						<input type="text" id="device-WIFISSID" name="device-WIFISSID" spellcheck="false" pattern="^[\x00-\x7F]{1,32}$|^$" title="SSID must be 1-32 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifissid')">
+						<span class="tooltiptext" id="tooltipwifissid"></span>
+					</div>
+					<div class="input-wrapper">
+						<label for="device-WIFIPassword">Password (8-63 Characters, 0 = Open)</label>
+						<input class="tooltip" type="text" id="device-WIFIPassword" name="device-WIFIPassword" spellcheck="false" pattern="^[\x00-\x7F]{8,63}$|^$" title="Password must be 8-63 ASCII Characters." type="pattern" oninput="checkInput(this, 'tooltipwifipass')">
+						<span class="tooltiptext" id="tooltipwifipass"></span>
+					</div>
+					<label for="device-WIFIChannel">Channel</label>
+					<input type="text" id="device-WIFIChannel" name="device-WIFIChannel" spellcheck="false">
+					<label for="device-CustomMACAddress">
+						Custom MAC (Default:
+						<data id="device-HardwareMACAddress"></data>
+						)
+					</label>
+					<input type="text" id="device-CustomMACAddress" name="device-CustomMACAddress" spellcheck="false">
+					<label for="device-IPAddress">Device IP Address</label>
+					<span type="text" id="device-IPAddress"></span>
+					<label for="device-name">Device Name</label>
+					<input type="text" id="device-name" name="device-name" spellcheck="false">
+					<button id="update-WIFISettings" class="submitButton" onclick="applyEffect(this); updateWifiSettings();">Change Settings</button>
 				</div>
 				<div id="c2-Settings" class="c2">
 					<h3>C2 Settings</h3>
-					<p>C2 is currently in beta. Click <a href="https://github.com/O-MG/O.MG-Firmware/wiki/C2">https://github.com/O-MG/O.MG-Firmware/wiki/C2</a> to learn more.</p><label for="c2config">C2 Config - <span id="c2configApplied"></span></label> <input type="text" id="c2config" name="c2config" spellcheck="false"> <button id="update-C2Settings" class="submitButton" onclick="applyEffect(this); updateC2Settings()">Change Settings</button>
-					<div class="button-container"><label for="c2status">C2</label>
+					<p>
+						C2 is currently in beta. Click 
+						<a href="https://github.com/O-MG/O.MG-Firmware/wiki/C2">https://github.com/O-MG/O.MG-Firmware/wiki/C2</a>
+						 to learn more.
+					</p>
+					<label for="c2config">
+						C2 Config - 
+						<span id="c2configApplied"></span>
+					</label>
+					<input type="text" id="c2config" name="c2config" spellcheck="false">
+					<button id="update-C2Settings" class="submitButton" onclick="applyEffect(this); updateC2Settings()">Change Settings</button>
+					<div class="button-container">
+						<label for="c2status">C2</label>
 						<div id="c2status" class="toggle-button" onclick="document.getElementById(`c2status`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`C2Start`) } else { sendMessage(`C2Stop`); };">
 							<div class="inner-circle"></div>
 						</div>
-					</div><button id="button-C2Wipe" class="submitButton hidden" onclick="applyEffect(this); sendMessage('C2Wipe')">Erase C2 Config</button>
+					</div>
+					<button id="button-C2Wipe" class="submitButton hidden" onclick="applyEffect(this); sendMessage('C2Wipe')">Erase C2 Config</button>
 				</div>
 			</div>
 			<div id="sidebar_settings_config" class="hidden">
-				<h3>USB ID Defaults</h3><label>Change the default USB identifiers. Any identifiers specified in a payload will override these defaults.</label><br><label for="device-USBVID">USB Vendor ID</label> <input type="text" id="device-USBVID" name="device-USBVID"> <label for="device-USBPID">USB Product ID</label> <input type="text" id="device-USBPID" name="device-USBPID"> <label for="device-USBMAN">USB Manufacturer</label> <input type="text" id="device-USBMAN" name="device-USBMAN"> <label for="device-USBPRO">USB Product</label> <input type="text" id="device-USBPRO" name="device-USBPRO"> <label for="device-USBSER">USB Serial Number</label> <input type="text" id="device-USBSER" name="device-USBSER"> <button class="submitButton" id="update-USBIDs" onclick="applyEffect(this); updateUSBIDs();">Update All USB IDs at once</button>
+				<h3>USB ID Defaults</h3>
+				<label>Change the default USB identifiers. Any identifiers specified in a payload will override these defaults. This setting currently does NOT apply to boot payloads</label>
+				<br>
+				<label for="device-USBVID">USB Vendor ID</label>
+				<input type="text" id="device-USBVID" name="device-USBVID">
+				<label for="device-USBPID">USB Product ID</label>
+				<input type="text" id="device-USBPID" name="device-USBPID">
+				<label for="device-USBMAN">USB Manufacturer</label>
+				<input type="text" id="device-USBMAN" name="device-USBMAN">
+				<label for="device-USBPRO">USB Product</label>
+				<input type="text" id="device-USBPRO" name="device-USBPRO">
+				<label for="device-USBSER">USB Serial Number</label>
+				<input type="text" id="device-USBSER" name="device-USBSER">
+				<button class="submitButton" id="update-USBIDs" onclick="applyEffect(this); updateUSBIDs();">Update All USB IDs at once</button>
 				<div class="hidx">
-					<h4>USB Overclock</h4><select name="experimentalSpeed" id="experimentalSpeed" onchange="sendMessage(`CTSet\tusbinterval\t${this.value}`);sendMessage(`CTList`);">
+					<h4>USB Overclock</h4>
+					<select name="experimentalSpeed" id="experimentalSpeed" onchange="sendMessage(`CTSet\tusbinterval\t${this.value}`);sendMessage(`CTList`);">
 						<option value="10">100%</option>
 						<option value="1">1000%</option>
-					</select> <button class="submitButton" id="experimentalSpeed" onclick="applyEffect(this); sendMessage(`CR1`)">Apply + Reboot</button>
+					</select>
+					<button class="submitButton" id="experimentalSpeed" onclick="applyEffect(this); sendMessage(`CR1`)">Apply + Reboot</button>
 				</div>
 				<div id="keylog-Settings" class="keylog">
-					<h3>Keylog Settings</h3><input class="keylyg" type="text" placeholder="US" data-keylogger-map-region id="keylogKeymapSelect" list="keymap-list"> <button id="update-keylogLocale" class="updateButton" onclick="applyEffect(this); generateKeymap(document.getElementById('keylogKeymapSelect').value)">Update</button>
-					<div class="button-container hidden"><label for="keylogDisplayUnmappedValues">Display Unmapped Values</label>
+					<h3>Keylog Settings</h3>
+					<input class="keylyg" type="text" placeholder="US" data-keylogger-map-region id="keylogKeymapSelect" list="keymap-list">
+					<button id="update-keylogLocale" class="updateButton" onclick="applyEffect(this); generateKeymap(document.getElementById('keylogKeymapSelect').value)">Update</button>
+					<div class="button-container hidden">
+						<label for="keylogDisplayUnmappedValues">Display Unmapped Values</label>
 						<div id="keylogDisplayUnmappedValues" class="toggle-button" onclick="document.getElementById(`keylogDisplayUnmappedValues`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CTSet\tkeylogall\t1`) } else { sendMessage(`CTSet\tkeylogall\t0`); };">
 							<div class="inner-circle"></div>
 						</div>
@@ -1563,33 +1855,44 @@
 				</div>
 				<div id="hidx-Settings" class="hidx">
 					<h3>HIDX StealthLink Settings</h3>
-					<div class="button-container"><label for="hidxstatusfile">HIDX File</label>
+					<div class="button-container">
+						<label for="hidxstatusfile">HIDX File</label>
 						<div id="hidxstatusfile" class="toggle-button" onclick="document.getElementById(`hidxstatusfile`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CHStart\tF\thidxfile`) } else { sendMessage(`CHStop`); };">
 							<div class="inner-circle"></div>
 						</div>
 					</div>
-					<div class="button-container"><label for="hidxstatustcp">HIDX TCP</label>
+					<div class="button-container">
+						<label for="hidxstatustcp">HIDX TCP</label>
 						<div id="hidxstatustcp" class="toggle-button" onclick="document.getElementById(`hidxstatustcp`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CHStart\tT`) } else { sendMessage(`CHStop`); };">
 							<div class="inner-circle"></div>
 						</div>
-					</div><label for="hidxhost">Listener Address</label> <input type="text" id="hidxhost" name="hidxhost" spellcheck="false"> <label for="hidxport">Listener Port</label> <input type="text" id="hidxport" name="hidxport" spellcheck="false"> <label for="hidxboot">AutoStart on Boot</label>
+					</div>
+					<label for="hidxhost">Listener Address</label>
+					<input type="text" id="hidxhost" name="hidxhost" spellcheck="false">
+					<label for="hidxport">Listener Port</label>
+					<input type="text" id="hidxport" name="hidxport" spellcheck="false">
+					<label for="hidxboot">AutoStart on Boot</label>
 					<div class="button-container">
 						<div id="hidxboot" class="toggle-button" onclick="document.getElementById(`hidxboot`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CTSet\thidxboot\t1`) } else { sendMessage(`CTSet\thidxboot\t0`); };">
 							<div class="inner-circle"></div>
 						</div>
-					</div><button id="update-HIDXSettings" class="submitButton" onclick="applyEffect(this); updateHIDXSettings(); sendMessage(`CR1`);">Change Settings</button>
+					</div>
+					<button id="update-HIDXSettings" class="submitButton" onclick="applyEffect(this); updateHIDXSettings(); sendMessage(`CR1`);">Change Settings</button>
 				</div>
-				<h3>Toggles</h3><label for="toggle-BootScript">BootScript</label>
+				<h3>Toggles</h3>
+				<label for="toggle-BootScript">BootScript</label>
 				<div class="button-container">
 					<div id="toggle-BootScript" class="toggle-button" onclick="if(this.classList.contains('active')) { payloadSetBootSlot('off') } else { payloadSetBootSlot('on'); };">
 						<div class="inner-circle"></div>
 					</div>
-				</div><label for="toggle-CU">USB</label>
+				</div>
+				<label for="toggle-CU">USB</label>
 				<div class="button-container">
 					<div id="toggle-CU" class="toggle-button" onclick="document.getElementById(`toggle-CU`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CU1`) } else { sendMessage(`CU0`); document.getElementById(`toggle-CJ`).classList.remove(`active`); }">
 						<div class="inner-circle"></div>
 					</div>
-				</div><label for="toggle-CJ">Mouse Jiggler</label>
+				</div>
+				<label for="toggle-CJ">Mouse Jiggler</label>
 				<div class="button-container">
 					<div id="toggle-CJ" class="toggle-button" onclick="document.getElementById(`toggle-CJ`).classList.toggle('active'); if(this.classList.contains('active')) { sendMessage(`CJ1`); document.getElementById(`toggle-CU`).classList.add(`active`); } else { sendMessage(`CJ0`) }">
 						<div class="inner-circle"></div>
@@ -1597,11 +1900,16 @@
 				</div>
 			</div>
 			<div id="sidebar_settings_keylog" class="hidden">
-				<h3>Keylog Settings</h3><button class="closeModal" type="button" onclick="keylogOptionsMenu('close')">&times;</button>
+				<h3>Keylog Settings</h3>
+				<button class="closeModal" type="button" onclick="keylogOptionsMenu('close')">&times;</button>
 			</div>
 			<div id="sidebar_settings_debug" class="hidden">
 				<div>
-					<h3>General</h3><label for="sidebar_settings_debug_partitionEditor">Partition Editor</label> <button class="plus" id="sidebar_settings_debug_partitionEditor" onclick="partitionEditorCurrent(); generatePartitionEditor(); viewDialog('partitionEditor', 'open')">Partition Editor</button> <label for="uiAccentColor">Theme</label> <select name="uiAccentColor" id="uiAccentColor" onchange="sendMessage(`CTSet\tuicolor\t${this.value}`);sendMessage(`CTList`);setAccentColors(this.value)">
+					<h3>General</h3>
+					<label for="sidebar_settings_debug_partitionEditor">Partition Editor</label>
+					<button class="plus" id="sidebar_settings_debug_partitionEditor" onclick="partitionEditorCurrent(); generatePartitionEditor(); viewDialog('partitionEditor', 'open')">Partition Editor</button>
+					<label for="uiAccentColor">Theme</label>
+					<select name="uiAccentColor" id="uiAccentColor" onchange="sendMessage(`CTSet\tuicolor\t${this.value}`);sendMessage(`CTList`);setAccentColors(this.value)">
 						<option value="red">Red</option>
 						<option value="orange">Orange</option>
 						<option value="yellow">Yellow</option>
@@ -1616,129 +1924,299 @@
 						<option value="brown">Brown</option>
 						<option value="grey">Grey</option>
 						<option id="uicolorCustom" value="custom">Custom</option>
-					</select> <label for="uiAccentColor">Custom Color</label>
-					<div id="color-container"><span><input type="range" id="color-slider" min="0" max="360" value="0">
+					</select>
+					<label for="uiAccentColor">Custom Color</label>
+					<div id="color-container">
+						<span>
+							<input type="range" id="color-slider" min="0" max="360" value="0">
 							<div id="color-box"></div>
-						</span><span><button id="apply-color" onclick="applyEffect(this);">Save</button></span></div>
+						</span>
+						<span>
+							<button id="apply-color" onclick="applyEffect(this);">Save</button>
+						</span>
+					</div>
 					<h3>Download Frontend Log</h3>
-					<p>This log contains info processed during this browser session, including payloads edited or ran & keylogs viewed. We recommend reloading your browser session and limiting your activity to only what you are comfortable sharing.</p><button class="submitButton" id="sidebar_settings_debug_feLog" onclick="applyEffect(this); downloadFrontendlog();">Download Frontend Log</button><br><label for="sidebar_settings_config_reboot">Reboot</label> <button class="submitButton" id="sidebar_settings_config_reboot" onclick="applyEffect(this); sendMessage(`CR1`)">Reboot</button>
+					<p>This log contains info processed during this browser session, including payloads edited or ran & keylogs viewed. We recommend reloading your browser session and limiting your activity to only what you are comfortable sharing.</p>
+					<button class="submitButton" id="sidebar_settings_debug_feLog" onclick="applyEffect(this); downloadFrontendlog();">Download Frontend Log</button>
+					<h3>Reboot</h3>
+					<button class="submitButton" id="sidebar_settings_config_reboot" onclick="applyEffect(this); sendMessage(`CR1`)">Reboot</button>
 					<div class="selfDestruct">
-						<h3>Self Destruct</h3><button class="submitButton" id="sidebar_settings_config_selfDestructFull" onclick="applyEffect(this); sendMessage(`CD1`)">Self Destruct (Full)</button>
-						<aside>Completely erase all data and disconnect data lines to make device behave "broken". You will need to reflash the firmware to recover.</aside><br><button class="submitButton" id="sidebar_settings_config_selfDestructPartial" onclick="applyEffect(this); sendMessage(`CD2`)">Self Destruct (Partial)</button>
+						<h3>Self Destruct</h3>
+						<button class="submitButton" id="sidebar_settings_config_selfDestructFull" onclick="applyEffect(this); sendMessage(`CD1`)">Self Destruct (Full)</button>
+						<aside>Completely erase all data and disconnect data lines to make device behave "broken". You will need to reflash the firmware to recover.</aside>
+						<br>
+						<button class="submitButton" id="sidebar_settings_config_selfDestructPartial" onclick="applyEffect(this); sendMessage(`CD2`)">Self Destruct (Partial)</button>
 						<aside>Erase all data, but leave data lines connected, so it behaves like a normal device. You will need to reflash the firmware to recover.</aside>
 					</div>
 					<div class="keylog">
-						<h3>Erase Keylog</h3><button class="submitButton" id="sidebar_settings_debug_cldelete" onclick="applyEffect(this); sendMessage(`CLDelete`);">Erase Keylog</button><br>
+						<h3>Erase Keylog</h3>
+						<button class="submitButton" id="sidebar_settings_debug_cldelete" onclick="applyEffect(this); sendMessage(`CLDelete`);">Erase Keylog</button>
+						<br>
 					</div>
-					<h2>Custom Command</h2><label for="customCommandInput">Input</label> <input type="text" id="customCommandInput" name="customCommandInput" spellcheck="false"> <button id="customCommandRun" class="updateButton" onclick="applyEffect(this); issueCustomCommand();">Run</button> <label for="customCommandOutput">Output</label> <textarea id="customCommandOutput" spellcheck="false"></textarea> <button id="enableDebugMenu" class="" onclick="applyEffect(this); document.getElementById(`contentSubNav_debug`).classList.remove(`hidden`);document.getElementById(`debug-info`).classList.remove(`hidden`);document.getElementById(`footerNavPayloadEvalByLine`).classList.remove(`hidden`);document.getElementById(`footerNavPayloadRunByLine`).classList.remove(`hidden`);">Enable Debug Menu</button>
+					<h3>Custom Command</h3>
+					<label for="customCommandInput">Input</label>
+					<input type="text" id="customCommandInput" name="customCommandInput" spellcheck="false">
+					<button id="customCommandRun" class="updateButton" onclick="applyEffect(this); issueCustomCommand();">Run</button>
+					<label for="customCommandOutput">Output</label>
+					<textarea id="customCommandOutput" spellcheck="false"></textarea>
+					<button id="enableDebugMenu" class="" onclick="applyEffect(this); document.getElementById(`contentSubNav_debug`).classList.remove(`hidden`);document.getElementById(`debug-info`).classList.remove(`hidden`);document.getElementById(`footerNavPayloadEvalByLine`).classList.remove(`hidden`);document.getElementById(`footerNavPayloadRunByLine`).classList.remove(`hidden`);">Enable Debug Menu</button>
 				</div>
 			</div>
 		</div>
-		<div id="sidebar_about" class="hidden"><button class="close" type="button" onclick="sidebarAreaToggle('close')"><span>&times;</span></button>
+		<div id="sidebar_about" class="hidden">
+			<button class="close" type="button" onclick="sidebarAreaToggle('close')">
+				<span>&times;</span>
+			</button>
 			<h1>About</h1>
 			<div>
-				<h2>Details</h2>
-				<div>Backend Version: <span id="device-VersionNumber"></span></div>
-				<div>Frontend Version: <span id="frontend-VersionNumber"></span></div>
-				<div>Model: <span id="device-TypeDecoded"></span></div><span id="device-Model" class="hidden"></span> <span id="device-Type" class="hidden"></span>
+				<h3>Details</h3>
+				<div>
+					Backend Version: 
+					<span id="device-VersionNumber"></span>
+				</div>
+				<div>
+					Frontend Version: 
+					<span id="frontend-VersionNumber"></span>
+				</div>
+				<div>
+					Model: 
+					<span id="device-TypeDecoded"></span>
+				</div>
+				<span id="device-Model" class="hidden"></span>
+				<span id="device-Type" class="hidden"></span>
 			</div>
-			<h2>Release Team</h2>
+			<h3>Release Team</h3>
 			<div id="releaseTeam" class="about-section-credits"></div>
 			<div class="about-team-name">More Information found at:</div>
-			<div class="about-twitter"><a href="https://o.mg.lol/team/">https://o.mg.lol/team/</a></div>
-			<h2 class="visible">Regulatory</h2><button class="visible" id="sidebar_settings_about_regulatoryButton" onclick="applyEffect(this); createRegulatory();">Regulatory Info</button>
+			<div class="about-twitter">
+				<a href="https://o.mg.lol/team/">https://o.mg.lol/team/</a>
+			</div>
+			<h2 class="visible">Regulatory</h2>
+			<button class="visible" id="sidebar_settings_about_regulatoryButton" onclick="applyEffect(this); createRegulatory();">Regulatory Info</button>
 		</div>
-		<div id="sidebar_help" class="hidden"><button class="close" type="button" onclick="sidebarAreaToggle('close')"><span>&times;</span></button>
-			<h1>Help</h1>See <a href="https://github.com/O-MG/O.MG-Firmware/wiki">Product Wiki</a> for additional info about specs, feature use, & support.<h3>Search</h3><input type="text" id="search" placeholder="Search Help...">
-			<h3>Keymap Viewer</h3><button class="submitButton helpHeader" id="sidebar_settings_help_keymapViewer" onclick="viewDialog('keymapViewer', 'open'); sidebarAreaToggle('close');">Show Keymap Viewer</button>
+		<div id="sidebar_help" class="hidden">
+			<button class="close" type="button" onclick="sidebarAreaToggle('close')">
+				<span>&times;</span>
+			</button>
+			<h1>Help</h1>
+			See 
+			<a href="https://github.com/O-MG/O.MG-Firmware/wiki">Product Wiki</a>
+			 for additional info about specs, feature use, & support.
+			<h3>Search</h3>
+			<input type="text" id="search" placeholder="Search Help...">
+			<h3>Keymap Viewer</h3>
+			<button class="submitButton helpHeader" id="sidebar_settings_help_keymapViewer" onclick="viewDialog('keymapViewer', 'open'); sidebarAreaToggle('close');">Show Keymap Viewer</button>
 			<h3>O.MG DuckyScript Syntax Guide</h3>
-			<div id="helpExamples"><button id="btn_helppayloadGithub" class="helpHeader" onclick="document.getElementById('helppayloadGithub').classList.toggle('hidden');">Hak5 Community Payloads</button>
+			<div id="helpExamples">
+				<button id="btn_helppayloadGithub" class="helpHeader" onclick="document.getElementById('helppayloadGithub').classList.toggle('hidden');">Hak5 Community Payloads</button>
 				<div id="helppayloadGithub" class="hidden">
-					<p>Community created payloads can be found at: <a href="http://github.com/hak5/omg-payloads" target="_blank">http://github.com/hak5/omg-payloads</a></p>
-					<p>If you have internet access, you can also search below.</p><input id="searchGithubPayloads" type="text" placeholder="Search Github..."> <button class="updateButton buttonMergeLeft" onclick="applyEffect(this); searchGithubPayloads()">Search</button><br>
-					<div id="githubPayloadExamples"></div><br>
-				</div><button id="btn_helppayloadExample" class="helpHeader" onclick="document.getElementById('helppayloadExample').classList.toggle('hidden');">Example Payloads</button>
-				<div id="helppayloadExample" class="hidden"></div><button id="btn_helppayload" class="helpHeader" onclick="document.getElementById('helppayload').classList.toggle('hidden');">General</button>
-				<div id="helppayload" class="hidden"></div><button id="btn_helpkeylog" class="helpHeader keylog" onclick="document.getElementById('helpkeylog').classList.toggle('hidden');">Keylogger</button>
-				<div id="helpkeylog" class="keylog hidden"></div><button id="btn_helpselfDestruct" class="helpHeader selfDestruct" onclick="document.getElementById('helpselfDestruct').classList.toggle('hidden');">Self-Destruct</button>
-				<div id="helpselfDestruct" class="selfDestruct hidden"></div><button id="btn_helppayloadGeofencing" class="helpHeader" onclick="document.getElementById('helppayloadGeofencing').classList.toggle('hidden');">Geofencing</button>
-				<div id="helppayloadGeofencing" class="hidden"></div><button id="btn_helppayloadUSBIDs" class="helpHeader" onclick="document.getElementById('helppayloadUSBIDs').classList.toggle('hidden');">USB Device ID</button>
-				<div id="helppayloadUSBIDs" class="hidden"></div><button id="btn_helpglobalKeys" class="helpHeader" onclick="document.getElementById('helpglobalKeys').classList.toggle('hidden');">Global Keys</button>
+					<p>
+						Community created payloads can be found at: 
+						<a href="http://github.com/hak5/omg-payloads" target="_blank">http://github.com/hak5/omg-payloads</a>
+					</p>
+					<p>If you have internet access, you can also search below.</p>
+					<input id="searchGithubPayloads" type="text" placeholder="Search Github...">
+					<button class="updateButton buttonMergeLeft" onclick="applyEffect(this); searchGithubPayloads()">Search</button>
+					<br>
+					<div id="githubPayloadExamples"></div>
+					<br>
+				</div>
+				<button id="btn_helppayloadExample" class="helpHeader" onclick="document.getElementById('helppayloadExample').classList.toggle('hidden');">Example Payloads</button>
+				<div id="helppayloadExample" class="hidden"></div>
+				<button id="btn_helppayload" class="helpHeader" onclick="document.getElementById('helppayload').classList.toggle('hidden');">General</button>
+				<div id="helppayload" class="hidden"></div>
+				<button id="btn_helpkeylog" class="helpHeader keylog" onclick="document.getElementById('helpkeylog').classList.toggle('hidden');">Keylogger</button>
+				<div id="helpkeylog" class="keylog hidden"></div>
+				<button id="btn_helpselfDestruct" class="helpHeader selfDestruct" onclick="document.getElementById('helpselfDestruct').classList.toggle('hidden');">Self-Destruct</button>
+				<div id="helpselfDestruct" class="selfDestruct hidden"></div>
+				<button id="btn_helppayloadGeofencing" class="helpHeader" onclick="document.getElementById('helppayloadGeofencing').classList.toggle('hidden');">Geofencing</button>
+				<div id="helppayloadGeofencing" class="hidden"></div>
+				<button id="btn_helppayloadUSBIDs" class="helpHeader" onclick="document.getElementById('helppayloadUSBIDs').classList.toggle('hidden');">USB Device ID</button>
+				<div id="helppayloadUSBIDs" class="hidden"></div>
+				<button id="btn_helpglobalKeys" class="helpHeader" onclick="document.getElementById('helpglobalKeys').classList.toggle('hidden');">Global Keys</button>
 				<div id="helpglobalKeys" class="hidden"></div>
 			</div>
 		</div>
 	</div>
 	<div id="content" class="contentFullscreen">
-		<content id="contentArea_keylog" class="hidden keylog"><label for="keylog" class="hidden">Keylog Area</label> <textarea id="keylog" spellcheck="false" class="editorKeylog" readonly="readonly" placeholder="Keylogger output"></textarea>
-			<div id="keylogStorage" class="footer"><label for="keylogStorage">Storage Used:<data id="keylogStoragePercent">&nbsp;</data></label>
+		<content id="contentArea_keylog" class="hidden keylog">
+			<label for="keylog" class="hidden">Keylog Area</label>
+			<textarea id="keylog" spellcheck="false" class="editorKeylog" readonly="readonly" placeholder="Keylogger output"></textarea>
+			<div id="keylogStorage" class="footer">
+				<label for="keylogStorage">
+					Storage Used:
+					<data id="keylogStoragePercent">&nbsp;</data>
+				</label>
 				<div id="keylogStorageUsed" class="progressBar">
 					<div id="keylogStorageUsedBar" class="progressFilled" style="width:0.2%">&nbsp;</div>
 				</div>
 			</div>
-			<div id="footerKeylog" class="subnav footer"><button id="footerNavKeylogDownload" onclick="applyEffect(this); downloadKeylog('1');"><svg id="ico_keylogDownload" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Refresh Log</span></button> <button id="footerNavKeylogSave" onclick="applyEffect(this); saveKeylog();"><svg id="ico_keylogSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Export View</span></button> <button id="footerNavKeylogLiveStatus" onclick="liveLog();"><svg id="ico_keylogLiveLog" xml:space="preserve" class="iconColor navIcon" viewBox="0 0 40 40"></svg> <span>LiveView</span></button> <button id="footerNavKeylogStatus" onclick="keylogStartStop();"><svg id="ico_keylogRun" xml:space="preserve" class="iconColor navIcon" viewBox="0 0 40 40"></svg> <span id="keylogStartButton">Start</span></button></div>
+			<div id="footerKeylog" class="subnav footer">
+				<button id="footerNavKeylogDownload" onclick="applyEffect(this); downloadKeylog('1');">
+					<svg id="ico_keylogDownload" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+					<span>Refresh Log</span>
+				</button>
+				<button id="footerNavKeylogSave" onclick="applyEffect(this); saveKeylog();">
+					<svg id="ico_keylogSave" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+					<span>Export View</span>
+				</button>
+				<button id="footerNavKeylogLiveStatus" onclick="liveLog();">
+					<svg id="ico_keylogLiveLog" xml:space="preserve" class="iconColor navIcon" viewBox="0 0 40 40"></svg>
+					<span>LiveView</span>
+				</button>
+				<button id="footerNavKeylogStatus" onclick="keylogStartStop();">
+					<svg id="ico_keylogRun" xml:space="preserve" class="iconColor navIcon" viewBox="0 0 40 40"></svg>
+					<span id="keylogStartButton">Start</span>
+				</button>
+			</div>
 		</content>
 		<content id="contentArea_payload" class="visible">
 			<div class="editor-wrapper">
-				<div id="lineNumbers"></div><textarea id="payload" class="editor" spellcheck="false">DUCKY_LANG US
-DELAY 2000
-</textarea> <textarea id="payloadoutput" readonly="readonly" class="hidden"></textarea>
+				<div id="lineNumbers"></div>
+				<textarea id="payload" class="editor" spellcheck="false">DUCKY_LANG US
+				DELAY 2000
+				</textarea>
+				<textarea id="payloadoutput" readonly="readonly" class="hidden"></textarea>
 				<div id="debug-info" class="debug-info hidden"></div>
-				<div id="payloadEditorFile"><span>File: </span><span id="payloadEditorFilename">unsaved</span><span id="payloadEditorBootable"></span> (<span id="payloadEditorSaved">unsaved</span>)</div>
+				<div id="payloadEditorFile">
+					<span>File: </span>
+					<span id="payloadEditorFilename">unsaved</span>
+					<span id="payloadEditorBootable"></span>
+					 (
+					<span id="payloadEditorSaved">unsaved</span>
+					)
+				</div>
 			</div>
-			<div id="payloadStorage" class="footer"><label for="payloadStorageUsed">Storage Used:<data id="payloadStoragePercent">0%</data></label>
+			<div id="payloadStorage" class="footer">
+				<label for="payloadStorageUsed">
+					Storage Used:
+					<data id="payloadStoragePercent">0%</data>
+				</label>
 				<div id="payloadStorageUsed" class="progressBar">
 					<div id="payloadStorageUsedBar" class="progressFilled" style="width:0.2%">&nbsp;</div>
 				</div>
 			</div>
-			<div id="payloadRun" class="footer hidden"><label for="payloadRunPercentDiv">Execution:<data id="payloadRunPercent">0%</data></label>
+			<div id="payloadRun" class="footer hidden">
+				<label for="payloadRunPercentDiv">
+					Execution:
+					<data id="payloadRunPercent">0%</data>
+				</label>
 				<div id="payloadRunPercentDiv" class="progressBar">
 					<div id="payloadRunPercentBar" class="progressFilled" style="width:0%">&nbsp;</div>
 				</div>
-			</div><label for="payload" class="hidden">Payload Area</label>
-			<div id="footerPayload" class="subnav footer"><button id="footerNavPayloadMenu" onclick="this.classList.toggle('buttonSelectedGrey'); toggleModule('payloadFileMenu');"><svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>File Menu</span></button> <button id="footerNavPayloadEvalByLine" class="hidden" onclick="applyEffect(this); compileDuckyScriptByLine();"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build By Line</span></button> <button id="footerNavPayloadRunByLine" class="hidden" onclick="applyEffect(this); runDuckyScriptByLine();"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Run By Line</span></button> <button id="footerNavPayloadEval" onclick="applyEffect(this); compileDuckyScript();"><svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg> <span>Build</span></button> <button id="footerNavPayloadRun" onclick="document.getElementById(`footerNavPayloadRun`).classList.add(`buttonRunning`); payloadRun();"><svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+			</div>
+			<label for="payload" class="hidden">Payload Area</label>
+			<div id="footerPayload" class="subnav footer">
+				<button id="footerNavPayloadMenu" onclick="this.classList.toggle('buttonSelectedGrey'); toggleModule('payloadFileMenu');">
+					<svg id="ico_payloadLoad" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+					<span>File Menu</span>
+				</button>
+				<button id="footerNavPayloadEvalByLine" class="hidden" onclick="applyEffect(this); compileDuckyScriptByLine();">
+					<svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+					<span>Build By Line</span>
+				</button>
+				<button id="footerNavPayloadRunByLine" class="hidden" onclick="applyEffect(this); runDuckyScriptByLine();">
+					<svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+					<span>Run By Line</span>
+				</button>
+				<button id="footerNavPayloadEval" onclick="applyEffect(this); compileDuckyScript();">
+					<svg id="ico_payloadBuild" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
+					<span>Build</span>
+				</button>
+				<button id="footerNavPayloadRun" onclick="document.getElementById(`footerNavPayloadRun`).classList.add(`buttonRunning`); payloadRun();">
+					<svg id="ico_payloadRun" xml:space="preserve" viewBox="0 0 40 40" class="iconColor navIcon"></svg>
 					<div>Build + Run</div>
-				</button></div>
-			<div id="payloadFileMenu" class="hidden footerFullscreen"><button class="closeModal" type="button" onclick="toggleModule('payloadFileMenu', 'close');">&times;</button>
-				<h2>File Menu</h2><label>Select Payload</label>
+				</button>
+			</div>
+			<div id="payloadFileMenu" class="hidden footerFullscreen">
+				<button class="closeModal" type="button" onclick="toggleModule('payloadFileMenu', 'close');">&times;</button>
+				<h2>File Menu</h2>
+				<label>Select Payload</label>
 				<div id="fileMenuFlex">
-					<div id="columnLeft"><input class="payloadList" type="text" id="payloadSelect" list="payload-list" title="Filename must be in the list - custom names coming soon." oninput="checkInputList(this, 'tooltipPayloadSelect', 'payload-list')" placeholder="payload1"><datalist id="payload-list"></datalist><span class="tooltiptext arrowTop" id="tooltipPayloadSelect"></span></div>
-					<div id="columnRight"><button id="payload-loadButton" class="updateButtonLarge buttonMergeLeft" onclick="applyEffect(this); payloadSlotLoad(document.getElementById('payloadSelect').value)">Load</button> <button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button></div>
-				</div><button id="payload-saveBootscriptButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); payloadSlotSave('bootscript')">Save Bootscript</button> <span>Run on Boot:</span> <span class="button-container" style="display: inline-block;">
+					<div id="columnLeft">
+						<select name="payloadSelect" id="payloadSelect"></select>
+						<datalist id="payload-list"></datalist>
+						<span class="tooltiptext arrowTop" id="tooltipPayloadSelect"></span>
+					</div>
+					<div id="columnRight">
+						<button id="payload-loadButton" class="updateButtonLarge buttonMergeLeft" onclick="applyEffect(this); payloadSlotLoad(document.getElementById('payloadSelect').value)">Load</button>
+						<button id="payload-saveButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); payloadSlotSave(document.getElementById('payloadSelect').value)">Save</button>
+					</div>
+				</div>
+				<button id="payload-saveBootscriptButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); payloadSlotSave('bootscript')">Save Bootscript</button>
+				<span>Run on Boot:</span>
+				<span class="button-container" style="display: inline-block;">
 					<div id="toggle-BootScriptFileMenu" class="toggle-button" onclick="if(this.classList.contains('active')) { payloadSetBootSlot('off') } else { payloadSetBootSlot('on'); };">
 						<div class="inner-circle"></div>
 					</div>
-				</span><br><button id="payload-saveBootscriptButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); sendMessage(`CERun\tbootscript`)">Run Bootscript</button>
+				</span>
+				<br>
+				<button id="payload-saveBootscriptButton" class="updateButtonLarge buttonMergeLeft buttonMergeRight" onclick="applyEffect(this); sendMessage(`CERun\tbootscript`)">Run Bootscript</button>
 			</div>
 		</content>
-		<content id="contentArea_syslog" class="hidden"><label for="syslog" class="hidden">Syslog Area</label> <textarea id="syslog" spellcheck="false" class="editorSyslog" readonly="readonly"></textarea> <textarea id="debuglog" class="hidden"></textarea></content>
-		<content id="contentArea_c2log" class="hidden"><label for="c2log" class="hidden">c2log Area</label> <textarea id="c2log" spellcheck="false" class="editorc2log" readonly="readonly"></textarea></content>
+		<content id="contentArea_syslog" class="hidden">
+			<label for="syslog" class="hidden">Syslog Area</label>
+			<textarea id="syslog" spellcheck="false" class="editorSyslog" readonly="readonly"></textarea>
+			<textarea id="debuglog" class="hidden"></textarea>
+		</content>
+		<content id="contentArea_c2log" class="hidden">
+			<label for="c2log" class="hidden">c2log Area</label>
+			<textarea id="c2log" spellcheck="false" class="editorc2log" readonly="readonly"></textarea>
+		</content>
 		<content id="contentArea_debug" class="hidden">
-			<div><label for="debugLevel">Log Level</label> <select name="debugLevel" id="debugLevel">
+			<div>
+				<label for="debugLevel">Log Level</label>
+				<select name="debugLevel" id="debugLevel">
 					<option value="NONE">NONE</option>
 					<option value="INFO">INFO</option>
 					<option value="WARN">WARN</option>
 					<option value="CRIT">CRIT</option>
 					<option value="DIAG">DIAG</option>
 					<option value="DEBUG">DEBUG</option>
-				</select> <label for="device-CalibrationStatus">Calibration Status</label> <input id="device-CalibrationStatus" readonly="readonly">
-				<div>Calibration Status: <span id="device-CalibrationStatusDecoded" spellcheck="false"></span></div><label for="device-FlashSize">Device Flash Size</label> <input id="device-FlashSize" readonly="readonly"> <label for="device-Uptime">Device Uptime</label> <input id="device-Uptime" readonly="readonly"> <label for="partitionEditorAvailable">Partition Editor Usable Space</label> <input id="partitionEditorAvailable" readonly="readonly"> <label for="bootscriptPair">Bootscript to Payload Pair</label> <input id="bootscriptPair" readonly="readonly">
+				</select>
+				<label for="device-CalibrationStatus">Calibration Status</label>
+				<input id="device-CalibrationStatus" readonly="readonly">
+				<div>
+					Calibration Status: 
+					<span id="device-CalibrationStatusDecoded" spellcheck="false"></span>
+				</div>
+				<label for="device-FlashSize">Device Flash Size</label>
+				<input id="device-FlashSize" readonly="readonly">
+				<label for="device-Uptime">Device Uptime</label>
+				<input id="device-Uptime" readonly="readonly">
+				<label for="partitionEditorAvailable">Partition Editor Usable Space</label>
+				<input id="partitionEditorAvailable" readonly="readonly">
+				<label for="bootscriptPair">Bootscript to Payload Pair</label>
+				<input id="bootscriptPair" readonly="readonly">
 			</div>
 			<div id="keyloggerStatus" class="keylog"></div>
 			<div id="CFListResults" class="visible"></div>
 			<div id="CTListResults" class="visible"></div>
 		</content>
 	</div>
-	<div id="modal" class="hidden"><button class="closeModal" type="button" onclick="modal('modal', 'close')">&times;</button>
+	<div id="modal" class="hidden">
+		<button class="closeModal" type="button" onclick="modal('modal', 'close')">&times;</button>
 		<h1 id="modalLabel"></h1>
 		<div id="modalMessage"></div>
 		<div id="modalLoader" class="loader hidden"></div>
-		<div id="modalButtons"><button id="modalSave" class="submitButton" onclick="applyEffect(this); downloadModal();">Save Message</button> <button id="modalClose" class="submitButton" onclick="modal(`modal`, 'close')">Close</button></div>
+		<div id="modalButtons">
+			<button id="modalSave" class="submitButton" onclick="applyEffect(this); downloadModal();">Save Message</button>
+			<button id="modalClose" class="submitButton" onclick="modal(`modal`, 'close')">Close</button>
+		</div>
 	</div>
 	<dialog id="loadingScreen" open>
 		<h1>Loading WebUI</h1>
 		<div class="loader"></div>
 	</dialog>
-	<dialog id="keymapViewer"><button class="close-button" type="button" onclick="viewDialog('keymapViewer', 'close');">&times;</button> <span id="keymapViewerLabel">Keymap Viewer</span> <span class="keymapViewerHeader"><input class="keymapping" type="text" placeholder="US" data-keylogger-map-region id="keymapViewerSelect" list="keymap-list"><datalist id="keymap-list"></datalist><button id="update-keymapViewerLocale" class="updateButton" onclick="applyEffect(this); generateKeymap(document.getElementById('keymapViewerSelect').value)">Update</button> <button id="find-keymapViewerLocale" class="updateButton" onclick="applyEffect(this); findKeymap()">Find</button></span>
+	<dialog id="keymapViewer">
+		<button class="close-button" type="button" onclick="viewDialog('keymapViewer', 'close');">&times;</button>
+		<span id="keymapViewerLabel">Keymap Viewer</span>
+		<span class="keymapViewerHeader">
+			<input class="keymapping" type="text" placeholder="US" data-keylogger-map-region id="keymapViewerSelect" list="keymap-list">
+			<datalist id="keymap-list"></datalist>
+			<button id="update-keymapViewerLocale" class="updateButton" onclick="applyEffect(this); generateKeymap(document.getElementById('keymapViewerSelect').value)">Update</button>
+			<button id="find-keymapViewerLocale" class="updateButton" onclick="applyEffect(this); findKeymap()">Find</button>
+		</span>
 		<div id="keymap_row1"></div>
 		<div id="keymap_row2"></div>
 		<div id="keymap_row3"></div>
@@ -1747,17 +2225,26 @@ DELAY 2000
 		<div id="keymap_row6"></div>
 		<div id="keymapFindList"></div>
 	</dialog>
-	<dialog id="partitionEditor"><button class="close-button" type="button" onclick="viewDialog('partitionEditor', 'close')">&times;</button>
+	<dialog id="partitionEditor">
+		<button class="close-button" type="button" onclick="viewDialog('partitionEditor', 'close')">&times;</button>
 		<h1 id="partitionEditorLabel">Partition Editor</h1>
 		<div id="partitionPayloadConfig">
 			<h2>Payloads</h2>
-			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Type</span> <select id="payloadSlotType" onchange="generatePartitionEditor();">
+			<div class="partitionEditorFieldWrapper">
+				<span class="partitionEditorFieldLabel">Type</span>
+				<select id="payloadSlotType" onchange="generatePartitionEditor();">
 					<option value="1" selected="selected">Editable</option>
 					<option value="2">Executable</option>
 					<option value="3">Both</option>
-				</select></div>
-			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Count</span> <select id="payloadSlotCount" onchange="generatePartitionEditor();"></select></div>
-			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Size</span> <select id="payloadSlotSize" onchange="generatePartitionEditor();">
+				</select>
+			</div>
+			<div class="partitionEditorFieldWrapper">
+				<span class="partitionEditorFieldLabel">Count</span>
+				<select id="payloadSlotCount" onchange="generatePartitionEditor();"></select>
+			</div>
+			<div class="partitionEditorFieldWrapper">
+				<span class="partitionEditorFieldLabel">Size</span>
+				<select id="payloadSlotSize" onchange="generatePartitionEditor();">
 					<option value="1">4 KB</option>
 					<option value="2">8 KB</option>
 					<option value="4" selected="selected">16 KB</option>
@@ -1765,15 +2252,21 @@ DELAY 2000
 					<option value="16">64 KB</option>
 					<option value="32">128 KB</option>
 					<option value="64">256 KB</option>
-				</select></div>
-			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Payload Cache</span> <select id="plcacheSlotSize" onchange="generatePartitionEditor();">
+				</select>
+			</div>
+			<div class="partitionEditorFieldWrapper">
+				<span class="partitionEditorFieldLabel">Payload Cache</span>
+				<select id="plcacheSlotSize" onchange="generatePartitionEditor();">
 					<option value="10">40 KB</option>
 					<option value="20">80 KB</option>
 					<option value="40">160 KB</option>
 					<option value="80" selected="selected">320 KB</option>
 					<option value="120">480 KB</option>
-				</select></div>
-			<div class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Bootscript</span> <select id="bootscriptSlotSize" onchange="generatePartitionEditor();">
+				</select>
+			</div>
+			<div class="partitionEditorFieldWrapper">
+				<span class="partitionEditorFieldLabel">Bootscript</span>
+				<select id="bootscriptSlotSize" onchange="generatePartitionEditor();">
 					<option value="1">4 KB</option>
 					<option value="2">8 KB</option>
 					<option value="4" selected="selected">16 KB</option>
@@ -1781,10 +2274,14 @@ DELAY 2000
 					<option value="16">64 KB</option>
 					<option value="32">128 KB</option>
 					<option value="64">256 KB</option>
-				</select></div>
-		</div><br>
+				</select>
+			</div>
+		</div>
+		<br>
 		<h2>Exfiltration</h2>
-		<div id="partitonHidxConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">HIDX Exfil to File</span> <select id="hidxfileSize" onchange="generatePartitionEditor();">
+		<div id="partitonHidxConfig" class="partitionEditorFieldWrapper">
+			<span class="partitionEditorFieldLabel">HIDX Exfil to File</span>
+			<select id="hidxfileSize" onchange="generatePartitionEditor();">
 				<option value="1">4 KB</option>
 				<option value="2">8 KB</option>
 				<option value="4">16 KB</option>
@@ -1793,16 +2290,197 @@ DELAY 2000
 				<option value="32">128 KB</option>
 				<option value="64">256 KB</option>
 				<option value="128">512 KB</option>
-			</select></div>
-		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper"><span class="partitionEditorFieldLabel">Keylog</span> <span id="keylogSize"></span><span>&nbsp;keys</span></div><br><br><button id="partitionEditorDefault" class="submitButton" onclick="applyEffect(this); partitionEditorApply();">Apply Layout</button>
+			</select>
+		</div>
+		<div id="partitionKeylogConfig" class="partitionEditorFieldWrapper">
+			<span class="partitionEditorFieldLabel">Keylog</span>
+			<span id="keylogSize"></span>
+			<span>&nbsp;keys</span>
+		</div>
+		<br>
+		<br>
+		<button id="partitionEditorDefault" class="submitButton" onclick="applyEffect(this); partitionEditorApply();">Apply Layout</button>
 	</dialog>
-	<dialog id="partitionApplied"><button class="closeModal" type="button" onclick="viewDialog('partitionApplied', 'close')">&times;</button>
+	<dialog id="partitionApplied">
+		<button class="closeModal" type="button" onclick="viewDialog('partitionApplied', 'close')">&times;</button>
 		<h2>Partition Applied</h2>
 		<h4>Your device will now reboot.</h4>
 	</dialog>
+	<dialog id="firstTimeSetup">
+		<h2>O.MG Initial Device Setup</h2>
+		<div id="fsIcons">
+			<div>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 338 338">
+					<path d="M169 319a150 150 0 1 1 0-300 150 150 0 1 1 0 300" fill="white" stroke="red" stroke-width="15" stroke-miterlimit="10"/>
+					<path d="M140 295c-15-7-26-15-33-27-21-31-15-71 15-99l28-25c15-13 21-31 17-51v-7c41 33 44 75 36 120 14-7 17-14 21-44 29 42 30 117-27 134 14-26 11-48-12-68-12-10-23-21-20-39-22 16-23 39-20 63-9-5-10-13-12-21-8 21-12 42 7 64Z" fill="#ffa300" id="fire"/>
+					<g class="blockerIcon">
+						<path d="M176,132h38.89c16.59,0,30.05,9.79,30.05,21.86h0c0,14.04-15.65,25.43-34.95,25.43h-78.9c-16.61,0-30.08,9.8-30.08,21.88h0c0,14.03,15.63,25.41,34.92,25.41,27.23,0,60.46,0,60.46,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M193.5,217.08v19s1,1,1,1h25s1-1,1-1v-4h8s0-12,0-12h-8v-3s-1-1-1-1h-25s-1,1-1,1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+						<path d="M150,121.5v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<g class="cableIcon">
+						<path d="M176,132h38.89c16.59,0,30.05,9.79,30.05,21.86h0c0,14.04-15.65,25.43-34.95,25.43h-78.9c-16.61,0-30.08,9.8-30.08,21.88h0c0,14.03,15.63,25.41,34.92,25.41,27.23,0,60.46,0,60.46,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M193.5,217.08v19s1,1,1,1h25s1-1,1-1v-4h8s0-12,0-12h-8v-3s-1-1-1-1h-25s-1,1-1,1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+						<path d="M150,121.5v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<g class="plugIcon" style="transform: scale(2) translate(-135px, -100px);">
+						<path d="M200.57,191.24c16.59,0,59.14-24,59.14,0h0c0,27.74-39.83,0-59.14,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M190.57,180.74v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<path d="M275 62 L65 273" fill="none" stroke="red" stroke-width="15" stroke-miterlimit="10"/>
+				</svg>
+				<br>
+				<span>Do not expose to extreme heat.</span>
+			</div>
+			<div>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 338 338">
+					<path d="M169 319a150 150 0 1 1 0-300 150 150 0 1 1 0 300" fill="white" stroke="red" stroke-width="15" stroke-miterlimit="10"/>
+					<path d="M0 1h338v338H0V1Z" fill="none"/>
+					<g class="blockerIcon">
+						<path d="M176,132h38.89c16.59,0,30.05,9.79,30.05,21.86h0c0,14.04-15.65,25.43-34.95,25.43h-78.9c-16.61,0-30.08,9.8-30.08,21.88h0c0,14.03,15.63,25.41,34.92,25.41,27.23,0,60.46,0,60.46,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M193.5,217.08v19s1,1,1,1h25s1-1,1-1v-4h8s0-12,0-12h-8v-3s-1-1-1-1h-25s-1,1-1,1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+						<path d="M150,121.5v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<g class="cableIcon">
+						<path d="M176,132h38.89c16.59,0,30.05,9.79,30.05,21.86h0c0,14.04-15.65,25.43-34.95,25.43h-78.9c-16.61,0-30.08,9.8-30.08,21.88h0c0,14.03,15.63,25.41,34.92,25.41,27.23,0,60.46,0,60.46,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M193.5,217.08v19s1,1,1,1h25s1-1,1-1v-4h8s0-12,0-12h-8v-3s-1-1-1-1h-25s-1,1-1,1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+						<path d="M150,121.5v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<g class="plugIcon" style="transform: scale(2) translate(-135px, -100px);">
+						<path d="M200.57,191.24c16.59,0,59.14-24,59.14,0h0c0,27.74-39.83,0-59.14,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M190.57,180.74v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<path class="blockerIcon" d="M70.5,70.5v40h-19s-1,1-1,1v5s1,1,1,1h19v35h-19s-1,1-1,1v4s1,1,1,1h19v12c0,4,3,7,7,7h74c4,0,7-3,7-7v-70c0-4-3-7-7-7h-74c-4,0-7,3-7,7Z" fill="black"/>
+					<path class="cableIcon" d="M70.5,70.5v40h-19s-1,1-1,1v5s1,1,1,1h19v35h-19s-1,1-1,1v4s1,1,1,1h19v12c0,4,3,7,7,7h74c4,0,7-3,7-7v-70c0-4-3-7-7-7h-74c-4,0-7,3-7,7Z" fill="black"/>
+					<polygon class="plugIcon" points="139.8 39.43 66.49 130.92 86.74 132.27 58.78 203.57 160.57 93.25 121.97 93.25 139.8 39.43" fill="black"/>
+					<path d="M275 62 L65 273" fill="none" stroke="red" stroke-width="15" stroke-miterlimit="10"/>
+				</svg>
+				<br>
+				<span>Do not expose to &gt;5V.</span>
+			</div>
+			<div>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 338 338">
+					<path d="M169 319a150 150 0 1 1 0-300 150 150 0 1 1 0 300" fill="white" stroke="red" stroke-width="15" stroke-miterlimit="10"/>
+					<path d="M0 1h338v338H0V1Z" fill="none"/>
+					<g fill="none" stroke-miterlimit="10">
+						<path d="M292 139v52c0 44-44 80-99 80h-43c-58 0-105-36-105-80v-51c0-39 45-71 102-71h45c55 0 99 32 99 71" stroke="black" stroke-width="10"/>
+						<path d="M267 90c0 14-12 25-28 25H97c-14 0-26-10-26-23m219 115c0-16-27-29-59-29s-62 25-62 55" stroke="black" stroke-width="10"/>
+						<path d="M267 90c0 14-12 25-28 25H97c-14 0-26-10-26-23" stroke="black" stroke-width="10"/>
+						<path d="M80 250c0-40 26-72 59-72s49 7 49 16" stroke="black" stroke-width="10"/>
+						<path d="M167 114V84 M222 112V83 M113 112V83" stroke="black" stroke-width="5"/>
+					</g>
+					<g class="blockerIcon">
+						<path d="M176,132h38.89c16.59,0,30.05,9.79,30.05,21.86h0c0,14.04-15.65,25.43-34.95,25.43h-78.9c-16.61,0-30.08,9.8-30.08,21.88h0c0,14.03,15.63,25.41,34.92,25.41,27.23,0,60.46,0,60.46,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M193.5,217.08v19s1,1,1,1h25s1-1,1-1v-4h8s0-12,0-12h-8v-3s-1-1-1-1h-25s-1,1-1,1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+						<path d="M150,121.5v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<g class="cableIcon">
+						<path d="M176,132h38.89c16.59,0,30.05,9.79,30.05,21.86h0c0,14.04-15.65,25.43-34.95,25.43h-78.9c-16.61,0-30.08,9.8-30.08,21.88h0c0,14.03,15.63,25.41,34.92,25.41,27.23,0,60.46,0,60.46,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M193.5,217.08v19s1,1,1,1h25s1-1,1-1v-4h8s0-12,0-12h-8v-3s-1-1-1-1h-25s-1,1-1,1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+						<path d="M150,121.5v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<g class="plugIcon" style="transform: scale(2) translate(-135px, -115px);">
+						<path d="M200.57,191.24c16.59,0,59.14-24,59.14,0h0c0,27.74-39.83,0-59.14,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M190.57,180.74v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<path d="M275 62 L65 273" fill="none" stroke="red" stroke-width="15" stroke-miterlimit="10"/>
+				</svg>
+				<br>
+				<span>Do not eat.</span>
+			</div>
+			<div>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 338 338">
+					<path d="M169 319a150 150 0 1 1 0-300 150 150 0 1 1 0 300" fill="white" stroke="red" stroke-width="15" stroke-miterlimit="10"/>
+					<path d="M67.5,81.5v167M272.5,81.5v167M62.5,243.5h214" fill="none" stroke-miterlimit="10" stroke="black" stroke-width="10"/>
+					<path d="M66.5,131.5c18,0,22-24,39-26s19,20,38,22c20,1,23-20,43-20,21,0,23,22,43,22,21-1,23-25,42-23" fill="none" stroke-miterlimit="10" stroke="black" stroke-width="10"/>
+					<g class="blockerIcon">
+						<path d="M176,132h38.89c16.59,0,30.05,9.79,30.05,21.86h0c0,14.04-15.65,25.43-34.95,25.43h-78.9c-16.61,0-30.08,9.8-30.08,21.88h0c0,14.03,15.63,25.41,34.92,25.41,27.23,0,60.46,0,60.46,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M193.5,217.08v19s1,1,1,1h25s1-1,1-1v-4h8s0-12,0-12h-8v-3s-1-1-1-1h-25s-1,1-1,1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+						<path d="M150,121.5v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<g class="cableIcon">
+						<path d="M176,132h38.89c16.59,0,30.05,9.79,30.05,21.86h0c0,14.04-15.65,25.43-34.95,25.43h-78.9c-16.61,0-30.08,9.8-30.08,21.88h0c0,14.03,15.63,25.41,34.92,25.41,27.23,0,60.46,0,60.46,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M193.5,217.08v19s1,1,1,1h25s1-1,1-1v-4h8s0-12,0-12h-8v-3s-1-1-1-1h-25s-1,1-1,1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+						<path d="M150,121.5v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<g class="plugIcon" style="transform: scale(2) translate(-135px, -100px);">
+						<path d="M200.57,191.24c16.59,0,59.14-24,59.14,0h0c0,27.74-39.83,0-59.14,0" fill="none" stroke="#7f7f7f" stroke-width="6" stroke-miterlimit="10"/>
+						<path d="M190.57,180.74v4h-9s0,12,0,12h9v4s1,1,1,1h24s1-1,1-1v-19s-1-1-1-1h-24s-1,1-1,1v-1Z" fill="#7f7f7f" stroke="#7f7f7f"/>
+					</g>
+					<path d="M275 62 L65 273" fill="none" stroke="red" stroke-width="15" stroke-miterlimit="10"/>
+				</svg>
+				<br>
+				<span>Do not submerge in water.</span>
+			</div>
+		</div>
+		<br>
+		<br>
+		<br>
+		<button id="firstTimeSetupAgree" class="submitButton buttonActivationDelay" onclick="applyEffect(this); viewDialog('firstTimeSetup', 'close'); if(frontendType == 'factory') { viewDialog('firstTimeSetupPage2', 'open'); } else { sendMessage(`FSSet\t1`); sendMessage(`CU0`); };">Agree and Activate</button>
+	</dialog>
+	<dialog id="firstTimeSetupPage2">
+		<h2>O.MG Initial Device Setup</h2>
+		<p>
+			This device is currently running factory-loaded firmware.
+			<br>
+			Firmware build date: 
+			<span id="firmwareVersionNumberHumanReadableString"></span>
+		</p>
+		<p>
+			An O.MG Programmer is required for both device recovery and firmware updates. Before using the device, we strongly recommend updating the firmware to ensure you have the latest features, improvements, and bug fixes. (
+			<a href="https://o.mg.lol/setup">https://o.mg.lol/setup</a>
+			)
+		</p>
+		<p>If the device becomes inaccessible — for example, due to Self-Destruct activation or accidental Wi-Fi or boot payload configurations — an O.MG Programmer will be required to recover it.</p>
+		<br>
+		<br>
+		<br>
+		<button id="firstTimeSetupAgreePage2" class="submitButton buttonActivationDelay" onclick="applyEffect(this); viewDialog('firstTimeSetupPage2', 'close'); viewDialog('firstTimeSetupPage3', 'open');">Agree and Activate</button>
+	</dialog>
+	<dialog id="firstTimeSetupPage3">
+		<h2>O.MG Initial Device Setup</h2>
+		<h2>Agreement</h2>
+		<p>O.MG Cable, O.MG Adapter, O.MG Plug, and O.MG UnBlocker are trademarks of Mischief Gadgets, LLC. Mischief Gadgets, LLC requires that all users read and accept the provisions of the Terms of Use Policy and the Privacy Policy prior to granting users any authorization to use pentesting hardware created by Mischief Gadgets, LLC and/or its affiliates. The Terms of Use Policy and the Privacy Policy can be found at https://o.mg.lol, and must be affirmatively consented to by users prior to using any pentesting hardware created by Mischief Gadgets, LLC and/or its affiliates (hereinafter referred to as “O.MG Devices”). Reading and Accepting the Terms of Use and the Privacy Policy are REQUIRED CONSIDERATIONS for Mischief Gadgets, LLC and/or its affiliates granting users the right to use any O.MG Device. All persons are DENIED permission to use any O.MG Device, unless they read and affirmatively accept the Terms of Use Policy and the Privacy Policy located at https://o.mg.lol.</p>
+		<h2>Privacy Policy</h2>
+		<p>All persons under the age of 18 are denied access to the website located at https://o.mg.lol, as well as denied authorization to use any O.MG Device. If you are under the age of 18, it is unlawful for you to visit, communicate, or interact with Mischief Gadgets, LLC and/or its affiliates in any manner. Mischief Gadgets, LLC and/or its affiliates specifically denies access to any individual that is covered by the Child Online Privacy Act (COPA) of 1998.</p>
+		<p>Mischief Gadgets, LLC and/or its affiliates reserve the right to deny access to any person or viewer for any reason. Under the provisions of this Privacy Policy, Mischief Gadgets, LLC and/or its affiliates are allowed to collect and store data and information for the purpose of exclusion, and for any other uses seen fit.</p>
+		<p>Mischief Gadgets, LLC and/or its affiliates have established safeguards to help prevent unauthorized access to or misuse of your information but cannot guarantee that your information will never be disclosed in a manner inconsistent with this Privacy Policy (for example, as a result of any unauthorized act by third parties that violate applicable law or our affiliates’ policies). To protect your privacy and security, we may use passwords or other technologies to register or authenticate you and enable you to take advantage of our services, and before granting access or making corrections to your information.</p>
+		<p>Mischief Gadgets, LLC and/or its affiliates do not rent or sell your personally identifiable information (such as name, address, telephone number, and credit card information) to third parties for their marketing purposes.</p>
+		<p>This Privacy Policy may change from time to time. Users have an affirmative duty, as part of the consideration for permission to use O.MG Devices, to keep themselves informed of changes to this Privacy Policy. All changes to this Privacy Policy will be posted at https://o.mg.lol.</p>
+		<h2>Terms of Use</h2>
+		<p>Pentesting hardware designed by Mischief Gadgets, LLC and/or its affiliates (hereinafter referred to as “O.MG Devices”) are network administration and pentesting tools used for authorized auditing and security analysis purposes only where permitted, subject to local and international laws where applicable. Users are solely responsible for compliance with all laws of their locality. Mischief Gadgets, LLC and/or its affiliates claim no responsibility for unauthorized or unlawful use.</p>
+		<p>O.MG Devices are packaged with a limited warranty, the acceptance of which is a condition of sale. See https://o.mg.lol for additional warranty details and limitations. Availability and performance of certain features, services, and applications are device and network dependent and may not be available in all areas; additional terms, conditions and/or charges may apply.</p>
+		<p>You agree not to access or use any O.MG Device or the website located at https://o.mg.lol in any unlawful way or for any unlawful or illegitimate purpose or in any manner that contravenes this Agreement. You shall not use any O.MG Device to post, use, store, or transmit any information that is unlawful, libelous, defamatory, obscene, fraudulent, predatory of minors, harassing, threatening or hateful towards any individual, this includes any information that infringes or violates any of the intellectual property rights of others or the privacy rights of others. You shall not use any O.MG Device to attempt to disturb the peace by any method, including through use of viruses, Trojan horses, worms, time bombs, denial of service attacks, flooding or spamming. You shall not use any O.MG Device in any manner that could damage, disable or impair Mischief Gadgets, LLC and/or its affiliates, or any third-party. You shall not use any O.MG Device to attempt to gain unauthorized access to any user account, computer systems, or networks through hacking, password mining or any other means. You shall not use any O.MG Device alongside any robot, data scraper, miner or virtual computer to gain unlawful access to protected computer systems.</p>
+		<p>All features, functionality and other product specifications are subject to change without notice or obligation. Mischief Gadgets, LLC and/or its affiliates reserve the right to make changes to the product description in this document without notice. Mischief Gadgets, LLC and/or its affiliates do not assume any liability that may occur due to the use or application of the product(s) described herein.</p>
+		<p>These terms and conditions shall be governed by and construed in accordance with the laws of the state of New York, United States of America, and you agree to submit to the personal jurisdiction of the courts of the state of New York. In the event that any portion of these terms and conditions is deemed by a court to be invalid, the remaining provisions shall remain in full force and effect. You agree that regardless of any statute or law to the contrary, any claim or cause of action arising out of or related to this Web site, or the use of this Website, must be filed within one year after such claim or cause of action arose and must be filed in a court in New York, New York, U.S.A.</p>
+		<p>
+			As required by Section 512(c)(2) of Title 17 of the United States Code, if you believe that any material on the website located at https://o.mg.lol infringes your copyright, you must send a notice of claimed infringement to Mischief Gadget, LLC’s General Counsel at the following address: c/o Mischief Gadgets, LLC - General Counsel
+			<br>
+			Tor Ekeland Law, PLLC
+			<br>
+			30 Wall St., 8th Floor
+			<br>
+			New York, NY 10005
+			<br>
+			info@torekeland.com
+		</p>
+		<p>If you do not agree to be bound by this Agreement, do not access or use any O.MG Device, or the website located at https://o.mg.lol. We reserve the right, with or without notice, to make changes to this Agreement at our discretion. Continued use of any O.MG Device or the website located at https://o.mg.lol constitutes your acceptance of these Terms, as they may appear at the time of your access.</p>
+		<p>By clicking the “I Agree” button, by availing yourself of any O.MG Device or the website located at https://o.mg.lol, or by accessing, visiting, browsing, using or attempting to interact with or use any O.MG Device or the website located at https://o.mg.lol, you agree that you have read, understand, and agree to be bound by this Agreement as well as our Privacy Policy, which is a part of this Agreement and which can be viewed here: https://o.mg.lol.</p>
+		<br>
+		<br>
+		<br>
+		<button id="firstTimeSetupAgreePage3" class="submitButton buttonActivationDelay" onclick="applyEffect(this); sendMessage(`FSSet\t1`); sendMessage(`CU0`); viewDialog('firstTimeSetupPage3', 'close');">Agree and Activate</button>
+	</dialog>
 	<script>
 		// Global Variables
-		frontendVersionNumber = "3.0-250509";
+		frontendType = "release"; // Options: release, factory
+		frontendMajorVersion = "3.0";
+		frontendMinorVersion = "250514";
+		if (frontendType == "factory") {
+			frontendVersionNumber = `${frontendMajorVersion}-${frontendMinorVersion}-${frontendType}`;
+		} else {
+			frontendVersionNumber = `${frontendMajorVersion}-${frontendMinorVersion}`;
+		}
 		let debugLevel = "INFO";
 		let liveLogStatus = "off";
 		let keylogStatus = "0";
@@ -1960,6 +2638,18 @@ DELAY 2000
 			'k': ['global', 'syslog', 'debug', 'payload', 'keylog', 'stealth'],
 			'e': ['global', 'syslog', 'debug', 'payload', 'keylog', 'c2', 'hidx', 'stealth'],
 		};
+		
+		function convertVersionToDate(versionString) {
+			const year = "20" + versionString.substring(0, 2);
+			const month = parseInt(versionString.substring(2, 4)) - 1;
+			const day = parseInt(versionString.substring(4, 6));
+			const date = new Date(year, month, day);
+			return date.toLocaleDateString('en-US', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			});
+		}
 		
 		function generateModifiers() {
 			const groups = {
@@ -3278,6 +3968,7 @@ DELAY 2000
 						const elementIds = {
 							'response-CV': { value: response, method: 'value' },
 							'frontend-VersionNumber': { value: frontendVersionNumber, method: 'innerHTML' },
+							'firmwareVersionNumberHumanReadableString': { value: convertVersionToDate(frontendMinorVersion), method: 'innerHTML' },
 							'device-VersionNumber': { value: parameters[1], method: 'innerHTML' },
 							'device-Model': { value: parameters[2].charAt(0), method: 'innerHTML' },
 							'device-Type': { value: parameters[2].charAt(1), method: 'innerHTML' },
@@ -3298,9 +3989,9 @@ DELAY 2000
 		
 		function apiResponseFSGet(data) {
 			const { response, parameters } = parseData(data);
-		
 			if (parameters[1] == "0") {
 				logMessage(`INFO`, `First Time Setup Wizard: Not Activated`);
+				debugLevel = 'NONE';
 				viewDialog('firstTimeSetup', 'blockingOpen');
 			}
 		}
@@ -4295,14 +4986,6 @@ DELAY 2000
 			if (splitPayloadCounter == iterations) {
 				viewDialog('payloadsaving', 'remove');
 				clearTimeout(slotSaveTimeoutId);
-			} else {
-				viewDialog('payloadsaving', 'remove');
-				createDialog({
-					id: 'payloadsaving',
-					title: 'Saving Payload',
-					description: `Saving Failed. Please Retry.`,
-					closeEnabled: true,
-				});
 			}
 		}
 		
@@ -6767,18 +7450,21 @@ DELAY 2000
 		}
 		
 		updateLineNumbers();
-
+		
+		function downloadFrontendlog() {
+			downloadFile('debuglog', 'frontend-log', true);
+		}
 		if (hostname == "localhost") {
 			hostname = "192.168.5.140"
 		}
-
+		
 		function downloadFrontendlog() {
 			downloadFile('debuglog', 'frontend-log', true);
 			downloadFile('c2log', 'c2-log', true);
 		}
-
+		
 		console.log(hostname);
-
+		
 		viewDialog('loadingScreen', 'close');
 		toggleClass('navbar-wifiIcon', 'visible', 'hidden');
 		toggleClass('wifiDetails', 'visible', 'hidden');
@@ -6788,7 +7474,7 @@ DELAY 2000
 		toggleClass('contentSubNav_c2log', 'hidden', 'visible');
 		toggleClass('contentSubNav_payload', 'hidden', 'visible');
 		toggleClass('sidebarNav_queue', 'hidden', 'visible');
-
+		
 		const deviceSelectDiv = document.getElementById("deviceSelect");
 		if (!deviceSelectDiv.querySelector("#alias")) {
 			const selectElement = document.createElement("select");
@@ -6796,7 +7482,7 @@ DELAY 2000
 			selectElement.name = "alias";
 			deviceSelectDiv.appendChild(selectElement);
 		}
-
+		
 		async function addCmd(alias, data) {
 			const response = await fetch(`http://${hostname}:8080/C2admin`, {
 				method: 'POST',
@@ -6809,7 +7495,7 @@ DELAY 2000
 					'Content-Type': 'application/json'
 				}
 			});
-
+		
 			if (response.ok) {
 				try {
 					const result = await response.json();
@@ -6820,11 +7506,11 @@ DELAY 2000
 			} else {
 				// console.log('Error with request:', response.status);
 			}
-
+		
 			loadAdminData();
 			loadCmdQueue(alias);
 		}
-
+		
 		async function deleteCmd(alias, index) {
 			const response = await fetch(`http://${hostname}:8080/C2admin`, {
 				method: 'POST',
@@ -6837,7 +7523,7 @@ DELAY 2000
 					'Content-Type': 'application/json'
 				}
 			});
-
+		
 			if (response.ok) {
 				try {
 					const result = await response.json();
@@ -6848,11 +7534,11 @@ DELAY 2000
 			} else {
 				// console.log('Error with request:', response.status);
 			}
-
+		
 			loadAdminData();
 			loadCmdQueue(alias);
 		}
-
+		
 		async function clearQueue(alias) {
 			const response = await fetch(`http://${hostname}:8080/C2admin`, {
 				method: 'POST',
@@ -6865,7 +7551,7 @@ DELAY 2000
 					'Content-Type': 'application/json'
 				}
 			});
-
+		
 			if (response.ok) {
 				try {
 					const result = await response.json();
@@ -6876,11 +7562,11 @@ DELAY 2000
 			} else {
 				// console.log('Error with request:', response.status);
 			}
-
+		
 			loadAdminData();
 			loadCmdQueue(alias);
 		}
-
+		
 		async function clearLog(aliasValue) {
 			const response = await fetch(`http://${hostname}:8080/C2admin`, {
 				method: 'POST',
@@ -6893,7 +7579,7 @@ DELAY 2000
 					'Content-Type': 'application/json'
 				}
 			});
-
+		
 			if (response.ok) {
 				try {
 					const result = await response.json();
@@ -6904,11 +7590,11 @@ DELAY 2000
 			} else {
 				// console.log('Error with request:', response.status);
 			}
-
+		
 			loadAdminData();
 			loadCmdQueue(alias);
 		}
-
+		
 		async function clearLogAll(aliasValue) {
 			const response = await fetch(`http://${hostname}:8080/C2admin`, {
 				method: 'POST',
@@ -6921,7 +7607,7 @@ DELAY 2000
 					'Content-Type': 'application/json'
 				}
 			});
-
+		
 			if (response.ok) {
 				try {
 					const result = await response.json();
@@ -6932,11 +7618,11 @@ DELAY 2000
 			} else {
 				// console.log('Error with request:', response.status);
 			}
-
+		
 			loadAdminData();
 			loadCmdQueue(alias);
 		}
-
+		
 		function loadCmdQueue(alias) {
 			lastDateTime = "";
 			const cmdQueueTable = document.getElementById('cmdQueueTable').getElementsByTagName('tbody')[0];
@@ -6946,21 +7632,21 @@ DELAY 2000
 				const row = cmdQueueTable.insertRow();
 				const cmdCell = row.insertCell(0);
 				const actionCell = row.insertCell(1);
-
+		
 				cmdCell.textContent = cmd;
-
+		
 				const deleteButton = document.createElement('button');
 				deleteButton.textContent = 'X';
 				deleteButton.onclick = () => {
 					deleteCmd(alias, index);
 				};
-
+		
 				actionCell.appendChild(deleteButton);
 			});
 		}
-
+		
 		let processedMessages = new Set();
-
+		
 		function formatDateTime(date) {
 			const year = date.getFullYear();
 			const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -6968,10 +7654,10 @@ DELAY 2000
 			const hour = String(date.getHours()).padStart(2, '0');
 			const minute = String(date.getMinutes()).padStart(2, '0');
 			const second = String(date.getSeconds()).padStart(2, '0');
-
+		
 			return `${year}/${month}/${day} - ${hour}:${minute}:${second}`;
 		}
-
+		
 		async function loadLogs(alias) {
 			const aliasSelect = document.getElementById('alias');
 			let aliasToUse = alias ? alias : (aliasSelect.value ? aliasSelect.value : "");
@@ -6980,16 +7666,16 @@ DELAY 2000
 			let url = aliasToUse && aliasToUse.length > 0 ?
 				`http://${hostname}:8080/C2log?alias=${encodeURIComponent(aliasToUse)}` :
 				`http://${hostname}:8080/C2log`;
-
+		
 			if (c2logAbridge == "1") {
 				url += (url.includes("?") ? "&" : "?") + "abridge=True";
 			}
-
+		
 			const response = await fetch(url);
 			let data = await response.text();
 			let lines = data.split('\n');
 			document.getElementById('c2log').textContent = lines.join('\n');
-
+		
 			let lastOutLine = lines.slice().reverse().find(line => line.includes(', out,'));
 			if (lastOutLine) {
 				let parts = lastOutLine.split(', ');
@@ -6997,16 +7683,16 @@ DELAY 2000
 				let currentTime = new Date();
 				let difference = (currentTime - dateTime) / 1000;
 				let pollRate = 10 * Number(document.getElementById('queuePollRate').value);
-
+		
 				if (difference > pollRate || alwaysDisplayLastPoll == "1") {
 					document.getElementById('navbarAlerts').innerHTML = `Last Check-In: ${formatDateTime(dateTime)}`;
 				} else {
 					document.getElementById('navbarAlerts').innerHTML = '';
 				}
 			}
-
+		
 			lines = lines.filter(line => !line.match(/.*, out, .*/));
-
+		
 			for (let line of lines) {
 				if (line !== "" && !processedMessages.has(line)) {
 					let parts = line.split(', ');
@@ -7021,12 +7707,12 @@ DELAY 2000
 				}
 			}
 		}
-
+		
 		async function loadAdminData() {
 			const aliasSelect = document.getElementById('alias');
 			const response = await fetch(`http://${hostname}:8080/C2admin`);
 			adminData = await response.json();
-
+		
 			if (!adminData.devices.length) {
 				createDialog({
 					id: 'C2Error',
@@ -7036,7 +7722,7 @@ DELAY 2000
 				});
 				return;
 			}
-
+		
 			let currentAliases = Array.from(aliasSelect.options, option => option.value);
 			adminData.devices.forEach(device => {
 				if (currentAliases.includes(device.alias)) {
@@ -7046,7 +7732,7 @@ DELAY 2000
 					}
 					return;
 				}
-
+		
 				const option = document.createElement('option');
 				option.text = device.alias;
 				option.value = device.alias;
@@ -7063,35 +7749,35 @@ DELAY 2000
 			Array.from(aliasSelect.options)
 				.sort((a, b) => a.text === b.text ? 0 : a.text < b.text ? -1 : 1)
 				.forEach(option => aliasSelect.add(option, null));
-
+		
 			aliasSelect.onchange = () => {
 				loadCmdQueue(aliasSelect.value);
-
+		
 				const selectedDevice = adminData.devices.find(device => device.alias === aliasSelect.value);
-
+		
 				if (selectedDevice) {
 					document.getElementById('queueContactRate').value = selectedDevice.contact_seconds;
 					document.getElementById('queuePollRate').value = selectedDevice.poll_seconds;
 					document.getElementById('queueFastRate').value = selectedDevice.fast_seconds;
 				}
 			};
-
+		
 			loadCmdQueue(aliasSelect.value);
 			const selectedDevice = adminData.devices.find(device => device.alias === aliasSelect.value);
-
+		
 			if (selectedDevice) {
 				document.getElementById('queueContactRate').value = selectedDevice.contact_seconds;
 				document.getElementById('queuePollRate').value = selectedDevice.poll_seconds;
 				document.getElementById('queueFastRate').value = selectedDevice.fast_seconds;
 			}
 		}
-
+		
 		async function changePollRate() {
 			aliasSelect = document.getElementById('alias').value;
 			pollSeconds = document.getElementById('queuePollRate').value;
 			fastSeconds = document.getElementById('queueFastRate').value;
 			contactSeconds = document.getElementById('queueContactRate').value;
-
+		
 			const response = await fetch(`http://${hostname}:8080/C2admin`, {
 				method: 'POST',
 				body: JSON.stringify({
@@ -7107,7 +7793,7 @@ DELAY 2000
 					'Content-Type': 'application/json'
 				}
 			});
-
+		
 			if (response.ok) {
 				try {
 					const result = await response.json();
@@ -7118,11 +7804,11 @@ DELAY 2000
 			} else {
 				// console.log('Error with request:', response.status);
 			}
-
+		
 			loadAdminData();
 			loadCmdQueue(alias);
 		}
-
+		
 		function changeRefreshRate(value) {
 			refreshRate = value;
 			clearInterval(logsIntervalId);
@@ -7130,7 +7816,7 @@ DELAY 2000
 			logsIntervalId = setInterval(loadLogs, refreshRate * 1000);
 			adminIntervalId = setInterval(loadAdminData, refreshRate * 1000);
 		}
-
+		
 		window.onload = () => {
 			loadAdminData();
 			const aliasSelect = document.getElementById('alias');
@@ -7139,7 +7825,7 @@ DELAY 2000
 			clearInterval(adminIntervalId);
 			logsIntervalId = setInterval(loadLogs, refreshRate * 1000);
 			adminIntervalId = setInterval(loadAdminData, refreshRate * 1000);
-
+		
 			document.getElementById('queryDeviceStatus').onclick = () => {
 				const deviceStatusCommands = ["CI", "CV", "CWInfo", "CNGet", "CTList", "CFList", "CWStatus", "CEStatus", "CLStatus", "[CHStatus]CHStatus", "C2Status"];
 				deviceStatusCommands.forEach((cmd) => addCmd(aliasSelect.value, cmd));
@@ -7159,32 +7845,31 @@ DELAY 2000
 				clearLogAll(aliasSelect.value);
 			};
 		};
-
+		
 		const connect = (() => {
 			const aliasSelect = document.getElementById('alias');
 			let messageQueue = [];
-
+		
 			function queueMessage(message) {
 				addCmd(aliasSelect.value, message);
 			}
-
+		
 			function sendMessage(message) {
 				if (!messageQueue.includes(message)) {
 					messageQueue.push(message);
 				}
 			}
-
+		
 			setInterval(() => {
 				if (messageQueue.length > 0) {
 					queueMessage(messageQueue.shift());
 				}
 			}, 250);
-
+		
 			return {
 				sendMessage,
 			};
 		})();
 	</script>
 </body>
-
 </html>
