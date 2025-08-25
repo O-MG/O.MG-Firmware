@@ -1,6 +1,6 @@
 <#
 win-hidshell.ps1
-Authors:  Ø1phor1³(@01p8or13), Wasabi (@spiceywasabi)
+Authors:  Ø1(@01p8or13), Wasabi (@spiceywasabi)
 Acknowledgements: rogandawes (@RoganDawes)
 Required Dependencies: Activated HIDX on OMG Elite device
 Recommended Listener: stealthlink-client-universal.py

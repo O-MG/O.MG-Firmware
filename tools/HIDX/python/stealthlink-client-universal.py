@@ -1,6 +1,6 @@
 #Name: Stealth-client-universal.py
 #Author: Wasabi (@spiceywasabi)
-#Acknowledgments: Ø1phor1³(@01p8or13)
+#Acknowledgments: Ø1(@01p8or13)
 #Required Dependencies: Python3, Network connectivity to O.MG device
 
 #Description:

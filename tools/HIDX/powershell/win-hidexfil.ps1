@@ -1,6 +1,6 @@
 <#
 HIDXExfil.ps1
-Author: Ø1phor1³ (@01p8or13)
+Author: Ø1 (@01p8or13)
 Acknowledgements: spiceywasabi, rogandawes
 Required Dependencies: Activated HIDX on OMG Elite device
 #>
