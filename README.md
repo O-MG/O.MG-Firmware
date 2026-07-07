@@ -1,9 +1,13 @@
-This is for all versions of the O.MG Cable, O.MG Adapter, and O.MG Plug
+Firmware & Official Documentation for 
+
+O.MG Cable, O.MG Adapter, O.MG UnBlocker, and O.MG Plug. 
+
+Purchase at: https://o.mg.lol/
 
 
 
-# [Setup Instructions & Latest Firmware](https://github.com/O-MG/O.MG-Firmware/wiki)
+# [Firmware & Official Documentation](https://github.com/O-MG/O.MG-Firmware/wiki)
 
 
 
-<img src="https://o.mg.lol/OMGCable-pkg.jpg" >
+<img src="https://o.mg.lol/logo2.jpg" >
