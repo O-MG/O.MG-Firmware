@@ -4694,7 +4694,7 @@
 			return payloadPart + `${padHex(1)}${padHex(mod)}${padHex(hid)}`;
 		};
 		
-		const getHumanized = (delay, jitter) => jitter >= 1 ? delay + Math.floor(Math.random() * jitter) : delay;
+		const getHumanized = (delay, jitter) => Number(jitter) >= 1 ? Number(delay) + Math.floor(Math.random() * Number(jitter)) : Number(delay);
 		
 		function split_process(hexPayload) {
 			const payloadMaxSize = 1008;
