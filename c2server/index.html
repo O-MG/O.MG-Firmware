@@ -2509,7 +2509,7 @@
 		};
 		let hostname = backendParam || hostnameMap[window.location.hostname] || window.location.hostname;
 		if(hostname == "localhost"){
-			hostname = "192.168.5.140";
+			hostname = window.location.hostname; // was a hardcoded dev IP; keep the served host so SSH-tunnel (localhost) access works
 		}
 		
 		function connectCustomBackend() {
@@ -2526,6 +2526,8 @@
 		const blockSize = 4096;
 		let splitPayload = [];
 		let splitPayloadCounter = 0;
+		let payloadLoadBaseAddr = 0;   // base flash address of the slot being Loaded
+		let payloadLoadMaxChunks = 0;  // upper bound on 1KB reads for that slot
 		let keymapList = [];
 		let keymapListPretty = "";
 		keymapViewerKeys = [];
@@ -3026,6 +3028,15 @@
 			const element = document.getElementById(id);
 			if (element) element[prop] = value;
 		}
+
+		// Patch (self-hosted C2): stock index.html calls updateElement() in 4 places
+		// (apiResponseCFList, processCFListData, updateElements, handleKey) but never
+		// defines it - only updateElementValue/updateElements exist - so each call throws
+		// ReferenceError and aborts the handler. Delegate to the existing safe setter,
+		// which no-ops when the target element is absent (e.g. the debug 'response-CFList').
+		function updateElement(id, value) {
+			updateElementValue(id, value);
+		}
 		
 		function setRadioChecked(id) {
 			const element = document.getElementById(id);
@@ -3479,7 +3490,7 @@
 					apiResponseCZ(responseTextParams[2]);
 					break;
 				case responseTextParams[0].match(/\[pL.*\]/)?.input:
-					apiResponsePayloadLoad(responseTextParams[2]);
+					apiResponsePayloadLoad(responseText);
 					break;
 				case responseTextParams[0].match(/\[pS.*\]/)?.input:
 					apiResponsePayloadSave(responseText);
@@ -4825,7 +4836,14 @@
 			const payloadSlotSize = parseInt(slotElement.value) * (blockSize / readSize);
 			const iterations = parseInt(payloadSlotSize, 10);
 		
-			sendFlashReadCommands(iterations, payloadSlotAddress);
+			// Patch (efficiency): read adaptively. The device caps one flash read at readSize
+			// (1KB), but payloads are usually far smaller than the slot. Instead of firing all
+			// `iterations` reads up front, queue ONLY the first chunk; apiResponsePayloadLoad
+			// queues the next chunk only if the current one lacked the end-of-payload marker.
+			// A sub-1KB payload now costs a single read instead of 16.
+			payloadLoadBaseAddr = payloadSlotAddress;
+			payloadLoadMaxChunks = iterations;
+			sendMessage(`[pL-1.${iterations}]FR${parseInt(payloadSlotAddress)}\t${readSize}`);
 		}
 		
 		function loadUserPayload(splitPayload) {
@@ -4847,33 +4865,61 @@
 			payloadFileMenuButton.classList.remove('buttonSelectedGrey');
 		}
 		
-		function apiResponsePayloadLoad(data) {
-			const { response, parameters } = parseData(data.toString());
+		function apiResponsePayloadLoad(responseText) {
+			// Patch (self-hosted C2): corrects the stock flash-read-back path, which hung the
+			// "Loading Payload" dialog. Stock bugs fixed: (1) the [pL] dispatch passed the wrong
+			// response field - the data is at split index 1 in this relay, not 2 - so data was
+			// undefined and data.toString() threw on every chunk; (2) the Python relay hex-encodes
+			// binary flash reads and frames each chunk as "<readsize>\t<bytes>", which must be
+			// decoded; (3) completion was hardcoded to exactly 16 chunks; (4) an 'ayload-runOnBoot'
+			// typo + unguarded getElementById threw. We parse the "[pL-i.total]" tag for progress,
+			// decode the hex payload, and finish when the final chunk (per the tag) arrives.
+			const parts = String(responseText).split('\t');
+			const tag = parts[0] || '';
+			const hexData = parts[1] || '';
+			const m = tag.match(/\[pL-(\d+)\.(\d+)\]/);
+			const chunkIdx = m ? parseInt(m[1], 10) : (splitPayloadCounter + 1);
+			const chunkTotal = m ? parseInt(m[2], 10) : 0;
 		
-			if (parameters.length === 1) {
-				splitPayload.push(parameters[0]);
-				if (splitPayloadCounter === 15) {
-					splitPayload = splitPayload.join('');
-					loadUserPayload(splitPayload);
+			let decoded = '';
+			if (hexData && /^[0-9a-fA-F]+$/.test(hexData)) {
+				const bytes = [];
+				for (let i = 0; i + 1 < hexData.length; i += 2) {
+					bytes.push(parseInt(hexData.substr(i, 2), 16));
 				}
-			} else {
-				logMessage(`INFO`, `! THIS PAYLOAD SLOT IS EMPTY`);
+				const tabAt = bytes.indexOf(9); // strip leading "<readsize>\t" frame
+				const raw = tabAt >= 0 ? bytes.slice(tabAt + 1) : bytes;
+				decoded = raw.map(b => String.fromCharCode(b)).join('');
 			}
 		
-			logMessage(`DEBUG`, `loadPayloadCallback: [data]:[${response}]`);
+			splitPayload.push(decoded);
 			splitPayloadCounter += 1;
-			payloadEditorSavedElement = document.getElementById('payloadEditorSaved');
-			payloadEditorSavedElement.innerHTML = "Saved";
+			logMessage(`DEBUG`, `loadPayloadCallback: [tag]:[${tag}] chunk ${chunkIdx}/${chunkTotal} len=${decoded.length}`);
 		
-			payloadEditorFilenameValue = document.getElementById(`payloadEditorFilename`).innerHTML;
-			payloadEditorBootable = document.getElementById('payloadEditorBootable');
-		
-			if (bootpair == payloadEditorFilenameValue) {
-				payloadEditorBootable.innerHTML = " + bootscript";
-				payloadSaveMenuBootable = document.getElementById(`ayload-runOnBoot`);
-				payloadSaveMenuBootable.classList.add('buttonSelected');
+			// A flash slot is NUL/0xFF padded past the payload, and loadUserPayload truncates at
+			// the first such byte. So the payload ends in THIS chunk once it contains one; only
+			// then (or at the slot's last chunk) do we stop. Otherwise fetch just the next chunk.
+			const hasTerminator = decoded.indexOf('\x00') !== -1 || decoded.indexOf('\u00ff') !== -1;
+			const reachedEnd = chunkTotal && chunkIdx >= chunkTotal;
+			if (hasTerminator || reachedEnd || !decoded.length) {
+				loadUserPayload(splitPayload.join(''));
 			} else {
-				payloadEditorBootable.innerHTML = "";
+				const nextIdx = chunkIdx + 1;
+				const nextAddr = payloadLoadBaseAddr + chunkIdx * readSize;
+				sendMessage(`[pL-${nextIdx}.${chunkTotal}]FR${parseInt(nextAddr)}\t${readSize}`);
+			}
+		
+			const savedEl = document.getElementById('payloadEditorSaved');
+			if (savedEl) savedEl.innerHTML = "Saved";
+			const fnameEl = document.getElementById('payloadEditorFilename');
+			const fnameVal = fnameEl ? fnameEl.innerHTML : '';
+			const bootableEl = document.getElementById('payloadEditorBootable');
+			if (bootpair == fnameVal) {
+				if (bootableEl) bootableEl.innerHTML = " + bootscript";
+				const runOnBootEl = document.getElementById('payload-runOnBoot') || document.getElementById('ayload-runOnBoot');
+				if (runOnBootEl) runOnBootEl.classList.add('buttonSelected');
+			} else {
+				if (bootableEl) bootableEl.innerHTML = "";
 			}
 		}
 		
@@ -4884,6 +4930,8 @@
 			}
 			
 			iterations = 0;
+			splitPayloadCounter = 0; // Patch: shared global; reset so save completion/progress is
+			                         // correct instead of relying on the 4s fallback timeout.
 			createDialog({
 				id: 'payloadsaving',
 				title: 'Saving Payload',
@@ -7455,7 +7503,7 @@
 			downloadFile('debuglog', 'frontend-log', true);
 		}
 		if (hostname == "localhost") {
-			hostname = "192.168.5.140"
+			hostname = window.location.hostname; // was a hardcoded dev IP; keep the served host for SSH-tunnel access
 		}
 		
 		function downloadFrontendlog() {
@@ -7702,7 +7750,18 @@
 					}
 					lastDateTime = dateTime;
 					let apiMessage = parts[3];
-					processOnMessage(apiMessage);
+					// Patch (self-hosted C2): isolate each dispatch. loadLogs re-parses the whole
+					// append-only C2log every poll; without this, one message whose handler throws
+					// (e.g. a stock apiResponse* referencing an undefined symbol) aborts the loop
+					// before later messages are processed, and because the line is never marked seen
+					// it re-throws on every poll forever - which silently blocks multi-chunk flows
+					// like payload Load/Save from ever completing. Mark the line processed regardless
+					// so a single bad message cannot wedge the whole pipeline.
+					try {
+						processOnMessage(apiMessage);
+					} catch (e) {
+						console.error('[C2] processOnMessage failed for:', JSON.stringify(String(apiMessage).slice(0, 40)), e);
+					}
 					processedMessages.add(line);
 				}
 			}
@@ -7870,6 +7929,15 @@
 				sendMessage,
 			};
 		})();
+
+		// Patch (self-hosted C2): expose the connect closure's sendMessage globally.
+		// Stock index.html declares sendMessage only INSIDE the connect IIFE and returns
+		// it as connect.sendMessage, but connect is never used and no global sendMessage
+		// exists. Bare sendMessage(...) calls - apiResponseCFList's CFList page-2 fetch,
+		// and the CERun/CTSet onclick handlers - therefore throw ReferenceError. That
+		// aborts CFList pagination after page 1, so processCFListData() never runs with a
+		// complete listing and the payload dropdown stays empty.
+		window.sendMessage = connect.sendMessage;
 	</script>
 </body>
 </html>
