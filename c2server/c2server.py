@@ -40,7 +40,12 @@ hostName = ip_address
 def write_c2log(alias, direction, msg):
     with open("c2log", "a") as f:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        f.write(f"{alias}, {timestamp}, {direction}, {msg}\n")
+        # Keep every record on one physical line. Payload-save commands (FW/CEStore)
+        # embed multi-line DuckyScript; a raw newline here splits one record into
+        # several, and the continuation lines become orphan fragments that corrupt
+        # the admin UI's line-oriented C2log parsing.
+        safe_msg = str(msg).replace("\r", "").replace("\n", "\\n")
+        f.write(f"{alias}, {timestamp}, {direction}, {safe_msg}\n")
 
 class c2server(BaseHTTPRequestHandler):
     def end_headers(self):
@@ -554,7 +559,10 @@ def log(err_text):
 
 
 def gen_random(size):
-    return bytes(rnd.randint(0, 255) for _ in range(size))
+    # Keys, session keys, and nonces must come from the OS CSPRNG. The `random`
+    # module is a Mersenne Twister whose internal state is recoverable from its
+    # outputs, so it must not be used for any security-sensitive value.
+    return os.urandom(size)
 
 
 class c2config:
@@ -665,6 +673,7 @@ if __name__ == "__main__":
                     print("Invalid arguments for provisioning. Expected sets of (alias, poll_seconds, fast_seconds, contact_seconds).")
     else:
         try:
+            c2admin.timeout = 30
             secondaryServer = ThreadingHTTPServer((config.host_url, config.admin_port), c2admin)
             secondaryThread = threading.Thread(target=secondaryServer.serve_forever)
             secondaryThread.daemon = True
@@ -680,7 +689,14 @@ if __name__ == "__main__":
             sys.exit(1)
 
         try:
-            webServer = HTTPServer((config.host_url, config.host_port), c2server)
+            # Thread the device listener and give each request a timeout. This port is
+            # internet-facing; a single-threaded HTTPServer is wedged indefinitely by one
+            # client that opens a connection and never completes a request (slowloris /
+            # half-open scan), because the lone accept loop blocks in that handler and the
+            # listen backlog fills, refusing all further connections (including real
+            # devices). The timeout reaps such stuck connections.
+            c2server.timeout = 30
+            webServer = ThreadingHTTPServer((config.host_url, config.host_port), c2server)
             print("C2 server started http://%s:%s" % (config.host_url, config.host_port))
             with webServer:
                 webServer.serve_forever()
