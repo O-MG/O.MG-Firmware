@@ -7,7 +7,7 @@
 # X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
 
 
-##### 
+#####
 ##### NOTE: THIS REQUIRES pyusb and libusb (either via pip3 install libusb_package or libusb1.0 library on your system)
 #####
 
@@ -27,12 +27,29 @@ from datetime import datetime
 
 from pprint import pprint
 
+
+def find_hidx_interface(configuration):
+    """Return the bidirectional HID interface and its IN/OUT endpoints."""
+    for interface in configuration:
+        endpoints = list(interface)
+        endpoint_in = next((endpoint for endpoint in endpoints
+                            if uu.endpoint_direction(endpoint.bEndpointAddress) == uu.ENDPOINT_IN), None)
+        endpoint_out = next((endpoint for endpoint in endpoints
+                             if uu.endpoint_direction(endpoint.bEndpointAddress) == uu.ENDPOINT_OUT), None)
+        if interface.bInterfaceClass == 3 and endpoint_in and endpoint_out:
+            return interface, endpoint_in, endpoint_out
+    raise RuntimeError("No bidirectional HIDX HID interface was found")
+
+
 class HIDX():
     def __init__(self,vid=None,pid=None,debug=False,sbuff=8,rbuff=8):
         # device information and endpoints
         self.vid = None
         self.pid = None
         self.int = None
+        self.interface_number = None
+        self.ep_in = None
+        self.ep_out = None
         self.dev = None
         self.dev_backend = None
         self.reattach = False
@@ -55,12 +72,12 @@ class HIDX():
                 self.find_devs()
             if not setup:
                 print("Failed to initalize.")
-                sys.exit(1)         
+                sys.exit(1)
         else:
             print("No VID or PID Provided")
             self.find_devs()
-            
-        
+
+
     def display_dev(self,vid=None,pid=None):
         if not vid and not pid:
             hvid = hex(self.vid)
@@ -82,7 +99,7 @@ class HIDX():
          c = os.popen(cmd)
          r = c.read()
       return r
-    
+
     def find_devs(self):
         dev = None
         try:
@@ -103,7 +120,7 @@ class HIDX():
             print("\n")
         else:
             print("Unable to enumerate available USB Devices. Likely permissions issues!")
-    
+
     def setup_dev(self,vid,pid):
         dev = None
         dev_id = self.display_dev(vid,pid)
@@ -128,18 +145,41 @@ class HIDX():
         if not dev:
             print(f"Could not find device: {dev_id}")
             return False
+        self.cfg = dev.get_active_configuration()
+        try:
+            self.int, self.ep_in, self.ep_out = find_hidx_interface(self.cfg)
+        except RuntimeError as error:
+            print(error)
+            return False
+        self.interface_number = self.int.bInterfaceNumber
         self.reattach = False
         try:
-            if hasattr(dev,"is_kernel_driver_active") and dev.is_kernel_driver_active(2):
+            if (hasattr(dev, "is_kernel_driver_active") and
+                    dev.is_kernel_driver_active(self.interface_number)):
                 self.reattach = True
-                dev.detach_kernel_driver(2)
+                dev.detach_kernel_driver(self.interface_number)
         except NotImplementedError:
             pass
-        self.cfg = dev.get_active_configuration()
-        self.int = self.cfg.interfaces()[2]
+        uu.claim_interface(dev, self.interface_number)
         self.dev = dev
         print(f"Found and Connecting to Device: {dev_id}")
         return True
+
+    def close(self):
+        """Release the discovered HIDX interface and restore its host driver."""
+        if self.dev is None or self.interface_number is None:
+            return
+        try:
+            uu.release_interface(self.dev, self.interface_number)
+        except (NotImplementedError, uc.USBError):
+            pass
+        if self.reattach:
+            try:
+                self.dev.attach_kernel_driver(self.interface_number)
+            except (AttributeError, NotImplementedError, uc.USBError):
+                pass
+        uu.dispose_resources(self.dev)
+        self.dev = None
 
     def pad_input(self,input_str, left_pad=False, right_pad=False, chunk_size = 8):
         if left_pad and right_pad:
@@ -152,7 +192,7 @@ class HIDX():
         if isinstance(input_str, bytes):
             input_str = self.decode_msg(input_str)
         if right_pad:
-            padded_str = input_str + ' ' * padding_length    
+            padded_str = input_str + ' ' * padding_length
         if left_pad:
             padded_str = ' ' * padding_length + input_str
         return padded_str
@@ -164,10 +204,10 @@ class HIDX():
             padded_message = self.pad_input(raw_message,right_pad=True)
             chunks.append(padded_message)
         return chunks
-    
+
 
     def write(self,msg=None, buffer_limit=8):
-        endpoint = self.int.endpoints()[1]
+        endpoint = self.ep_out
         error = False
         start_buffer_size = len(self.send_buff)
         write_bytes = 0
@@ -180,8 +220,9 @@ class HIDX():
                 part = b""
                 if len(self.send_buff)>0:
                     part = self.send_buff.pop(0)
-                endpoint.write(part)
-                write_bytes = len(part)
+                write_bytes = endpoint.write(part)
+                if write_bytes != len(part):
+                    raise IOError(f"Short HIDX write: expected {len(part)}, wrote {write_bytes}")
                 end_buffer_size = len(self.send_buff)
                 if self.debug:
                    print(f"Write Buffer: ob:{start_buffer_size},wb:{write_bytes},eb:{end_buffer_size}")
@@ -192,7 +233,7 @@ class HIDX():
 
 
     def _read(self, buffer_limit=8,report_size=8,timeout=200):
-        endpoint = self.int.endpoints()[0]
+        endpoint = self.ep_in
         res = None
         error = False
         raw_message = b""
@@ -209,7 +250,7 @@ class HIDX():
                 for _r in rawdata:
                     if 32 <= _r <= 126 or _r in [10]:
                         procdata+=chr(_r).encode()
-                raw_message+=procdata 
+                raw_message+=procdata
                 recv_packets += 1
                 recv_bytes += len(rawdata)
         except uc.USBTimeoutError:
@@ -230,7 +271,7 @@ class HIDX():
             pass
 
         return error, recv_packets, recv_bytes, res
-        
+
     def read(self, retries=1):
         raw_message = b""
         empty_message = 0
@@ -241,12 +282,12 @@ class HIDX():
             if self.debug:
                 print("In read loop...")
             try:
-                error, recv_packet, recv_byte, raw_data = self._read(
+                error, packet_count, recv_byte, raw_data = self._read(
                     buffer_limit=(self.read_buff_size*4),
                     report_size=self.read_buff_size
                 )
                 recv_bytes+=recv_byte
-                recv_packet+=recv_packet
+                recv_packet+=packet_count
                 if error:
                     print("! Error detected in read()")
                     return raw_message
@@ -266,10 +307,10 @@ class HIDX():
     def setWriteBuffSize(self,size):
         self.write_buff_size = size
         return size
-    
+
     def setReadBuffSize(self,size):
         self.read_buff_size = size
-        return size    
+        return size
 
     def decode_msg(self,data):
         content = None
@@ -277,18 +318,18 @@ class HIDX():
             content = data.decode('utf-8')
         except UnicodeDecodeError:
             content = data.decode('latin-1')
-        return content 
+        return content
 
     def start(self,max_errors=5):
         iter = 1
-        clear_errcnt = 0 
+        clear_errcnt = 0
         while self.write_errors < max_errors and self.read_errors < max_errors:
             result = None
             read_error, recv_packet, recv_bytes, raw_message = self.read()
-            
+
             if self.debug:
                 print("In main loop...")
-            
+
             if read_error:
                 self.read_errors+=1
             else:
@@ -315,24 +356,25 @@ class HIDX():
             result=None
             write_error,send_bytes = self.write(result,self.write_buff_size)
             if write_error:
-                self.write_errors+=1      
+                self.write_errors+=1
             iter += 1
             if (clear_errcnt > 24):
                 self.read_errors = 0
                 self.write_errors = 0
-    
+
     def send(self,message,max_errors=5):
         iter = 1
-        clear_errcnt = 0 
+        clear_errcnt = 0
         write_error,send_bytes = self.write(message,self.write_buff_size)
-        self.write_errors =+ 1
+        if write_error:
+            self.write_errors += 1
         if self.debug:
             print("Sending message: %d" % len(message))
         while len(self.send_buff)>0 and (self.write_errors < max_errors and self.read_errors < max_errors):
             result = message
             write_error,send_bytes = self.write(None,self.write_buff_size)
             if write_error:
-                self.write_errors+=1      
+                self.write_errors+=1
             iter += 1
             if (clear_errcnt > 24):
                 self.read_errors = 0
@@ -347,7 +389,7 @@ if __name__ == "__main__":
     def clean_id(inmsg):
         hexstr = "0x"+str(inmsg).lower().replace("0x","")
         return int(hexstr,16)
-    
+
 
     def read_stdin():
         content = None
@@ -364,8 +406,8 @@ if __name__ == "__main__":
                         content = data.decode('latin-1')
         except:
             pass
-        return content  
-        
+        return content
+
     parser = argparse.ArgumentParser(description="HIDUniversal Tool")
 
     parser.add_argument("--vid", type=str, default="0xd3c0", help="Specify vid parameter")
@@ -379,14 +421,19 @@ if __name__ == "__main__":
     if args.debug:
         debug=True
         print("Starting Up...")
-    
+
     hdx = HIDX(vid=clean_id(args.vid),pid=clean_id(args.pid),rbuff=int(args.readbuff),debug=debug,sbuff=int(args.sendbuff))
     stdin_data = read_stdin()
-    if stdin_data:
-        if debug:
-           print("In STDIN Mode")
-        hdx.send(stdin_data)
-    else:
-        if debug:
-            print("In Interactive Shell Mode")
-        hdx.start()
+    try:
+        if stdin_data:
+            if debug:
+               print("In STDIN Mode")
+            hdx.send(stdin_data)
+        else:
+            if debug:
+                print("In Interactive Shell Mode")
+            hdx.start()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        hdx.close()

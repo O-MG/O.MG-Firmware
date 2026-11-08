@@ -1005,7 +1005,7 @@ class ESP32ROM(ESPLoader):
         word4 = self.read_efuse(4)
         adc_vref = (word4 >> 8) & 0x1F
         if adc_vref:
-            features += ["VRef calibration in efuse"]
+            features += ["ADC reference voltage in efuse"]
 
         blk3_part_res = word3 >> 14 & 0x1
         if blk3_part_res:

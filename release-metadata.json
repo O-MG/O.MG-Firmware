@@ -1,0 +1,12 @@
+{
+  "backend": {
+    "commit": "dbea4a42b2e90fb33c501b974fcf52df612383b2",
+    "release_tag": "v4-4.0-261108"
+  },
+  "frontend": {
+    "branch": "v4",
+    "commit": "7f6a2d00b55da366ec7eea920c13cea79e5b624c",
+    "frontend_version": "4.0-261023.1",
+    "release_tag": "v4-4.0-261023.1",
+  }
+}

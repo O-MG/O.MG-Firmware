@@ -79,7 +79,7 @@ def _posix_get_window_size():
     from fcntl import ioctl
     from termios import TIOCGWINSZ
     from array import array
-    
+
     winsize = array("H", [0] * 4)
     try:
         ioctl(sys.stdout.fileno(), TIOCGWINSZ, winsize)
@@ -239,7 +239,7 @@ getch.__doc__ = \
 #     before the call to this function
 def getchars():
     return getch(_getall=True)
-    
+
 
 def echo(msg):
     #https://groups.google.com/forum/#!topic/python-ideas/8vLtBO4rzBU
@@ -300,8 +300,3 @@ def page(content, pagecallback=prompt):
         if pagecallback(pagenum) == False:
             return
         pagenum += 1
-
-
-
-
-

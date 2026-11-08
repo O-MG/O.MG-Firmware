@@ -10,7 +10,7 @@ function HIDXExfil {
 .DESCRIPTION
 This is a POC.
 A “low and slow” method of covert exfiltration meant to provide alternate pentesting pathways beyond using the target host’s network interfaces or mass storage.
-This POC will allow data exfiltration back to the O.MG’s flash storage or act as a proxy between the target host and another device, 
+This POC will allow data exfiltration back to the O.MG’s flash storage or act as a proxy between the target host and another device,
 via the O.MG Device's built-in WiFi interface, which can allow you to receive data via listeners like nc, netcat, or similar tools.
 
 .PARAMETER Message
@@ -23,15 +23,15 @@ Defining vendor ID of the device. (Default: D3C0)
 Defining product ID of the device. (Default: D34D)
 
 .EXAMPLE
-Defining a message: 
+Defining a message:
 HIDXExfil -Message "hello world"
 
 .EXAMPLE
-HIDX usage with every parameter: 
+HIDX usage with every parameter:
 HIDXExfil -VendorID D3C0 -ProductID D34D -Message "test"
 
 .EXAMPLE
-Piping output into HIDX: 
+Piping output into HIDX:
 whoami | HIDXExfil
 
 .EXAMPLE

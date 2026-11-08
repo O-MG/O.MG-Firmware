@@ -16,7 +16,7 @@ from pprint import pprint
 
 
 # current issues:
-""" 
+"""
 1. input prompt prompt may return before content is finished so you will see things like
 $whoami
 $root
@@ -31,7 +31,7 @@ this will also fix #1
 
 ## These we can set but aren't meant to be changed regularly
 ## So not a part of the user inputs and flags
-nowait = True # wait or not wait for end of message control characters 
+nowait = True # wait or not wait for end of message control characters
 remote_prompt = False # hide the > prompt and presume it comes from the client
 windows = False # enable larger buffer, please don't trun this on unless testing!!!!
 delay = None # delay between messages (0.2-0.5 is fine) default to None
@@ -55,7 +55,7 @@ def pad_input(input_str, left_pad=False, right_pad=False, chunk_size = 8):
     if isinstance(input_str, bytes):
         input_str = input_str.decode("utf-8")
     if right_pad:
-        padded_str = input_str + ' ' * padding_length    
+        padded_str = input_str + ' ' * padding_length
     if left_pad:
         padded_str = ' ' * padding_length + input_str
     return padded_str
@@ -67,7 +67,7 @@ def split_output(message,chunk_size=8):
         padded_message = pad_input(raw_message,right_pad=True)
         chunks.append(padded_message)
     return chunks
-    
+
 def recvlog(msg):
     print(f"{msg}",end="")
     logger_received.info(msg)
@@ -91,14 +91,14 @@ def handle_client(client_socket,run,rts):
             run.clear()
             print(f"Socket Exception: {e}")
             break
-        
+
         """
         print("\nSTART INCOMING DATA")
         print(f"{data}")
         print(binascii.hexlify(bytes(data,'utf-8')))
         print("END INCOMING DATA")
         """
-        
+
         # double check the data
         if not data:
             recvlog("!!!! Socket has disconnected....")
@@ -115,7 +115,7 @@ def handle_client(client_socket,run,rts):
                 rts.set()
             #print("Status: %s"%str(rts.is_set()))
             recvlog(f"{data}")
-    
+
 def console_input(client_socket,run,rts):
     print("\nHIDX Shell (type '%quit' to exit)")
     global nowait, windows, delay, remote_prompt
@@ -134,7 +134,7 @@ def console_input(client_socket,run,rts):
                 print(prompt_msg, end='', flush=True)
                 user_input = input()
                 if not user_input:
-                	continue
+                        continue
                 if user_input == "%exit":
                     client_socket.close()
                     run.clear()
@@ -169,7 +169,7 @@ def hidxcli(host, port,reuse=True):
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     run = threading.Event()
     run.set()
-    
+
     rts = threading.Event()
     rts.set()
 
@@ -177,7 +177,7 @@ def hidxcli(host, port,reuse=True):
         server_socket.bind((host, port))
         server_socket.listen(1)
         print(f"Server listening on {host}:{port}")
-    
+
         while run:
             client_socket, addr = server_socket.accept()
             print()
@@ -202,7 +202,7 @@ if __name__ == "__main__":
     parser.add_argument("sendlog", type=str, nargs="?", help="message send log")
     parser.add_argument("recvlog", type=str, nargs="?", default="hidxrecv.log", help="message receive log (for loot)")
     args = parser.parse_args()
-    
+
     global logger_received, logger_sent
     logger_received = logging.getLogger("received_data")
     logger_received.addHandler(logging.FileHandler(args.recvlog))
@@ -214,5 +214,3 @@ if __name__ == "__main__":
         logger_sent.setLevel(logging.INFO)
 
     hidxcli(args.host, args.port)
-
-

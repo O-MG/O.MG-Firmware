@@ -30,4 +30,3 @@ function Minify-Script {
 
 # Example usage:
 Minify-Script -InputFilePath "HIDXExfil.ps1" -OutputFilePath "HIDXExfil-minified.ps1" -AsBase64
-

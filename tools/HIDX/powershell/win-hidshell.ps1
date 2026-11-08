@@ -22,7 +22,7 @@ Defining product ID of the device. (Default: D34D)
 Display more information about received and executed commands
 
 .EXAMPLE
-HIDXShell usage with defined device: 
+HIDXShell usage with defined device:
 HIDXShell -VendorID D3C0 -ProductID D34D
 
 .LINK
@@ -52,12 +52,12 @@ X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H* amsiscanbuf
     #Defining OMG device
     $OMG = $VendorID +"&PID_" + $ProductID
 
-    $tries = 0 
+    $tries = 0
     $ErrorActionPreference="Stop"
 
     #Creating filehandle
     function CreateBinding(){
-        try { 
+        try {
                 Add-Type -TypeDefinition @"
 using System;
 using System.IO;
@@ -75,7 +75,7 @@ namespace omg {
 }
 "@
                 Write-Host -ForegroundColor Yellow "[?]Adding Binding..."
-                } 
+                }
                 catch {
                     Write-Host -ForegroundColor red "[!]Error:Cannot load Binding..."
                 }
@@ -111,7 +111,7 @@ namespace omg {
                 #Verify device - open device
                 Write-Host -ForegroundColor Green "[+]Identified O.MG Device: ${devicestring}"
                 $filehandle = [omg.hidx]::open($devicestring)
-                #Verify filehandle 
+                #Verify filehandle
                 if($null -eq $filehandle){
                     $loop=$false
                     Write-Host -ForegroundColor red "[!]Error: Filehandle is empty"
@@ -195,4 +195,4 @@ namespace omg {
             }
         }
     }
-} 
+}

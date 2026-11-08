@@ -9,7 +9,7 @@ import os,sys,time
 from textwrap import wrap
 
 # set these
- 
+
 hidx_device = None
 transmission_delay = 1 # in seconds, 0 disables
 max_message_size = 48 # bytes

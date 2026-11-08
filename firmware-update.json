@@ -1,0 +1,139 @@
+{
+  "build": "261108",
+  "commit": "dbea4a42",
+  "format": "omg-websocket-update-v2",
+  "images": {
+    "application": {
+      "capacity": 409600,
+      "consumers": [
+        "ota",
+        "python",
+        "webflasher"
+      ],
+      "crc32": "d9c37b96",
+      "file": "image.elf-0x10000.bin",
+      "md5": "541433a24664d7b3db0979082138079b",
+      "sectors": 98,
+      "sha256": "a6683e2d918212df791ca643f690968b656ae5b3aca2f4ad10a6b22535299f14",
+      "size": 399984,
+      "stage": "0x110000",
+      "target": "0x10000"
+    },
+    "boot": {
+      "capacity": 65536,
+      "consumers": [
+        "ota",
+        "python",
+        "webflasher"
+      ],
+      "crc32": "e62c4bac",
+      "file": "image.elf-0x00000.bin",
+      "md5": "2d62e2e53737642c0f06630b6a71b4a0",
+      "sectors": 14,
+      "sha256": "07c734a107698d1f8b4706971613c78444a7d4b3802e0c10604878518af3fe5c",
+      "size": 54992,
+      "stage": "0x100000",
+      "target": "0x00000"
+    },
+    "webui": {
+      "capacity": 262144,
+      "consumers": [
+        "ota",
+        "python",
+        "webflasher"
+      ],
+      "crc32": "4a413970",
+      "file": "page.mpfs",
+      "md5": "7b6332f6f4ac9850c8a855be7c407a66",
+      "sectors": 43,
+      "sha256": "5f0959fc42305d44e297f6cc8ed55927657de7d242a350004447f1d2e2df52b6",
+      "size": 175616,
+      "stage": "0x180000",
+      "target": "0x80000"
+    }
+  },
+  "minimum_physical_flash_mb": 2,
+  "preserved_regions": [
+    "wifi-control",
+    "flash-log",
+    "rf-calibration",
+    "phy-init",
+    "sdk-parameters"
+  ],
+  "programmer": {
+    "data_reset": {
+      "end_by_flash_mb": {
+        "1": "0xfa000",
+        "2": "0x1fa000"
+      },
+      "start": "0x74000"
+    },
+    "images": {
+      "ofat_init": {
+        "capacity": 4096,
+        "consumers": [
+          "python",
+          "webflasher"
+        ],
+        "crc32": "c71c0011",
+        "file": "blank-settings.bin",
+        "md5": "620f0b67a91f7f74151bc5be745b7110",
+        "sectors": 1,
+        "sha256": "ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7",
+        "size": 4096,
+        "target": "0x7f000"
+      },
+      "phy_init": {
+        "capacity": 4096,
+        "consumers": [
+          "python",
+          "webflasher"
+        ],
+        "crc32": "db45b038",
+        "file": "esp_init_data_default_v08.bin",
+        "md5": "95659619c2cd734463c6604736a564f8",
+        "sectors": 1,
+        "sha256": "b2218087cf938ce665b26ac049f7d146677c70fe2909205a4d0e6a58aef0e4b3",
+        "size": 128,
+        "target_by_flash_mb": {
+          "1": "0xfc000",
+          "2": "0x1fc000"
+        }
+      },
+      "wifi_reflash": {
+        "capacity": 4096,
+        "consumers": [
+          "python",
+          "webflasher"
+        ],
+        "crc32": "f154670a",
+        "file": "blank.bin",
+        "md5": "6ae59e64850377ee5470c854761551ea",
+        "sectors": 1,
+        "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+        "size": 4096,
+        "target": "0x7e000"
+      }
+    }
+  },
+  "protected_flash_regions": {
+    "1": {
+      "rf-calibration": {
+        "size": 8192,
+        "start": "0xfa000"
+      }
+    },
+    "2": {
+      "rf-calibration": {
+        "size": 8192,
+        "start": "0x1fa000"
+      }
+    }
+  },
+  "required_logical_flash_mb": 2,
+  "reset_regions": [
+    "ofat-user-data"
+  ],
+  "sector_size": 4096,
+  "version": "4.0.0.1"
+}
