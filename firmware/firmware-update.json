@@ -56,7 +56,6 @@
   "preserved_regions": [
     "wifi-control",
     "flash-log",
-    "rf-calibration",
     "phy-init",
     "sdk-parameters"
   ],
@@ -113,20 +112,6 @@
         "sha256": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
         "size": 4096,
         "target": "0x7e000"
-      }
-    }
-  },
-  "protected_flash_regions": {
-    "1": {
-      "rf-calibration": {
-        "size": 8192,
-        "start": "0xfa000"
-      }
-    },
-    "2": {
-      "rf-calibration": {
-        "size": 8192,
-        "start": "0x1fa000"
       }
     }
   },
